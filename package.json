@@ -1,18 +1,34 @@
 {
   "name": "medical-diagnosis-system",
   "version": "1.0.0",
-  "description": "AI-powered medical diagnosis system with frontend and backend",
-  "main": "index.js",
+  "description": "AI-powered medical diagnosis system with React + Vite frontend and Node.js + MongoDB backend",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm start",
-    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "start:backend": "cd backend && npm start",
+    "deploy": "vercel --prod",
+    "vercel-build": "cd frontend && npm install && npm run build"
   },
-  "keywords": ["medical", "diagnosis", "ai", "healthcare", "react", "nodejs"],
+  "keywords": [
+    "medical",
+    "diagnosis",
+    "ai",
+    "react",
+    "vite",
+    "nodejs",
+    "mongodb",
+    "healthcare"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }

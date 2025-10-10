@@ -1,5 +1,8 @@
 const express = require('express');
-const db = require('../database/db');
+const User = require('../models/User');
+const PatientProfile = require('../models/PatientProfile');
+const DiagnosisSession = require('../models/DiagnosisSession');
+const AuditLog = require('../models/AuditLog');
 const { authMiddleware, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -7,19 +10,31 @@ const router = express.Router();
 // Get all patients (for doctors)
 router.get('/patients', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
-    const patients = await db.all(`
-      SELECT u.id, u.firstName, u.lastName, u.email, u.createdAt,
-             pp.age, pp.gender, pp.medicalHistory, pp.allergies,
-             COUNT(ds.id) as sessionCount
-      FROM users u
-      LEFT JOIN patient_profiles pp ON u.id = pp.userId
-      LEFT JOIN diagnosis_sessions ds ON u.id = ds.patientId
-      WHERE u.role = 'patient'
-      GROUP BY u.id
-      ORDER BY u.createdAt DESC
-    `);
+    const patients = await User.find({ role: 'patient' })
+      .select('firstName lastName email createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json({ patients });
+    // Get patient profiles and session counts
+    const patientsWithDetails = await Promise.all(patients.map(async (patient) => {
+      const profile = await PatientProfile.findOne({ userId: patient._id }).lean();
+      const sessionCount = await DiagnosisSession.countDocuments({ patientId: patient._id });
+      
+      return {
+        id: patient._id,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        email: patient.email,
+        createdAt: patient.createdAt,
+        age: profile?.age,
+        gender: profile?.gender,
+        medicalHistory: profile?.medicalHistory,
+        allergies: profile?.allergies,
+        sessionCount
+      };
+    }));
+
+    res.json({ patients: patientsWithDetails });
   } catch (error) {
     console.error('Patients fetch error:', error);
     res.status(500).json({ message: 'Server error fetching patients' });
@@ -31,36 +46,44 @@ router.get('/patients/:patientId', authMiddleware, requireRole(['doctor']), asyn
   try {
     const { patientId } = req.params;
 
-    const patient = await db.get(`
-      SELECT u.id, u.firstName, u.lastName, u.email, u.createdAt,
-             pp.age, pp.gender, pp.medicalHistory, pp.allergies, 
-             pp.currentMedications, pp.emergencyContact
-      FROM users u
-      LEFT JOIN patient_profiles pp ON u.id = pp.userId
-      WHERE u.id = ? AND u.role = 'patient'
-    `, [patientId]);
+    const patient = await User.findOne({ _id: patientId, role: 'patient' })
+      .select('firstName lastName email createdAt')
+      .lean();
 
     if (!patient) {
       return res.status(404).json({ message: 'Patient not found' });
     }
 
-    // Get patient's diagnosis sessions
-    const sessions = await db.all(`
-      SELECT ds.*, u.firstName as doctorFirstName, u.lastName as doctorLastName
-      FROM diagnosis_sessions ds
-      LEFT JOIN users u ON ds.doctorId = u.id
-      WHERE ds.patientId = ?
-      ORDER BY ds.createdAt DESC
-    `, [patientId]);
+    const profile = await PatientProfile.findOne({ userId: patientId }).lean();
 
-    // Parse AI predictions
+    // Get patient's diagnosis sessions
+    const sessions = await DiagnosisSession.find({ patientId })
+      .populate('doctorId', 'firstName lastName')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Format sessions
     const formattedSessions = sessions.map(session => ({
       ...session,
-      aiPrediction: session.aiPrediction ? JSON.parse(session.aiPrediction) : null
+      id: session._id,
+      doctorFirstName: session.doctorId?.firstName,
+      doctorLastName: session.doctorId?.lastName
     }));
 
     res.json({ 
-      patient,
+      patient: {
+        id: patient._id,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        email: patient.email,
+        createdAt: patient.createdAt,
+        age: profile?.age,
+        gender: profile?.gender,
+        medicalHistory: profile?.medicalHistory,
+        allergies: profile?.allergies,
+        currentMedications: profile?.currentMedications,
+        emergencyContact: profile?.emergencyContact
+      },
       sessions: formattedSessions
     });
   } catch (error) {
@@ -78,19 +101,37 @@ router.get('/search/patients', authMiddleware, requireRole(['doctor']), async (r
       return res.status(400).json({ message: 'Search query must be at least 2 characters' });
     }
 
-    const searchTerm = `%${q.trim()}%`;
-    const patients = await db.all(`
-      SELECT u.id, u.firstName, u.lastName, u.email, u.createdAt,
-             pp.age, pp.gender
-      FROM users u
-      LEFT JOIN patient_profiles pp ON u.id = pp.userId
-      WHERE u.role = 'patient' 
-        AND (u.firstName LIKE ? OR u.lastName LIKE ? OR u.email LIKE ?)
-      ORDER BY u.firstName, u.lastName
-      LIMIT 10
-    `, [searchTerm, searchTerm, searchTerm]);
+    const searchTerm = q.trim();
+    const searchRegex = new RegExp(searchTerm, 'i');
 
-    res.json({ patients });
+    const patients = await User.find({ 
+      role: 'patient',
+      $or: [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex }
+      ]
+    })
+      .select('firstName lastName email createdAt')
+      .limit(10)
+      .lean();
+
+    // Get patient profiles
+    const patientsWithProfiles = await Promise.all(patients.map(async (patient) => {
+      const profile = await PatientProfile.findOne({ userId: patient._id }).lean();
+      
+      return {
+        id: patient._id,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
+        email: patient.email,
+        createdAt: patient.createdAt,
+        age: profile?.age,
+        gender: profile?.gender
+      };
+    }));
+
+    res.json({ patients: patientsWithProfiles });
   } catch (error) {
     console.error('Patient search error:', error);
     res.status(500).json({ message: 'Server error searching patients' });
@@ -101,27 +142,34 @@ router.get('/search/patients', authMiddleware, requireRole(['doctor']), async (r
 router.get('/activity/:userId?', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
-    const requestingUserId = req.user.id;
+    const requestingUserId = req.user._id;
     const userRole = req.user.role;
 
     // If no userId specified, get current user's activity
     let targetUserId = userId || requestingUserId;
 
     // Authorization check - patients can only see their own activity
-    if (userRole === 'patient' && targetUserId != requestingUserId) {
+    if (userRole === 'patient' && targetUserId.toString() !== requestingUserId.toString()) {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
 
-    const logs = await db.all(`
-      SELECT al.*, u.firstName, u.lastName, u.email
-      FROM audit_logs al
-      JOIN users u ON al.userId = u.id
-      WHERE al.userId = ?
-      ORDER BY al.timestamp DESC
-      LIMIT 50
-    `, [targetUserId]);
+    const logs = await AuditLog.find({ userId: targetUserId })
+      .populate('userId', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
 
-    res.json({ logs });
+    // Format logs
+    const formattedLogs = logs.map(log => ({
+      ...log,
+      id: log._id,
+      firstName: log.userId?.firstName,
+      lastName: log.userId?.lastName,
+      email: log.userId?.email,
+      timestamp: log.createdAt
+    }));
+
+    res.json({ logs: formattedLogs });
   } catch (error) {
     console.error('Activity logs fetch error:', error);
     res.status(500).json({ message: 'Server error fetching activity logs' });

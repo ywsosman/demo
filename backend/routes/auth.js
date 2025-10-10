@@ -2,7 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const db = require('../database/db');
+const User = require('../models/User');
+const PatientProfile = require('../models/PatientProfile');
+const DoctorProfile = require('../models/DoctorProfile');
 const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
@@ -34,7 +36,7 @@ router.post('/register', async (req, res) => {
     const { email, password, firstName, lastName, role } = value;
 
     // Check if user already exists
-    const existingUser = await db.get('SELECT id FROM users WHERE email = ?', [email]);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
@@ -43,36 +45,33 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const result = await db.run(
-      'INSERT INTO users (email, password, role, firstName, lastName) VALUES (?, ?, ?, ?, ?)',
-      [email, hashedPassword, role, firstName, lastName]
-    );
+    const user = await User.create({
+      email,
+      password: hashedPassword,
+      role,
+      firstName,
+      lastName
+    });
 
     // Create role-specific profile
     if (role === 'patient') {
-      await db.run(
-        'INSERT INTO patient_profiles (userId) VALUES (?)',
-        [result.id]
-      );
+      await PatientProfile.create({ userId: user._id });
     } else if (role === 'doctor') {
-      await db.run(
-        'INSERT INTO doctor_profiles (userId) VALUES (?)',
-        [result.id]
-      );
+      await DoctorProfile.create({ userId: user._id });
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: result.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
       message: 'User registered successfully',
       token,
       user: {
-        id: result.id,
-        email,
-        role,
-        firstName,
-        lastName
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName
       }
     });
   } catch (error) {
@@ -93,10 +92,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = value;
 
     // Find user
-    const user = await db.get(
-      'SELECT id, email, password, role, firstName, lastName FROM users WHERE email = ?',
-      [email]
-    );
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
@@ -109,19 +105,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
     // Log audit event
-    await db.run(
-      'INSERT INTO audit_logs (userId, action, details) VALUES (?, ?, ?)',
-      [user.id, 'LOGIN', 'User logged in successfully']
-    );
+    const AuditLog = require('../models/AuditLog');
+    await AuditLog.create({
+      userId: user._id,
+      action: 'LOGIN',
+      details: 'User logged in successfully'
+    });
 
     res.json({
       message: 'Login successful',
       token,
       user: {
-        id: user.id,
+        id: user._id,
         email: user.email,
         role: user.role,
         firstName: user.firstName,
@@ -141,15 +139,9 @@ router.get('/profile', authMiddleware, async (req, res) => {
     let profile = null;
 
     if (user.role === 'patient') {
-      profile = await db.get(
-        'SELECT * FROM patient_profiles WHERE userId = ?',
-        [user.id]
-      );
+      profile = await PatientProfile.findOne({ userId: user._id });
     } else if (user.role === 'doctor') {
-      profile = await db.get(
-        'SELECT * FROM doctor_profiles WHERE userId = ?',
-        [user.id]
-      );
+      profile = await DoctorProfile.findOne({ userId: user._id });
     }
 
     res.json({
@@ -165,27 +157,24 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // Update user profile
 router.put('/profile', authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const { role } = req.user;
 
     if (role === 'patient') {
       const { age, gender, medicalHistory, allergies, currentMedications, emergencyContact } = req.body;
       
-      await db.run(
-        `UPDATE patient_profiles 
-         SET age = ?, gender = ?, medicalHistory = ?, allergies = ?, 
-             currentMedications = ?, emergencyContact = ?
-         WHERE userId = ?`,
-        [age, gender, medicalHistory, allergies, currentMedications, emergencyContact, userId]
+      await PatientProfile.findOneAndUpdate(
+        { userId },
+        { age, gender, medicalHistory, allergies, currentMedications, emergencyContact },
+        { upsert: true, new: true }
       );
     } else if (role === 'doctor') {
       const { specialization, licenseNumber, yearsOfExperience, hospital } = req.body;
       
-      await db.run(
-        `UPDATE doctor_profiles 
-         SET specialization = ?, licenseNumber = ?, yearsOfExperience = ?, hospital = ?
-         WHERE userId = ?`,
-        [specialization, licenseNumber, yearsOfExperience, hospital, userId]
+      await DoctorProfile.findOneAndUpdate(
+        { userId },
+        { specialization, licenseNumber, yearsOfExperience, hospital },
+        { upsert: true, new: true }
       );
     }
 

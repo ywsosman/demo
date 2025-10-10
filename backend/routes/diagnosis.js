@@ -1,6 +1,9 @@
 const express = require('express');
 const Joi = require('joi');
-const db = require('../database/db');
+const DiagnosisSession = require('../models/DiagnosisSession');
+const AuditLog = require('../models/AuditLog');
+const User = require('../models/User');
+const PatientProfile = require('../models/PatientProfile');
 const { authMiddleware, requireRole } = require('../middleware/auth');
 const aiModel = require('../models/aiModel');
 
@@ -24,7 +27,7 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
     }
 
     const { symptoms, severity, duration, additionalInfo } = value;
-    const patientId = req.user.id;
+    const patientId = req.user._id;
 
     // Get AI prediction
     const aiPrediction = await aiModel.predictDiagnosis({
@@ -35,23 +38,26 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
     });
 
     // Save diagnosis session
-    const result = await db.run(
-      `INSERT INTO diagnosis_sessions 
-       (patientId, symptoms, severity, duration, additionalInfo, aiPrediction, confidence)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [patientId, symptoms, severity, duration, additionalInfo, 
-       JSON.stringify(aiPrediction.predictions), aiPrediction.confidence]
-    );
+    const session = await DiagnosisSession.create({
+      patientId,
+      symptoms,
+      severity,
+      duration,
+      additionalInfo,
+      aiPrediction: aiPrediction.predictions,
+      confidence: aiPrediction.confidence
+    });
 
     // Log audit event
-    await db.run(
-      'INSERT INTO audit_logs (userId, action, details) VALUES (?, ?, ?)',
-      [patientId, 'DIAGNOSIS_SUBMITTED', `Session ID: ${result.id}`]
-    );
+    await AuditLog.create({
+      userId: patientId,
+      action: 'DIAGNOSIS_SUBMITTED',
+      details: `Session ID: ${session._id}`
+    });
 
     res.status(201).json({
       message: 'Diagnosis request submitted successfully',
-      sessionId: result.id,
+      sessionId: session._id,
       aiPrediction: aiPrediction
     });
   } catch (error) {
@@ -63,23 +69,19 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
 // Get patient's diagnosis history
 router.get('/history', authMiddleware, requireRole(['patient']), async (req, res) => {
   try {
-    const patientId = req.user.id;
+    const patientId = req.user._id;
     
-    const sessions = await db.all(
-      `SELECT ds.*, 
-              u.firstName as doctorFirstName, 
-              u.lastName as doctorLastName
-       FROM diagnosis_sessions ds
-       LEFT JOIN users u ON ds.doctorId = u.id
-       WHERE ds.patientId = ?
-       ORDER BY ds.createdAt DESC`,
-      [patientId]
-    );
+    const sessions = await DiagnosisSession.find({ patientId })
+      .populate('doctorId', 'firstName lastName')
+      .sort({ createdAt: -1 })
+      .lean();
 
-    // Parse AI predictions
+    // Format sessions
     const formattedSessions = sessions.map(session => ({
       ...session,
-      aiPrediction: session.aiPrediction ? JSON.parse(session.aiPrediction) : null
+      id: session._id,
+      doctorFirstName: session.doctorId?.firstName,
+      doctorLastName: session.doctorId?.lastName
     }));
 
     res.json({ sessions: formattedSessions });
@@ -92,23 +94,26 @@ router.get('/history', authMiddleware, requireRole(['patient']), async (req, res
 // Get all pending diagnosis sessions (for doctors)
 router.get('/pending', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
-    const sessions = await db.all(
-      `SELECT ds.*, 
-              u.firstName as patientFirstName, 
-              u.lastName as patientLastName,
-              u.email as patientEmail,
-              pp.age, pp.gender, pp.medicalHistory, pp.allergies
-       FROM diagnosis_sessions ds
-       JOIN users u ON ds.patientId = u.id
-       LEFT JOIN patient_profiles pp ON u.id = pp.userId
-       WHERE ds.status = 'pending'
-       ORDER BY ds.createdAt ASC`
-    );
+    const sessions = await DiagnosisSession.find({ status: 'pending' })
+      .populate('patientId', 'firstName lastName email')
+      .sort({ createdAt: 1 })
+      .lean();
 
-    // Parse AI predictions
-    const formattedSessions = sessions.map(session => ({
-      ...session,
-      aiPrediction: session.aiPrediction ? JSON.parse(session.aiPrediction) : null
+    // Get patient profiles
+    const formattedSessions = await Promise.all(sessions.map(async (session) => {
+      const patientProfile = await PatientProfile.findOne({ userId: session.patientId._id }).lean();
+      
+      return {
+        ...session,
+        id: session._id,
+        patientFirstName: session.patientId?.firstName,
+        patientLastName: session.patientId?.lastName,
+        patientEmail: session.patientId?.email,
+        age: patientProfile?.age,
+        gender: patientProfile?.gender,
+        medicalHistory: patientProfile?.medicalHistory,
+        allergies: patientProfile?.allergies
+      };
     }));
 
     res.json({ sessions: formattedSessions });
@@ -122,40 +127,43 @@ router.get('/pending', authMiddleware, requireRole(['doctor']), async (req, res)
 router.get('/:sessionId', authMiddleware, async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
     const userRole = req.user.role;
 
-    let query = `
-      SELECT ds.*, 
-             u.firstName as patientFirstName, 
-             u.lastName as patientLastName,
-             u.email as patientEmail,
-             pp.age, pp.gender, pp.medicalHistory, pp.allergies,
-             doctor.firstName as doctorFirstName,
-             doctor.lastName as doctorLastName
-      FROM diagnosis_sessions ds
-      JOIN users u ON ds.patientId = u.id
-      LEFT JOIN patient_profiles pp ON u.id = pp.userId
-      LEFT JOIN users doctor ON ds.doctorId = doctor.id
-      WHERE ds.id = ?
-    `;
+    let query = { _id: sessionId };
 
     // Add authorization check
     if (userRole === 'patient') {
-      query += ' AND ds.patientId = ?';
+      query.patientId = userId;
     }
 
-    const params = userRole === 'patient' ? [sessionId, userId] : [sessionId];
-    const session = await db.get(query, params);
+    const session = await DiagnosisSession.findOne(query)
+      .populate('patientId', 'firstName lastName email')
+      .populate('doctorId', 'firstName lastName')
+      .lean();
 
     if (!session) {
       return res.status(404).json({ message: 'Diagnosis session not found' });
     }
 
-    // Parse AI prediction
-    session.aiPrediction = session.aiPrediction ? JSON.parse(session.aiPrediction) : null;
+    // Get patient profile
+    const patientProfile = await PatientProfile.findOne({ userId: session.patientId._id }).lean();
 
-    res.json({ session });
+    const formattedSession = {
+      ...session,
+      id: session._id,
+      patientFirstName: session.patientId?.firstName,
+      patientLastName: session.patientId?.lastName,
+      patientEmail: session.patientId?.email,
+      doctorFirstName: session.doctorId?.firstName,
+      doctorLastName: session.doctorId?.lastName,
+      age: patientProfile?.age,
+      gender: patientProfile?.gender,
+      medicalHistory: patientProfile?.medicalHistory,
+      allergies: patientProfile?.allergies
+    };
+
+    res.json({ session: formattedSession });
   } catch (error) {
     console.error('Session fetch error:', error);
     res.status(500).json({ message: 'Server error fetching diagnosis session' });
@@ -167,20 +175,23 @@ router.put('/:sessionId/review', authMiddleware, requireRole(['doctor']), async 
   try {
     const { sessionId } = req.params;
     const { doctorNotes, status } = req.body;
-    const doctorId = req.user.id;
+    const doctorId = req.user._id;
 
-    await db.run(
-      `UPDATE diagnosis_sessions 
-       SET doctorNotes = ?, doctorId = ?, status = ?
-       WHERE id = ?`,
-      [doctorNotes, doctorId, status || 'reviewed', sessionId]
+    await DiagnosisSession.findByIdAndUpdate(
+      sessionId,
+      {
+        doctorNotes,
+        doctorId,
+        status: status || 'reviewed'
+      }
     );
 
     // Log audit event
-    await db.run(
-      'INSERT INTO audit_logs (userId, action, details) VALUES (?, ?, ?)',
-      [doctorId, 'DIAGNOSIS_REVIEWED', `Session ID: ${sessionId}`]
-    );
+    await AuditLog.create({
+      userId: doctorId,
+      action: 'DIAGNOSIS_REVIEWED',
+      details: `Session ID: ${sessionId}`
+    });
 
     res.json({ message: 'Diagnosis session updated successfully' });
   } catch (error) {
@@ -192,18 +203,18 @@ router.put('/:sessionId/review', authMiddleware, requireRole(['doctor']), async 
 // Get diagnosis statistics (for dashboard)
 router.get('/stats/overview', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
-    const stats = await Promise.all([
-      db.get('SELECT COUNT(*) as total FROM diagnosis_sessions'),
-      db.get('SELECT COUNT(*) as pending FROM diagnosis_sessions WHERE status = "pending"'),
-      db.get('SELECT COUNT(*) as reviewed FROM diagnosis_sessions WHERE status = "reviewed"'),
-      db.get('SELECT COUNT(*) as patients FROM users WHERE role = "patient"')
+    const [totalSessions, pendingSessions, reviewedSessions, totalPatients] = await Promise.all([
+      DiagnosisSession.countDocuments(),
+      DiagnosisSession.countDocuments({ status: 'pending' }),
+      DiagnosisSession.countDocuments({ status: 'reviewed' }),
+      User.countDocuments({ role: 'patient' })
     ]);
 
     res.json({
-      totalSessions: stats[0].total,
-      pendingSessions: stats[1].pending,
-      reviewedSessions: stats[2].reviewed,
-      totalPatients: stats[3].patients
+      totalSessions,
+      pendingSessions,
+      reviewedSessions,
+      totalPatients
     });
   } catch (error) {
     console.error('Stats fetch error:', error);

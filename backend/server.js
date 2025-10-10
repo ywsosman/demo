@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -11,24 +12,24 @@ const userRoutes = require('./routes/users');
 
 // Import database initialization
 const db = require('./database/db');
+const config = require('./config');
 
 const app = express();
 
 // Environment variables
-const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secure_jwt_secret_key_change_in_production';
+const PORT = config.port;
 
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000',
+  origin: config.corsOrigin,
   credentials: true
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: config.rateLimitWindowMs,
+  max: config.rateLimitMax
 });
 app.use('/api/', limiter);
 
@@ -49,7 +50,8 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime() 
+    uptime: process.uptime(),
+    database: db.connected ? 'connected' : 'disconnected'
   });
 });
 
@@ -72,10 +74,18 @@ db.initialize().then(() => {
   app.listen(PORT, () => {
     console.log(`🏥 Medical Diagnosis Server running on port ${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🌍 Environment: ${config.nodeEnv}`);
   });
 }).catch(err => {
   console.error('Failed to initialize database:', err);
   process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  db.close();
+  process.exit(0);
 });
 
 module.exports = app;

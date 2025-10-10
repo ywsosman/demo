@@ -2,7 +2,7 @@ module.exports = {
   port: process.env.PORT || 5000,
   jwtSecret: process.env.JWT_SECRET || 'your_super_secure_jwt_secret_key_change_in_production',
   nodeEnv: process.env.NODE_ENV || 'development',
-  dbPath: process.env.DB_PATH || './database.sqlite',
+  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/medical-diagnosis',
   
   // Rate limiting
   rateLimitWindowMs: 15 * 60 * 1000, // 15 minutes
@@ -12,7 +12,9 @@ module.exports = {
   maxFileSize: 10 * 1024 * 1024, // 10MB
   
   // CORS settings
-  corsOrigin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000',
+  corsOrigin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL || false 
+    : 'http://localhost:5173', // Updated for Vite default port
   
   // Database settings
   database: {
