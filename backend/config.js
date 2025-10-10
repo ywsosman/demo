@@ -12,9 +12,7 @@ module.exports = {
   maxFileSize: 10 * 1024 * 1024, // 10MB
   
   // CORS settings
-  corsOrigin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || false 
-    : 'http://localhost:5173', // Updated for Vite default port
+  corsOrigin: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? false : 'http://localhost:5173'),
   
   // Database settings
   database: {
