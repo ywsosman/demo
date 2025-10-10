@@ -91,6 +91,41 @@ router.get('/history', authMiddleware, requireRole(['patient']), async (req, res
   }
 });
 
+// Get all sessions for doctors (pending, reviewed, closed)
+router.get('/all', authMiddleware, requireRole(['doctor']), async (req, res) => {
+  try {
+    const sessions = await DiagnosisSession.find({})
+      .populate('patientId', 'firstName lastName email')
+      .populate('doctorId', 'firstName lastName')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Get patient profiles
+    const formattedSessions = await Promise.all(sessions.map(async (session) => {
+      const patientProfile = await PatientProfile.findOne({ userId: session.patientId._id }).lean();
+      
+      return {
+        ...session,
+        id: session._id,
+        patientFirstName: session.patientId?.firstName,
+        patientLastName: session.patientId?.lastName,
+        patientEmail: session.patientId?.email,
+        doctorFirstName: session.doctorId?.firstName,
+        doctorLastName: session.doctorId?.lastName,
+        age: patientProfile?.age,
+        gender: patientProfile?.gender,
+        medicalHistory: patientProfile?.medicalHistory,
+        allergies: patientProfile?.allergies
+      };
+    }));
+
+    res.json({ sessions: formattedSessions });
+  } catch (error) {
+    console.error('All sessions fetch error:', error);
+    res.status(500).json({ message: 'Server error fetching sessions' });
+  }
+});
+
 // Get all pending diagnosis sessions (for doctors)
 router.get('/pending', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
@@ -177,26 +212,48 @@ router.put('/:sessionId/review', authMiddleware, requireRole(['doctor']), async 
     const { doctorNotes, status } = req.body;
     const doctorId = req.user._id;
 
-    await DiagnosisSession.findByIdAndUpdate(
+    // Validate status
+    const validStatuses = ['pending', 'reviewed', 'closed'];
+    const newStatus = status || 'reviewed';
+    
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).json({ 
+        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
+      });
+    }
+
+    // Find and update the session
+    const updatedSession = await DiagnosisSession.findByIdAndUpdate(
       sessionId,
       {
         doctorNotes,
         doctorId,
-        status: status || 'reviewed'
-      }
+        status: newStatus
+      },
+      { new: true, runValidators: true }
     );
+
+    if (!updatedSession) {
+      return res.status(404).json({ message: 'Diagnosis session not found' });
+    }
 
     // Log audit event
     await AuditLog.create({
       userId: doctorId,
       action: 'DIAGNOSIS_REVIEWED',
-      details: `Session ID: ${sessionId}`
+      details: `Session ID: ${sessionId}, Status: ${newStatus}`
     });
 
-    res.json({ message: 'Diagnosis session updated successfully' });
+    res.json({ 
+      message: 'Diagnosis session updated successfully',
+      session: updatedSession
+    });
   } catch (error) {
     console.error('Session update error:', error);
-    res.status(500).json({ message: 'Server error updating diagnosis session' });
+    res.status(500).json({ 
+      message: 'Server error updating diagnosis session',
+      error: error.message 
+    });
   }
 });
 

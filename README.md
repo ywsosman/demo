@@ -225,17 +225,14 @@ demo/
 - `GET /api/users/search/patients` - Search patients
 - `GET /api/users/activity/:id?` - Get activity logs
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is reserved to Youssef Waleed and Ali Mohamed Hassanein. PROJECT IS FOR GRADUATION PROJECT, SHOULD NOT BE USED IN REAL LIFE AS IT IS NOT FINISHED OR TAILORED TO USE IN THE REAL WORLD, ALL RIGHTS RESERVED.
 
 ## 🆘 Support
 
-For support, email support@medidiagnose.com or open an issue in the repository.
+For support, email youssef.waleed2231@gmail.com
 
 ## ⚠️ Disclaimer
 

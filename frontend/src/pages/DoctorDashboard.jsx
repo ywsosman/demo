@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
+import toast from 'react-hot-toast';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -22,8 +23,10 @@ const DoctorDashboard = () => {
     totalPatients: 0
   });
   const [pendingSessions, setPendingSessions] = useState([]);
+  const [reviewedSessions, setReviewedSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState(null);
+  const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'reviewed'
   const [reviewData, setReviewData] = useState({
     doctorNotes: '',
     status: 'reviewed'
@@ -35,15 +38,22 @@ const DoctorDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsResponse, sessionsResponse] = await Promise.all([
+      const [statsResponse, pendingResponse, allSessionsResponse] = await Promise.all([
         diagnosisAPI.getStats(),
-        diagnosisAPI.getPending()
+        diagnosisAPI.getPending(),
+        diagnosisAPI.getAll() // Get all sessions for doctor
       ]);
 
       setStats(statsResponse.data);
-      setPendingSessions(sessionsResponse.data.sessions || []);
+      setPendingSessions(pendingResponse.data.sessions || []);
+      
+      // Filter for reviewed and closed sessions
+      const allSessions = allSessionsResponse.data.sessions || [];
+      const reviewed = allSessions.filter(s => s.status === 'reviewed' || s.status === 'closed');
+      setReviewedSessions(reviewed);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -52,12 +62,14 @@ const DoctorDashboard = () => {
   const handleReviewSession = async (sessionId) => {
     try {
       await diagnosisAPI.reviewSession(sessionId, reviewData);
+      toast.success(`Session ${reviewData.status === 'reviewed' ? 'reviewed' : 'closed'} successfully!`);
       // Refresh data
       await fetchDashboardData();
       setSelectedSession(null);
       setReviewData({ doctorNotes: '', status: 'reviewed' });
     } catch (error) {
-      console.error('Failed to review session:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to submit review. Please try again.';
+      toast.error(errorMessage);
     }
   };
 
@@ -65,7 +77,7 @@ const DoctorDashboard = () => {
     setSelectedSession(session);
     setReviewData({
       doctorNotes: session.doctorNotes || '',
-      status: session.status || 'reviewed'
+      status: 'reviewed' // Always default to 'reviewed' when opening the modal
     });
   };
 
@@ -161,28 +173,58 @@ const DoctorDashboard = () => {
           </div>
         </div>
 
-        {/* Pending Sessions */}
+        {/* Sessions Tabs */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Pending Diagnosis Reviews</h2>
-            {pendingSessions.length > 0 && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                {pendingSessions.length} pending
-              </span>
-            )}
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200 mb-6">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('pending')}
+                className={`${
+                  activeTab === 'pending'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              >
+                Pending Reviews
+                {pendingSessions.length > 0 && (
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    {pendingSessions.length}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('reviewed')}
+                className={`${
+                  activeTab === 'reviewed'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              >
+                Reviewed & Closed
+                {reviewedSessions.length > 0 && (
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {reviewedSessions.length}
+                  </span>
+                )}
+              </button>
+            </nav>
           </div>
 
-          {pendingSessions.length === 0 ? (
-            <div className="card p-12 text-center">
-              <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">All caught up!</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                No pending diagnosis sessions to review at this time.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {pendingSessions.map((session) => (
+          {/* Pending Tab Content */}
+          {activeTab === 'pending' && (
+            <>
+              {pendingSessions.length === 0 ? (
+                <div className="card p-12 text-center">
+                  <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">All caught up!</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    No pending diagnosis sessions to review at this time.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingSessions.map((session) => (
                 <div key={session.id} className="card p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -271,7 +313,88 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               ))}
-            </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Reviewed Tab Content */}
+          {activeTab === 'reviewed' && (
+            <>
+              {reviewedSessions.length === 0 ? (
+                <div className="card p-12 text-center">
+                  <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No reviewed sessions yet</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Sessions you review will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reviewedSessions.map((session) => (
+                    <div key={session.id || session._id} className="card p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-lg font-medium text-gray-900">
+                              {session.patientFirstName} {session.patientLastName}
+                            </h3>
+                            <span className="text-sm text-gray-500">
+                              Session #{session.id || session._id}
+                            </span>
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              session.status === 'reviewed' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {session.status === 'reviewed' ? 'Reviewed' : 'Closed'}
+                            </span>
+                          </div>
+
+                          <div className="text-sm text-gray-500 mb-3">
+                            <p><strong>Submitted:</strong> {format(new Date(session.createdAt), 'MMMM dd, yyyy at h:mm a')}</p>
+                            {session.updatedAt && session.updatedAt !== session.createdAt && (
+                              <p><strong>Reviewed:</strong> {format(new Date(session.updatedAt), 'MMMM dd, yyyy at h:mm a')}</p>
+                            )}
+                          </div>
+
+                          <div className="mb-3">
+                            <h4 className="text-sm font-medium text-gray-700 mb-1">Symptoms:</h4>
+                            <p className="text-sm text-gray-900">{session.symptoms}</p>
+                          </div>
+
+                          {session.doctorNotes && (
+                            <div className="mb-3 bg-blue-50 rounded-lg p-3">
+                              <h4 className="text-sm font-medium text-gray-700 mb-1">Your Assessment:</h4>
+                              <p className="text-sm text-gray-900">{session.doctorNotes}</p>
+                            </div>
+                          )}
+
+                          {session.aiPrediction && session.aiPrediction.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-medium text-gray-700 mb-2">AI Analysis:</h4>
+                              <div className="space-y-2">
+                                {session.aiPrediction.slice(0, 2).map((prediction, index) => (
+                                  <div key={index} className="bg-gray-50 rounded-lg p-3">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <h5 className="font-medium text-gray-900">{prediction.condition}</h5>
+                                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getConfidenceColor(prediction.confidence)}`}>
+                                        {Math.round(prediction.confidence * 100)}% confidence
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">{prediction.description}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 

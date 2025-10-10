@@ -45,9 +45,8 @@ const initializeDatabase = async () => {
     try {
       await db.initialize();
       dbInitialized = true;
-      console.log('✅ Database initialized');
     } catch (error) {
-      console.error('❌ Database initialization error:', error);
+      console.error('Database initialization error:', error);
     }
   }
 };

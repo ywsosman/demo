@@ -52,6 +52,7 @@ export const diagnosisAPI = {
   submit: (diagnosisData) => api.post('/diagnosis/submit', diagnosisData),
   getHistory: () => api.get('/diagnosis/history'),
   getPending: () => api.get('/diagnosis/pending'),
+  getAll: () => api.get('/diagnosis/all'),
   getSession: (sessionId) => api.get(`/diagnosis/${sessionId}`),
   reviewSession: (sessionId, reviewData) => api.put(`/diagnosis/${sessionId}/review`, reviewData),
   getStats: () => api.get('/diagnosis/stats/overview'),
