@@ -1,281 +1,208 @@
-const nlp = require('compromise');
+const { spawn } = require('child_process');
+const path = require('path');
 
-// Simple medical knowledge base for demo purposes
-const MEDICAL_KNOWLEDGE = {
-  // Symptom patterns and associated conditions
-  conditions: {
-    'common_cold': {
-      name: 'Common Cold',
-      symptoms: ['runny nose', 'sneezing', 'cough', 'congestion', 'sore throat', 'fatigue'],
-      severity: [1, 2, 3, 4],
-      description: 'A viral infection of the upper respiratory tract',
-      recommendations: [
-        'Get plenty of rest',
-        'Stay hydrated',
-        'Use over-the-counter medications for symptom relief',
-        'Consult a doctor if symptoms worsen or persist beyond 10 days'
-      ]
-    },
-    'flu': {
-      name: 'Influenza (Flu)',
-      symptoms: ['fever', 'chills', 'muscle aches', 'fatigue', 'headache', 'cough', 'sore throat'],
-      severity: [3, 4, 5, 6, 7],
-      description: 'A respiratory illness caused by influenza viruses',
-      recommendations: [
-        'Rest and stay hydrated',
-        'Consider antiviral medications if within 48 hours of symptom onset',
-        'Monitor fever and seek medical attention if it exceeds 103°F',
-        'Isolate to prevent spreading to others'
-      ]
-    },
-    'migraine': {
-      name: 'Migraine Headache',
-      symptoms: ['severe headache', 'nausea', 'vomiting', 'sensitivity to light', 'sensitivity to sound'],
-      severity: [5, 6, 7, 8, 9],
-      description: 'A neurological condition characterized by intense headaches',
-      recommendations: [
-        'Rest in a dark, quiet room',
-        'Apply cold or warm compress to head/neck',
-        'Stay hydrated',
-        'Consider prescription migraine medications'
-      ]
-    },
-    'gastroenteritis': {
-      name: 'Gastroenteritis (Stomach Flu)',
-      symptoms: ['nausea', 'vomiting', 'diarrhea', 'stomach cramps', 'fever', 'dehydration'],
-      severity: [3, 4, 5, 6],
-      description: 'Inflammation of the stomach and intestines',
-      recommendations: [
-        'Stay hydrated with clear fluids',
-        'Follow the BRAT diet (bananas, rice, applesauce, toast)',
-        'Rest and avoid dairy products',
-        'Seek medical attention if severe dehydration occurs'
-      ]
-    },
-    'hypertension': {
-      name: 'High Blood Pressure',
-      symptoms: ['headaches', 'dizziness', 'blurred vision', 'chest pain', 'fatigue'],
-      severity: [4, 5, 6, 7, 8],
-      description: 'Elevated blood pressure that can lead to serious health complications',
-      recommendations: [
-        'Monitor blood pressure regularly',
-        'Maintain a healthy diet low in sodium',
-        'Exercise regularly',
-        'Take prescribed medications as directed'
-      ]
-    },
-    'anxiety': {
-      name: 'Anxiety Disorder',
-      symptoms: ['excessive worry', 'restlessness', 'fatigue', 'difficulty concentrating', 'irritability', 'sleep problems'],
-      severity: [3, 4, 5, 6, 7, 8],
-      description: 'A mental health condition characterized by excessive worry and fear',
-      recommendations: [
-        'Practice relaxation techniques',
-        'Regular exercise and healthy lifestyle',
-        'Consider therapy or counseling',
-        'Discuss medication options with healthcare provider'
-      ]
-    },
-    'allergic_reaction': {
-      name: 'Allergic Reaction',
-      symptoms: ['itching', 'hives', 'swelling', 'runny nose', 'watery eyes', 'difficulty breathing'],
-      severity: [2, 3, 4, 5, 6, 7, 8, 9],
-      description: 'An immune system response to an allergen',
-      recommendations: [
-        'Identify and avoid the allergen',
-        'Use antihistamines for mild reactions',
-        'Seek immediate medical attention for severe reactions',
-        'Consider carrying an epinephrine auto-injector if prescribed'
-      ]
-    }
-  }
-};
+// Configuration
+const PYTHON_SCRIPT_PATH = path.join(__dirname, '..', 'predict_disease.py');
+const PYTHON_COMMAND = process.env.PYTHON_PATH || 'python';  // or 'python3' on some systems
+const MODEL_TIMEOUT = 60000; // 60 seconds timeout for model prediction
 
 class AIModel {
   constructor() {
     this.initialized = true;
+    this.modelReady = false;
   }
 
+  /**
+   * Call Python script to predict disease using fine-tuned BERT model
+   * @param {Object} patientData - Patient symptom data
+   * @returns {Promise<Object>} Prediction results with SHAP explanations
+   */
   async predictDiagnosis(patientData) {
     try {
       const { symptoms, severity, duration, additionalInfo } = patientData;
       
-      // Normalize and process symptoms text
-      const normalizedSymptoms = this.normalizeSymptoms(symptoms);
+      // Construct full symptom text
+      let fullSymptomText = symptoms;
       
-      // Calculate match scores for each condition
-      const conditionScores = this.calculateConditionScores(
-        normalizedSymptoms, 
-        severity, 
-        duration, 
-        additionalInfo
-      );
+      // Optionally enhance with additional context
+      if (additionalInfo) {
+        fullSymptomText += `. Additional info: ${additionalInfo}`;
+      }
       
-      // Sort by confidence score
-      const sortedPredictions = conditionScores
-        .sort((a, b) => b.confidence - a.confidence)
-        .slice(0, 3); // Top 3 predictions
+      // Call Python prediction script
+      const pythonResult = await this.callPythonPredictor(fullSymptomText);
       
-      // Calculate overall confidence
-      const overallConfidence = sortedPredictions.length > 0 ? 
-        sortedPredictions[0].confidence : 0;
-      
+      if (!pythonResult.success) {
+        console.error('Python prediction failed:', pythonResult.error);
+        // Fallback to basic response
       return {
-        predictions: sortedPredictions,
-        confidence: overallConfidence,
-        explanation: this.generateExplanation(sortedPredictions, normalizedSymptoms),
+          predictions: [],
+          confidence: 0,
+          explanation: pythonResult.message || 'Model prediction failed. Please try again.',
+          error: pythonResult.error,
         timestamp: new Date().toISOString()
       };
+      }
+      
+      // Format predictions for frontend
+      const predictions = pythonResult.top_predictions.map(pred => ({
+        condition: pred.disease,
+        confidence: pred.confidence,
+        description: `AI-predicted condition: ${pred.disease}`,
+        recommendations: this.getRecommendations(pred.disease),
+        matchedSymptoms: []
+      }));
+      
+      // Build explanation text
+      const explanation = this.generateExplanationFromShap(
+        pythonResult.predicted_disease,
+        pythonResult.confidence,
+        pythonResult.word_importance
+      );
+      
+      return {
+        predictions,
+        confidence: pythonResult.confidence,
+        explanation,
+        shapExplanation: pythonResult.explanation,  // Raw SHAP data
+        wordImportance: pythonResult.word_importance,  // Top important words
+        predictedDisease: pythonResult.predicted_disease,
+        timestamp: new Date().toISOString(),
+        modelDevice: pythonResult.device
+      };
+      
     } catch (error) {
       console.error('AI Model prediction error:', error);
       return {
         predictions: [],
         confidence: 0,
         explanation: 'Unable to generate prediction due to processing error',
+        error: error.message,
         timestamp: new Date().toISOString()
       };
     }
   }
 
-  normalizeSymptoms(symptomsText) {
-    // Use compromise.js for basic NLP processing
-    const doc = nlp(symptomsText.toLowerCase());
-    
-    // Extract potential symptoms
-    const symptoms = [];
-    
-    // Simple keyword matching for demo purposes
-    const text = symptomsText.toLowerCase();
-    const words = text.split(/[\s,]+/);
-    
-    // Common medical terms and their variations
-    const symptomMappings = {
-      'headache': ['headache', 'head pain', 'head ache'],
-      'fever': ['fever', 'temperature', 'hot', 'feverish'],
-      'cough': ['cough', 'coughing'],
-      'fatigue': ['tired', 'fatigue', 'exhausted', 'weakness', 'weak'],
-      'nausea': ['nausea', 'sick', 'queasy'],
-      'vomiting': ['vomiting', 'throwing up', 'vomit'],
-      'diarrhea': ['diarrhea', 'loose stool', 'loose stools'],
-      'runny nose': ['runny nose', 'nasal congestion', 'congestion'],
-      'sore throat': ['sore throat', 'throat pain'],
-      'muscle aches': ['muscle pain', 'body aches', 'aches', 'muscle aches'],
-      'difficulty breathing': ['breathing problems', 'shortness of breath', 'difficulty breathing'],
-      'chest pain': ['chest pain', 'chest discomfort'],
-      'dizziness': ['dizzy', 'dizziness', 'lightheaded'],
-      'itching': ['itchy', 'itching', 'itch'],
-      'swelling': ['swelling', 'swollen'],
-      'blurred vision': ['blurred vision', 'vision problems'],
-      'anxiety': ['anxious', 'worried', 'nervous', 'panic'],
-      'stomach cramps': ['stomach pain', 'abdominal pain', 'cramps']
-    };
-    
-    // Check for symptom matches
-    for (const [symptom, variations] of Object.entries(symptomMappings)) {
-      for (const variation of variations) {
-        if (text.includes(variation)) {
-          symptoms.push(symptom);
-          break;
-        }
-      }
-    }
-    
-    return [...new Set(symptoms)]; // Remove duplicates
-  }
+  /**
+   * Spawn Python process to run disease prediction
+   * @param {string} symptomText - Patient's symptom description
+   * @returns {Promise<Object>} Prediction result from Python
+   */
+  callPythonPredictor(symptomText) {
+    return new Promise((resolve, reject) => {
+      const pythonProcess = spawn(PYTHON_COMMAND, [
+        PYTHON_SCRIPT_PATH,
+        symptomText
+      ]);
 
-  calculateConditionScores(symptoms, severity, duration, additionalInfo) {
-    const scores = [];
-    
-    for (const [conditionKey, condition] of Object.entries(MEDICAL_KNOWLEDGE.conditions)) {
-      let matchScore = 0;
-      let totalPossible = condition.symptoms.length;
-      
-      // Calculate symptom matching score
-      for (const symptom of symptoms) {
-        if (condition.symptoms.includes(symptom)) {
-          matchScore += 1;
+      let outputData = '';
+      let errorData = '';
+
+      // Collect stdout
+      pythonProcess.stdout.on('data', (data) => {
+        outputData += data.toString();
+      });
+
+      // Collect stderr
+      pythonProcess.stderr.on('data', (data) => {
+        errorData += data.toString();
+      });
+
+      // Handle process completion
+      pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+          console.error('Python script error:', errorData);
+          resolve({
+            success: false,
+            error: errorData || 'Python script execution failed',
+            message: 'Failed to run prediction model'
+          });
+          return;
         }
-      }
-      
-      // Normalize symptom score (0-1)
-      const symptomScore = totalPossible > 0 ? matchScore / totalPossible : 0;
-      
-      // Severity matching
-      let severityScore = 0;
-      if (condition.severity.includes(severity)) {
-        severityScore = 1;
-      } else {
-        // Calculate distance from closest severity
-        const distances = condition.severity.map(s => Math.abs(s - severity));
-        const minDistance = Math.min(...distances);
-        severityScore = Math.max(0, 1 - (minDistance / 5)); // Normalize by max severity range
-      }
-      
-      // Duration consideration (simple heuristic)
-      let durationScore = 0.5; // Default neutral score
-      if (duration) {
-        const durationLower = duration.toLowerCase();
-        if (durationLower.includes('acute') || durationLower.includes('sudden')) {
-          durationScore = conditionKey === 'migraine' || conditionKey === 'allergic_reaction' ? 0.8 : 0.6;
-        } else if (durationLower.includes('chronic') || durationLower.includes('weeks')) {
-          durationScore = conditionKey === 'hypertension' || conditionKey === 'anxiety' ? 0.8 : 0.4;
+
+        try {
+          const result = JSON.parse(outputData);
+          resolve(result);
+        } catch (parseError) {
+          console.error('Failed to parse Python output:', outputData);
+          resolve({
+            success: false,
+            error: parseError.message,
+            message: 'Failed to parse model output'
+          });
         }
-      }
-      
-      // Calculate overall confidence (weighted average)
-      const confidence = (
-        symptomScore * 0.6 +           // 60% weight on symptoms
-        severityScore * 0.3 +          // 30% weight on severity
-        durationScore * 0.1            // 10% weight on duration
-      );
-      
-      // Only include conditions with reasonable confidence
-      if (confidence > 0.1) {
-        scores.push({
-          condition: condition.name,
-          confidence: Math.round(confidence * 100) / 100,
-          description: condition.description,
-          recommendations: condition.recommendations,
-          matchedSymptoms: symptoms.filter(s => condition.symptoms.includes(s))
+      });
+
+      // Handle process errors
+      pythonProcess.on('error', (error) => {
+        console.error('Failed to start Python process:', error);
+        resolve({
+          success: false,
+          error: error.message,
+          message: 'Failed to start prediction process. Ensure Python is installed.'
         });
-      }
-    }
-    
-    return scores;
+      });
+
+      // Set timeout
+      setTimeout(() => {
+        pythonProcess.kill();
+        resolve({
+          success: false,
+          error: 'Prediction timeout',
+          message: 'Model prediction took too long. Please try again.'
+        });
+      }, MODEL_TIMEOUT);
+    });
   }
 
-  generateExplanation(predictions, symptoms) {
-    if (predictions.length === 0) {
-      return 'No clear diagnosis pattern found. Please consult with a healthcare professional for proper evaluation.';
+  /**
+   * Generate human-readable explanation from SHAP word importance
+   * @param {string} disease - Predicted disease
+   * @param {number} confidence - Confidence score
+   * @param {Array} wordImportance - Array of word importance objects
+   * @returns {string} Explanation text
+   */
+  generateExplanationFromShap(disease, confidence, wordImportance) {
+    if (!wordImportance || wordImportance.length === 0) {
+      return `The AI model predicts ${disease} with ${(confidence * 100).toFixed(1)}% confidence.`;
+    }
+
+    // Get top positive contributors
+    const topWords = wordImportance
+      .filter(w => w.importance > 0)
+      .slice(0, 5)
+      .map(w => w.word)
+      .join(', ');
+
+    let explanation = `Based on AI analysis, the model predicts ${disease} with ${(confidence * 100).toFixed(1)}% confidence. `;
+    
+    if (topWords) {
+      explanation += `Key symptoms that contributed to this prediction include: ${topWords}. `;
     }
     
-    const topPrediction = predictions[0];
-    const symptomsText = symptoms.length > 0 ? symptoms.join(', ') : 'reported symptoms';
-    
-    let explanation = `Based on the symptoms (${symptomsText}), `;
-    
-    if (topPrediction.confidence > 0.7) {
-      explanation += `there is a strong indication of ${topPrediction.condition}.`;
-    } else if (topPrediction.confidence > 0.4) {
-      explanation += `${topPrediction.condition} is a possible diagnosis.`;
-    } else {
-      explanation += `${topPrediction.condition} is one potential consideration among others.`;
-    }
-    
-    explanation += ` This assessment is based on AI analysis and should be confirmed by a healthcare professional.`;
+    explanation += 'This assessment uses advanced natural language processing and should be reviewed by a healthcare professional.';
     
     return explanation;
   }
 
-  // Method to get detailed information about a specific condition
-  getConditionInfo(conditionName) {
-    for (const condition of Object.values(MEDICAL_KNOWLEDGE.conditions)) {
-      if (condition.name.toLowerCase() === conditionName.toLowerCase()) {
-        return condition;
-      }
-    }
-    return null;
+  /**
+   * Get general recommendations for a disease
+   * @param {string} diseaseName - Name of the disease
+   * @returns {Array<string>} List of recommendations
+   */
+  getRecommendations(diseaseName) {
+    // Generic recommendations - can be expanded based on disease database
+    const genericRecommendations = [
+      'Consult with a healthcare professional for proper diagnosis',
+      'Monitor your symptoms and note any changes',
+      'Keep track of symptom severity and duration',
+      'Seek immediate medical attention if symptoms worsen'
+    ];
+
+    // You can add disease-specific recommendations here
+    return genericRecommendations;
   }
+
 }
 
 module.exports = new AIModel();

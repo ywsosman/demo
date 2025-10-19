@@ -4,7 +4,9 @@ A full-stack medical diagnosis system powered by AI, built with React + Vite, No
 
 ## 🚀 Features
 
-- **AI-Powered Diagnosis**: Symptom analysis with AI predictions
+- **AI-Powered Diagnosis**: Fine-tuned BERT model for disease prediction
+- **Explainable AI**: SHAP visualization showing which symptoms influenced the diagnosis
+- **Word Importance**: Visual highlighting of key symptoms in patient descriptions
 - **Patient Dashboard**: Track medical history and diagnosis sessions
 - **Doctor Dashboard**: Review patient cases and provide medical feedback
 - **Secure Authentication**: JWT-based authentication system
@@ -24,6 +26,9 @@ A full-stack medical diagnosis system powered by AI, built with React + Vite, No
 ### Backend
 - **Node.js** with **Express**
 - **MongoDB** with **Mongoose** for database
+- **Python** with **Transformers** for AI model
+- **SHAP** for explainable AI
+- **PyTorch** for model inference
 - **JWT** for authentication
 - **Bcrypt** for password hashing
 - **Joi** for validation
@@ -32,8 +37,10 @@ A full-stack medical diagnosis system powered by AI, built with React + Vite, No
 ## 📋 Prerequisites
 
 - Node.js (v16 or higher)
+- Python (v3.8 or higher)
 - MongoDB (local or MongoDB Atlas)
 - npm or yarn
+- pip (Python package manager)
 
 ## 🔧 Installation
 
@@ -44,21 +51,40 @@ git clone <your-repo-url>
 cd demo
 ```
 
-### 2. Install Backend Dependencies
+### 2. Install Python Dependencies (for AI Model)
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+**Note**: On Linux/Mac, use `pip3` instead of `pip`
+
+### 3. Install Backend Dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Install Frontend Dependencies
+### 4. Install Frontend Dependencies
 
 ```bash
 cd frontend
 npm install
 ```
 
-### 4. Environment Setup
+### 5. Verify AI Model Files
+
+Ensure your fine-tuned BERT model is in:
+```
+backend/symptom_disease_model/
+├── config.json
+├── model.safetensors
+├── tokenizer files...
+```
+
+### 6. Environment Setup
 
 #### Backend (.env)
 Create a `.env` file in the `backend` directory:
@@ -69,6 +95,7 @@ NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/medical-diagnosis
 JWT_SECRET=your_super_secure_jwt_secret_key_change_in_production
 FRONTEND_URL=http://localhost:5173
+PYTHON_PATH=python  # or python3 on Linux/Mac
 ```
 
 #### Frontend (.env)
@@ -80,7 +107,18 @@ VITE_API_URL=http://localhost:5000/api
 
 ## 🚀 Running the Application
 
+### Quick Start
+
+For a quick start with the AI model, see [QUICK_START_AI_MODEL.md](./QUICK_START_AI_MODEL.md)
+
 ### Development Mode
+
+#### Test Python AI Model (First Time)
+```bash
+cd backend
+python predict_disease.py "I have a headache and fever"
+```
+You should see JSON output with disease prediction and SHAP explanations.
 
 #### Start Backend Server
 ```bash
@@ -88,6 +126,8 @@ cd backend
 npm run dev
 ```
 Server will run on http://localhost:5000
+
+**Note**: First AI prediction will be slow (20-30s) as the model loads into memory.
 
 #### Start Frontend Development Server
 ```bash
@@ -162,15 +202,21 @@ demo/
 ├── backend/
 │   ├── config.js
 │   ├── server.js
+│   ├── predict_disease.py         # Python script for AI predictions
+│   ├── requirements.txt            # Python dependencies
+│   ├── symptom_disease_model/      # Fine-tuned BERT model
+│   │   ├── config.json
+│   │   ├── model.safetensors
+│   │   └── tokenizer files
 │   ├── database/
 │   │   └── db.js
 │   ├── models/
 │   │   ├── User.js
 │   │   ├── PatientProfile.js
 │   │   ├── DoctorProfile.js
-│   │   ├── DiagnosisSession.js
+│   │   ├── DiagnosisSession.js    # Now includes SHAP data
 │   │   ├── AuditLog.js
-│   │   └── aiModel.js
+│   │   └── aiModel.js              # Node.js wrapper for Python model
 │   ├── routes/
 │   │   ├── auth.js
 │   │   ├── diagnosis.js
@@ -183,6 +229,7 @@ demo/
 │   │   ├── components/
 │   │   ├── contexts/
 │   │   ├── pages/
+│   │   │   └── SymptomChecker.jsx  # Now with SHAP visualization
 │   │   ├── services/
 │   │   ├── App.jsx
 │   │   └── main.jsx
@@ -190,7 +237,9 @@ demo/
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   └── package.json
-├── vercel.json
+├── AI_MODEL_INTEGRATION.md         # AI integration documentation
+├── PYTHON_SETUP.md                 # Python setup guide
+├── QUICK_START_AI_MODEL.md         # Quick start guide
 └── README.md
 ```
 
@@ -225,6 +274,30 @@ demo/
 - `GET /api/users/search/patients` - Search patients
 - `GET /api/users/activity/:id?` - Get activity logs
 
+
+## 🤖 AI Model Integration
+
+This application uses a fine-tuned BERT model for disease prediction with SHAP explanations.
+
+### Key Features:
+- **Fine-tuned BERT**: Medical symptom-to-disease prediction
+- **SHAP Explanations**: Visual word importance for transparency
+- **Node.js Integration**: Python called as subprocess from Node.js
+- **Explainable AI**: See which symptoms influenced the diagnosis
+
+### Documentation:
+- [Quick Start Guide](./QUICK_START_AI_MODEL.md) - Get up and running in 5 minutes
+- [Python Setup](./PYTHON_SETUP.md) - Detailed Python environment setup
+- [Integration Guide](./AI_MODEL_INTEGRATION.md) - Architecture and technical details
+
+### How It Works:
+1. Patient enters symptoms in React frontend
+2. Node.js backend receives request
+3. Node.js spawns Python subprocess with symptom text
+4. Python loads BERT model and generates predictions
+5. Python calculates SHAP values for explainability
+6. Results returned to Node.js and saved to MongoDB
+7. Frontend displays predictions with word importance visualization
 
 ## 📄 License
 

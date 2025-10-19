@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { diagnosisAPI } from '../services/api';
 import toast from 'react-hot-toast';
@@ -228,6 +228,66 @@ const SymptomChecker = () => {
               </div>
             )}
 
+            {/* SHAP Word Importance Visualization */}
+            {result.aiPrediction && result.aiPrediction.wordImportance && result.aiPrediction.wordImportance.length > 0 && (
+              <div className="card p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  AI Explainability: Key Symptom Words
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  The following words from your symptom description had the most influence on the AI&apos;s prediction. 
+                  Words highlighted in <span className="text-red-600 font-medium">red/pink</span> contributed positively to the diagnosis.
+                </p>
+                
+                <div className="space-y-3">
+                  {result.aiPrediction.wordImportance.map((item, idx) => {
+                    // Calculate color intensity based on importance value
+                    const absImportance = Math.abs(item.importance);
+                    const maxImportance = Math.max(...result.aiPrediction.wordImportance.map(w => Math.abs(w.importance)));
+                    const intensity = Math.min((absImportance / maxImportance) * 100, 100);
+                    
+                    // Positive importance = red/pink, Negative = blue (less relevant)
+                    const bgColor = item.importance > 0 
+                      ? `rgba(239, 68, 68, ${intensity / 100 * 0.3 + 0.1})`  // Red with varying opacity
+                      : `rgba(59, 130, 246, ${intensity / 100 * 0.2})`;  // Blue with low opacity
+                    
+                    const textColor = item.importance > 0 ? 'text-red-900' : 'text-blue-900';
+                    const borderColor = item.importance > 0 ? 'border-red-200' : 'border-blue-200';
+                    
+                    return (
+                      <div 
+                        key={idx}
+                        className={`flex items-center justify-between p-3 rounded-lg border ${borderColor}`}
+                        style={{ backgroundColor: bgColor }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className={`text-lg font-medium ${textColor}`}>
+                            &ldquo;{item.word}&rdquo;
+                          </span>
+                          {item.importance > 0 && (
+                            <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">
+                              Key symptom
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Impact: {(item.importance * 100).toFixed(2)}%
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-xs text-blue-800">
+                    <strong>How to read this:</strong> The AI model analyzed each word in your symptom description. 
+                    Words with higher positive impact scores were more influential in predicting the disease. 
+                    This visualization uses SHAP (SHapley Additive exPlanations) to make the AI&apos;s decision-making process transparent.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Next Steps */}
             <div className="card p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -399,9 +459,14 @@ const SymptomChecker = () => {
                 className={`w-full btn-medical ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Analyzing Symptoms...
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Analyzing Symptoms with AI Model...
+                    </div>
+                    <span className="text-xs mt-1 opacity-90">
+                      First prediction may take 20-30 seconds (loading model)
+                    </span>
                   </div>
                 ) : (
                   'Analyze Symptoms'

@@ -33,6 +33,18 @@ const diagnosisSessionSchema = new mongoose.Schema({
     min: 0,
     max: 1
   },
+  shapExplanation: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  wordImportance: {
+    type: Array,
+    default: []
+  },
+  predictedDisease: {
+    type: String,
+    default: ''
+  },
   doctorNotes: {
     type: String,
     default: ''

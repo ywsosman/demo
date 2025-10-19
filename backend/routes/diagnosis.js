@@ -45,7 +45,10 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
       duration,
       additionalInfo,
       aiPrediction: aiPrediction.predictions,
-      confidence: aiPrediction.confidence
+      confidence: aiPrediction.confidence,
+      shapExplanation: aiPrediction.shapExplanation,
+      wordImportance: aiPrediction.wordImportance,
+      predictedDisease: aiPrediction.predictedDisease
     });
 
     // Log audit event

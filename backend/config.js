@@ -12,7 +12,7 @@ module.exports = {
   maxFileSize: 10 * 1024 * 1024, // 10MB
   
   // CORS settings
-  corsOrigin: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? false : 'http://localhost:5173'),
+  corsOrigin: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? false : ['http://localhost:5173', 'http://localhost:5174']),
   
   // Database settings
   database: {
@@ -25,6 +25,8 @@ module.exports = {
   aiModel: {
     confidenceThreshold: 0.1,
     maxPredictions: 5,
-    enableExplanations: true
+    enableExplanations: true,
+    pythonPath: process.env.PYTHON_PATH || 'python',  // or 'python3' on Linux/Mac
+    modelTimeout: 60000  // 60 seconds
   }
 };
