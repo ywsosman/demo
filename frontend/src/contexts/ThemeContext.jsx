@@ -5,7 +5,7 @@ const ThemeContext = createContext();
 
 // Theme Provider
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false); // Default to light mode
 
   useEffect(() => {
     // Only run in browser environment
@@ -13,12 +13,13 @@ export const ThemeProvider = ({ children }) => {
       return;
     }
     
-    // Check localStorage first, then system preference
+    // Check localStorage first, then default to light mode
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
     } else {
-      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      // Default to light mode instead of system preference
+      setIsDarkMode(false);
     }
   }, []);
 
