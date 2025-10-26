@@ -1,0 +1,58 @@
+/* Responsive styles for AuroraBackground component */
+
+/* Mobile and tablet optimizations */
+@media (max-width: 1024px) {
+  .aurora-background-wrapper > div {
+    /* Reduce blur on smaller screens for better performance */
+    filter: blur(48px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .aurora-background-wrapper > div {
+    /* Further reduce blur on tablets */
+    filter: blur(40px) !important;
+  }
+  
+  /* Reduce opacity on mobile for better readability */
+  .aurora-background-wrapper > div[class*="aurora-"] {
+    opacity: 0.7 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .aurora-background-wrapper > div {
+    /* Minimal blur on small phones for performance */
+    filter: blur(32px) !important;
+  }
+  
+  .aurora-background-wrapper > div[class*="aurora-"] {
+    opacity: 0.6 !important;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .aurora-background-wrapper {
+    /* Reduce vertical space usage in landscape */
+    transform: scale(0.9);
+  }
+}
+
+/* High DPI / Retina display optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .aurora-background-wrapper {
+    /* Optimize rendering on high DPI screens */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-background-wrapper > div {
+    animation: none !important;
+  }
+}
+
