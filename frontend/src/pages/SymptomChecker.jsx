@@ -119,12 +119,12 @@ const SymptomChecker = () => {
 
   if (result) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Diagnosis Results</h1>
-            <p className="mt-2 text-gray-600">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
               AI-powered analysis of your symptoms
             </p>
           </div>
@@ -343,13 +343,13 @@ const SymptomChecker = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
           <HeartIcon className="mx-auto h-12 w-12 text-medical-600 mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900">Symptom Checker</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
             Describe your symptoms and get AI-powered health insights
           </p>
         </div>
