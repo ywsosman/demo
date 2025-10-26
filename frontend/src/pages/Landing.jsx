@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
+import ScrollReveal from '../components/ScrollReveal';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -63,50 +64,59 @@ const Landing = () => {
         </div>
         
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-          <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-            <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 dark:text-gray-300 ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
-              Revolutionizing healthcare with AI.{' '}
-              <a href="#features" className="font-semibold text-medical-600">
-                <span className="absolute inset-0" aria-hidden="true" />
-                Learn more <span aria-hidden="true">&rarr;</span>
-              </a>
+          <ScrollReveal direction="down" delay={100} duration={800}>
+            <div className="hidden sm:mb-8 sm:flex sm:justify-center">
+              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 dark:text-gray-300 ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
+                Revolutionizing healthcare with AI.{' '}
+                <a href="#features" className="font-semibold text-medical-600">
+                  <span className="absolute inset-0" aria-hidden="true" />
+                  Learn more <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
             </div>
-          </div>
+          </ScrollReveal>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              AI-Powered Medical Diagnosis System
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Get instant, accurate medical insights powered by advanced AI technology. 
-              Trusted by healthcare professionals and patients worldwide for better health outcomes.
-            </p>
+            <ScrollReveal direction="up" delay={200} duration={900}>
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+                AI-Powered Medical Diagnosis System
+              </h1>
+            </ScrollReveal>
             
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              {user ? (
-                <Link
-                  to="/dashboard"
-                  className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600"
-                >
-                  Go to Dashboard
-                </Link>
-              ) : (
-                <>
+            <ScrollReveal direction="up" delay={400} duration={900}>
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                Get instant, accurate medical insights powered by advanced AI technology. 
+                Trusted by healthcare professionals and patients worldwide for better health outcomes.
+              </p>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={600} duration={900}>
+              <div className="mt-10 flex items-center justify-center gap-x-6">
+                {user ? (
                   <Link
-                    to="/register"
+                    to="/dashboard"
                     className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600"
                   >
-                    Get Started
+                    Go to Dashboard
                   </Link>
-                  <Link
-                    to="/login"
-                    className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
-                  >
-                    Sign in <span aria-hidden="true">→</span>
-                  </Link>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/register"
+                      className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600"
+                    >
+                      Get Started
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+                    >
+                      Sign in <span aria-hidden="true">→</span>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </ScrollReveal>
           </div>
         </div>
         
@@ -119,18 +129,25 @@ const Landing = () => {
       <div className="bg-white dark:bg-gray-800 py-24 sm:py-32 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.id} className="mx-auto flex max-w-xs flex-col gap-y-4">
-                <dt className="text-base leading-7 text-gray-600 dark:text-gray-300">{stat.name}</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                  <AnimatedCounter 
-                    end={stat.numericValue}
-                    suffix={stat.suffix}
-                    duration={2000}
-                    className="inline-block"
-                  />
-                </dd>
-              </div>
+            {stats.map((stat, index) => (
+              <ScrollReveal 
+                key={stat.id} 
+                direction="up" 
+                delay={index * 100}
+                duration={800}
+              >
+                <div className="mx-auto flex max-w-xs flex-col gap-y-4">
+                  <dt className="text-base leading-7 text-gray-600 dark:text-gray-300">{stat.name}</dt>
+                  <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                    <AnimatedCounter 
+                      end={stat.numericValue}
+                      suffix={stat.suffix}
+                      duration={2000}
+                      className="inline-block"
+                    />
+                  </dd>
+                </div>
+              </ScrollReveal>
             ))}
           </dl>
         </div>
@@ -140,28 +157,43 @@ const Landing = () => {
       <div id="features" className="bg-gray-50 dark:bg-gray-900 py-24 sm:py-32 transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-medical-600">Advanced Healthcare</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Everything you need for medical diagnosis
-            </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Our comprehensive platform combines cutting-edge AI technology with medical expertise 
-              to provide accurate, fast, and reliable health insights.
-            </p>
+            <ScrollReveal direction="up" delay={100} duration={800}>
+              <h2 className="text-base font-semibold leading-7 text-medical-600">Advanced Healthcare</h2>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={200} duration={900}>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                Everything you need for medical diagnosis
+              </p>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={300} duration={900}>
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+                Our comprehensive platform combines cutting-edge AI technology with medical expertise 
+                to provide accurate, fast, and reliable health insights.
+              </p>
+            </ScrollReveal>
           </div>
           
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-              {features.map((feature) => (
-                <div key={feature.name} className="relative pl-16">
-                  <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-medical-600">
-                      <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                    </div>
-                    {feature.name}
-                  </dt>
-                  <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">{feature.description}</dd>
-                </div>
+              {features.map((feature, index) => (
+                <ScrollReveal 
+                  key={feature.name} 
+                  direction="up" 
+                  delay={index * 100}
+                  duration={800}
+                >
+                  <div className="relative pl-16">
+                    <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-medical-600">
+                        <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      {feature.name}
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-gray-600 dark:text-gray-300">{feature.description}</dd>
+                  </div>
+                </ScrollReveal>
               ))}
             </dl>
           </div>
@@ -172,26 +204,34 @@ const Landing = () => {
       <div className="bg-medical-600 dark:bg-medical-700">
         <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Ready to experience the future of healthcare?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-medical-100">
-              Join thousands of healthcare professionals and patients who trust our AI-powered 
-              medical diagnosis system for better health outcomes.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              {!user && (
-                <Link
-                  to="/register"
-                  className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-medical-600 shadow-sm hover:bg-medical-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                >
-                  Get started today
-                </Link>
-              )}
-              <a href="#features" className="text-sm font-semibold leading-6 text-white">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
+            <ScrollReveal direction="up" delay={100} duration={800}>
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Ready to experience the future of healthcare?
+              </h2>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={300} duration={900}>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-medical-100">
+                Join thousands of healthcare professionals and patients who trust our AI-powered 
+                medical diagnosis system for better health outcomes.
+              </p>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={500} duration={900}>
+              <div className="mt-10 flex items-center justify-center gap-x-6">
+                {!user && (
+                  <Link
+                    to="/register"
+                    className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-medical-600 shadow-sm hover:bg-medical-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  >
+                    Get started today
+                  </Link>
+                )}
+                <a href="#features" className="text-sm font-semibold leading-6 text-white">
+                  Learn more <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </div>

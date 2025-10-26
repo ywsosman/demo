@@ -79,9 +79,6 @@ const AnimatedCounter = ({
           ? 'opacity-100 translate-y-0' 
           : 'opacity-0 translate-y-12'
       }`}
-      style={{
-        transform: isVisible ? 'translateY(0)' : 'translateY(3rem)',
-      }}
     >
       {prefix}{formatCount(count)}{suffix}
     </span>
