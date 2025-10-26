@@ -106,40 +106,42 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Desktop navigation - Always visible */}
+          {/* Desktop navigation - ALWAYS visible and functional */}
           <div className="hidden md:flex items-center space-x-8">
-            {user ? (
-              // Show role-specific navigation for logged-in users
-              navLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link
-                    key={link.name}
-                    to={link.href}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                      isActive(link.href)
-                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{link.name}</span>
-                  </Link>
-                );
-              })
-            ) : (
-              // Show general navigation for visitors
-              <>
+            {/* Always show basic navigation for all users */}
+            <Link
+              to="/"
+              className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                isActive('/')
+                  ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+              }`}
+            >
+              <span>Home</span>
+            </Link>
+            
+            {/* Show role-specific navigation for logged-in users */}
+            {user && navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
                 <Link
-                  to="/"
+                  key={link.name}
+                  to={link.href}
                   className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/')
+                    isActive(link.href)
                       ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
                       : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
                   }`}
                 >
-                  <span>Home</span>
+                  <Icon className="h-4 w-4" />
+                  <span>{link.name}</span>
                 </Link>
+              );
+            })}
+            
+            {/* Always show login/register for non-logged-in users */}
+            {!user && (
+              <>
                 <Link
                   to="/login"
                   className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
@@ -234,7 +236,21 @@ const Navbar = () => {
               <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
             
-            {user ? (
+            {/* Always show basic navigation for all users */}
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                isActive('/')
+                  ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+              }`}
+            >
+              <span>Home</span>
+            </Link>
+            
+            {/* Show role-specific navigation for logged-in users */}
+            {user && (
               <>
                 <div className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 mb-2">
                   Welcome, {user.firstName || user.name || 'User'}
@@ -273,20 +289,11 @@ const Navbar = () => {
                   <span>Logout</span>
                 </button>
               </>
-            ) : (
+            )}
+            
+            {/* Always show login/register for non-logged-in users */}
+            {!user && (
               <>
-                {/* General navigation for visitors */}
-                <Link
-                  to="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>Home</span>
-                </Link>
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
