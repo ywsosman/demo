@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
+import LiquidEther from '../components/LiquidEther';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -15,6 +17,12 @@ import {
 
 const Landing = () => {
   const { user } = useAuth();
+  const { isDarkMode } = useTheme();
+
+  // Theme-aware colors for the liquid effect
+  const liquidColors = isDarkMode
+    ? ['#14b8a6', '#2dd4bf', '#5eead4'] // Teal shades for dark mode
+    : ['#86efac', '#22c55e', '#bbf7d0']; // Calm green shades for light mode
 
   const features = [
     {
@@ -58,6 +66,27 @@ const Landing = () => {
 
   return (
     <div className="relative transition-colors duration-300">
+      {/* LiquidEther Background */}
+      <div className="fixed inset-0 w-full h-full -z-10 overflow-hidden">
+        <LiquidEther
+          colors={liquidColors}
+          mouseForce={20}
+          cursorSize={100}
+          isViscous={false}
+          viscous={30}
+          iterationsViscous={32}
+          iterationsPoisson={32}
+          resolution={0.5}
+          isBounce={false}
+          autoDemo={true}
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.25}
+          autoResumeDelay={3000}
+          autoRampDuration={0.6}
+        />
+      </div>
+
       {/* Hero section */}
       <div className="relative px-6 pt-20 lg:px-8">
         
