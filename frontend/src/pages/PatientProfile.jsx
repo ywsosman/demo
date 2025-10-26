@@ -107,8 +107,8 @@ const PatientProfile = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">My Profile</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
             Manage your personal information and medical details
           </p>
         </div>
@@ -123,7 +123,7 @@ const PatientProfile = () => {
                   <UserIcon className="inline h-4 w-4 mr-1" />
                   Full Name
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                   {user.firstName} {user.lastName}
                 </div>
               </div>
@@ -133,7 +133,7 @@ const PatientProfile = () => {
                   <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                   Email Address
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                   {user.email}
                 </div>
               </div>
@@ -143,7 +143,7 @@ const PatientProfile = () => {
                   <IdentificationIcon className="inline h-4 w-4 mr-1" />
                   Account Type
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300 capitalize">
+                <div className="form-input bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 capitalize">
                   {user.role}
                 </div>
               </div>
@@ -153,7 +153,7 @@ const PatientProfile = () => {
                   <CalendarIcon className="inline h-4 w-4 mr-1" />
                   Member Since
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                   {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                 </div>
               </div>
@@ -300,16 +300,16 @@ const PatientProfile = () => {
           </form>
 
           {/* Privacy Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
             <div className="flex">
               <div className="flex-shrink-0">
                 <IdentificationIcon className="h-5 w-5 text-blue-400" />
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
                   Privacy & Security
                 </h3>
-                <div className="mt-1 text-sm text-blue-700">
+                <div className="mt-1 text-sm text-blue-700 dark:text-blue-300">
                   <p>Your medical information is encrypted and securely stored. Only you and authorized healthcare professionals can access this information. We follow strict HIPAA guidelines to protect your privacy.</p>
                 </div>
               </div>
