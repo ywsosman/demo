@@ -64,7 +64,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen relative transition-colors duration-300 bg-white dark:bg-gray-900">
+          <div className="min-h-screen relative transition-colors duration-300">
             {/* Aurora Background */}
             <AuroraBackground />
             

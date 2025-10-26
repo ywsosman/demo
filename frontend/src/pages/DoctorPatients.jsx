@@ -83,7 +83,7 @@ const DoctorPatients = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
@@ -94,12 +94,12 @@ const DoctorPatients = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
+    <div className="min-h-screen py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">My Patients</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Patients</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
             Manage and view patients you have reviewed or taken requests from
           </p>
         </div>
