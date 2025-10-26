@@ -17,7 +17,8 @@ export const StaggeredMenu = ({
   accentColor = '#ef4444',
   changeMenuColorOnOpen = true,
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  user = null
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -356,29 +357,38 @@ export const StaggeredMenu = ({
             ) : null
           )}
         </div>
-        <button
-          ref={toggleBtnRef}
-          className="sm-toggle"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          aria-controls="staggered-menu-panel"
-          onClick={toggleMenu}
-          type="button"
-        >
-          <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
-            <span ref={textInnerRef} className="sm-toggle-textInner">
-              {textLines.map((l, i) => (
-                <span className="sm-toggle-line" key={i}>
-                  {l}
-                </span>
-              ))}
+        <div className="sm-header-right">
+          {user && (
+            <div className="sm-welcome-message">
+              <span className="sm-welcome-text">
+                Welcome, <span className="sm-welcome-name">{user.firstName}</span>
+              </span>
+            </div>
+          )}
+          <button
+            ref={toggleBtnRef}
+            className="sm-toggle"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="staggered-menu-panel"
+            onClick={toggleMenu}
+            type="button"
+          >
+            <span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+              <span ref={textInnerRef} className="sm-toggle-textInner">
+                {textLines.map((l, i) => (
+                  <span className="sm-toggle-line" key={i}>
+                    {l}
+                  </span>
+                ))}
+              </span>
             </span>
-          </span>
-          <span ref={iconRef} className="sm-icon" aria-hidden="true">
-            <span ref={plusHRef} className="sm-icon-line" />
-            <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
-          </span>
-        </button>
+            <span ref={iconRef} className="sm-icon" aria-hidden="true">
+              <span ref={plusHRef} className="sm-icon-line" />
+              <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
+            </span>
+          </button>
+        </div>
       </header>
 
       <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
