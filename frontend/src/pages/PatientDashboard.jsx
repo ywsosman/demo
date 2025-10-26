@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI } from '../services/api';
+import ScrollReveal from '../components/ScrollReveal';
 import {
   HeartIcon,
   ClipboardDocumentListIcon,
@@ -78,123 +79,142 @@ const PatientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300 scroll-smooth">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back, {user.firstName}!
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Manage your health with our AI-powered diagnosis system
-          </p>
-        </div>
+        <ScrollReveal direction="down" delay={0} duration={600}>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Welcome back, {user.firstName}!
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
+              Manage your health with our AI-powered diagnosis system
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+          <ScrollReveal direction="up" delay={100} duration={600}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+          </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Link
-              to="/patient/symptom-checker"
-              className="card card-hover p-6 flex items-center space-x-4 group"
-            >
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-medical-100 rounded-lg flex items-center justify-center group-hover:bg-medical-200 transition-colors">
-                  <HeartIcon className="w-6 h-6 text-medical-600" />
+            <ScrollReveal direction="up" delay={150} duration={600}>
+              <Link
+                to="/patient/symptom-checker"
+                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+              >
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-medical-100 rounded-lg flex items-center justify-center group-hover:bg-medical-200 transition-colors duration-300">
+                    <HeartIcon className="w-6 h-6 text-medical-600" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Symptom Checker</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Get AI-powered health insights</p>
-              </div>
-              <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200" />
-            </Link>
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Symptom Checker</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Get AI-powered health insights</p>
+                </div>
+                <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-colors duration-300" />
+              </Link>
+            </ScrollReveal>
 
-            <Link
-              to="/patient/history"
-              className="card card-hover p-6 flex items-center space-x-4 group"
-            >
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                  <ClipboardDocumentListIcon className="w-6 h-6 text-blue-600" />
+            <ScrollReveal direction="up" delay={250} duration={600}>
+              <Link
+                to="/patient/history"
+                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+              >
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                    <ClipboardDocumentListIcon className="w-6 h-6 text-blue-600" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">View History</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Review past diagnoses</p>
-              </div>
-            </Link>
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">View History</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Review past diagnoses</p>
+                </div>
+              </Link>
+            </ScrollReveal>
 
-            <Link
-              to="/patient/profile"
-              className="card card-hover p-6 flex items-center space-x-4 group"
-            >
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                  <ChartBarIcon className="w-6 h-6 text-purple-600" />
+            <ScrollReveal direction="up" delay={350} duration={600}>
+              <Link
+                to="/patient/profile"
+                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+              >
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-300">
+                    <ChartBarIcon className="w-6 h-6 text-purple-600" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Profile</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Update medical information</p>
-              </div>
-            </Link>
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Profile</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Update medical information</p>
+                </div>
+              </Link>
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Stats Overview */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          <ScrollReveal direction="up" delay={100} duration={600}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
+            <ScrollReveal direction="up" delay={150} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClockIcon className="h-8 w-8 text-yellow-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
+            <ScrollReveal direction="up" delay={250} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <ClockIcon className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CheckCircleIcon className="h-8 w-8 text-green-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
+            <ScrollReveal direction="up" delay={350} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Recent Sessions */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Diagnosis Sessions</h2>
-            <Link
-              to="/patient/history"
-              className="text-sm text-medical-600 hover:text-medical-500 font-medium"
-            >
-              View all
-            </Link>
-          </div>
+        <ScrollReveal direction="up" delay={100} duration={600}>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Diagnosis Sessions</h2>
+              <Link
+                to="/patient/history"
+                className="text-sm text-medical-600 hover:text-medical-500 font-medium transition-colors duration-300"
+              >
+                View all
+              </Link>
+            </div>
 
           {recentSessions.length === 0 ? (
             <div className="card p-6 text-center">
@@ -234,8 +254,14 @@ const PatientDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {recentSessions.map((session) => (
-                      <tr key={session.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    {recentSessions.map((session, index) => (
+                      <tr 
+                        key={session.id} 
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
+                        style={{
+                          animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
+                        }}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           {format(new Date(session.createdAt), 'MMM dd, yyyy')}
                         </td>
@@ -273,7 +299,8 @@ const PatientDashboard = () => {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        </ScrollReveal>
       </div>
     </div>
   );

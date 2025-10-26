@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import ScrollReveal from '../components/ScrollReveal';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -107,115 +108,128 @@ const DoctorDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300 scroll-smooth">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome, Dr. {user.firstName}!
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Review patient diagnoses and provide professional medical guidance
-          </p>
-        </div>
+        <ScrollReveal direction="down" delay={0} duration={600}>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Welcome, Dr. {user.firstName}!
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
+              Review patient diagnoses and provide professional medical guidance
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Stats Overview */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          <ScrollReveal direction="up" delay={100} duration={600}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
+            <ScrollReveal direction="up" delay={150} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClockIcon className="h-8 w-8 text-yellow-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pendingSessions}</p>
+            <ScrollReveal direction="up" delay={250} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <ClockIcon className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pendingSessions}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CheckCircleIcon className="h-8 w-8 text-green-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewedSessions}</p>
+            <ScrollReveal direction="up" delay={350} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewedSessions}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
 
-            <div className="card p-6">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <UserGroupIcon className="h-8 w-8 text-purple-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalPatients}</p>
+            <ScrollReveal direction="up" delay={450} duration={600}>
+              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <UserGroupIcon className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalPatients}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Sessions Tabs */}
-        <div>
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200 mb-6">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('pending')}
-                className={`${
-                  activeTab === 'pending'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
-              >
-                Pending Reviews
-                {pendingSessions.length > 0 && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    {pendingSessions.length}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('reviewed')}
-                className={`${
-                  activeTab === 'reviewed'
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
-              >
-                Reviewed & Closed
-                {reviewedSessions.length > 0 && (
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {reviewedSessions.length}
-                  </span>
-                )}
-              </button>
-            </nav>
-          </div>
+        <ScrollReveal direction="up" delay={100} duration={600}>
+          <div>
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('pending')}
+                  className={`${
+                    activeTab === 'pending'
+                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-all duration-300`}
+                >
+                  Pending Reviews
+                  {pendingSessions.length > 0 && (
+                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 transition-all duration-300">
+                      {pendingSessions.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('reviewed')}
+                  className={`${
+                    activeTab === 'reviewed'
+                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-all duration-300`}
+                >
+                  Reviewed & Closed
+                  {reviewedSessions.length > 0 && (
+                    <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 transition-all duration-300">
+                      {reviewedSessions.length}
+                    </span>
+                  )}
+                </button>
+              </nav>
+            </div>
 
           {/* Pending Tab Content */}
           {activeTab === 'pending' && (
-            <>
+            <div className="animate-fadeIn">
               {pendingSessions.length === 0 ? (
-                <div className="card p-12 text-center">
+                <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
                   <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
                   <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">All caught up!</h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -224,8 +238,14 @@ const DoctorDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {pendingSessions.map((session) => (
-                <div key={session.id} className="card p-6">
+                  {pendingSessions.map((session, index) => (
+                <div 
+                  key={session.id} 
+                  className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+                  style={{
+                    animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
+                  }}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
@@ -304,7 +324,7 @@ const DoctorDashboard = () => {
                     <div className="ml-4 flex flex-col space-y-2">
                       <button
                         onClick={() => openReviewModal(session)}
-                        className="btn-primary flex items-center"
+                        className="btn-primary flex items-center transition-all duration-300 hover:scale-105"
                       >
                         <ChatBubbleLeftRightIcon className="w-4 h-4 mr-2" />
                         Review
@@ -315,14 +335,14 @@ const DoctorDashboard = () => {
               ))}
                 </div>
               )}
-            </>
+            </div>
           )}
 
           {/* Reviewed Tab Content */}
           {activeTab === 'reviewed' && (
-            <>
+            <div className="animate-fadeIn">
               {reviewedSessions.length === 0 ? (
-                <div className="card p-12 text-center">
+                <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
                   <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
                   <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No reviewed sessions yet</h3>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -331,8 +351,14 @@ const DoctorDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {reviewedSessions.map((session) => (
-                    <div key={session.id || session._id} className="card p-6">
+                  {reviewedSessions.map((session, index) => (
+                    <div 
+                      key={session.id || session._id} 
+                      className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+                      style={{
+                        animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
+                      }}
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
@@ -394,9 +420,10 @@ const DoctorDashboard = () => {
                   ))}
                 </div>
               )}
-            </>
+            </div>
           )}
-        </div>
+          </div>
+        </ScrollReveal>
 
         {/* Review Modal */}
         {selectedSession && (
