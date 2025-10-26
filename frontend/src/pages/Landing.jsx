@@ -5,6 +5,7 @@ import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
 import Orb from '../components/Orb';
+import OrbAmbience from '../components/OrbAmbience';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -61,9 +62,12 @@ const Landing = () => {
     <div className="relative transition-colors duration-300">
       {/* Hero section */}
       <div className="relative px-6 pt-20 lg:px-8 overflow-hidden">
-        {/* Orb Background */}
+        {/* Ambient Background */}
+        <OrbAmbience />
+        
+        {/* Orb */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full max-w-4xl h-[500px] sm:h-[600px] lg:h-[700px] opacity-40">
+          <div className="w-full max-w-4xl h-[500px] sm:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
             <Orb 
               hoverIntensity={0.75}
               rotateOnHover={true}
