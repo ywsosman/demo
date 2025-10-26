@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/layout/Navbar';
+import AuroraBackground from './components/AuroraBackground';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -63,7 +64,10 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+          <div className="min-h-screen relative transition-colors duration-300">
+            {/* Aurora Background */}
+            <AuroraBackground />
+            
             <Navbar />
             <main className="relative z-0">
             <Routes>

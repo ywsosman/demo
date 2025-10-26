@@ -15,9 +15,8 @@ const AnimatedCounter = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
+        // Toggle visibility based on whether element is in viewport
+        setIsVisible(entry.isIntersecting);
       },
       { threshold: 0.1 }
     );
@@ -31,13 +30,14 @@ const AnimatedCounter = ({
         observer.unobserve(counterRef.current);
       }
     };
-  }, [isVisible]);
+  }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
-
+    let animationFrameId;
     const startTime = Date.now();
     const numericEnd = parseFloat(end.toString().replace(/[^\d.]/g, ''));
+    const targetValue = isVisible ? numericEnd : start;
+    const startValue = count;
     
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -45,18 +45,25 @@ const AnimatedCounter = ({
       
       // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const currentCount = start + (numericEnd - start) * easeOutQuart;
+      const currentCount = startValue + (targetValue - startValue) * easeOutQuart;
       
       setCount(currentCount);
       
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
       } else {
-        setCount(numericEnd);
+        setCount(targetValue);
       }
     };
 
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
+
+    // Cleanup function to cancel animation if component unmounts or visibility changes
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
   }, [isVisible, end, duration, start]);
 
   const formatCount = (num) => {
