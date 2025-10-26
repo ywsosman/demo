@@ -67,7 +67,7 @@ const Landing = () => {
         
         {/* Orb */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full max-w-4xl h-[500px] sm:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
+          <div className="w-full max-w-[90vw] sm:max-w-3xl lg:max-w-4xl h-[400px] xs:h-[450px] sm:h-[550px] md:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
             <Orb 
               hoverIntensity={0.75}
               rotateOnHover={true}

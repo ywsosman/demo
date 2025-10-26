@@ -1,7 +1,16 @@
 # Orb Component Implementation
 
 ## Overview
-A beautiful, theme-aware WebGL orb component with animated ambient background has been integrated into the Landing page as the hero background element. The system features a stunning blurry gradient backdrop that complements the orb's colors and creates an immersive aesthetic experience.
+A beautiful, theme-aware WebGL orb component with animated ambient background has been integrated into the Landing page as the hero background element. The orb is part of a cohesive global theme system where the entire site features blue/cyan ambience in light mode and mint/green ambience in dark mode.
+
+## Global Theme Integration
+The orb perfectly complements the site-wide ambient background:
+- **Global Background**: All pages use the AuroraBackground component with matching colors
+- **Orb Section**: Landing page hero has additional OrbAmbience layer for extra depth
+- **Color Harmony**: Orb hues (190° light, 150° dark) match the global aurora gradients
+- **Seamless Experience**: Consistent visual language across the entire application
+
+See `GLOBAL_THEME.md` for details about the site-wide ambient background system.
 
 ## Features Implemented
 

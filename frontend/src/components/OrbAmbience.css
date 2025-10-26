@@ -146,6 +146,26 @@
 }
 
 /* Responsive adjustments */
+
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .orb-ambience-blob-1 {
+    width: 350px;
+    height: 350px;
+  }
+  
+  .orb-ambience-blob-2 {
+    width: 320px;
+    height: 320px;
+  }
+  
+  .orb-ambience-blob-3 {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+/* Tablets and larger phones */
 @media (max-width: 768px) {
   .orb-ambience-gradient {
     filter: blur(60px);
@@ -156,36 +176,152 @@
   .orb-ambience-blob-1,
   .orb-ambience-blob-2,
   .orb-ambience-blob-3 {
-    filter: blur(40px);
+    filter: blur(45px);
   }
   
   .orb-ambience-blob-1 {
-    width: 250px;
-    height: 250px;
+    width: 280px;
+    height: 280px;
+    top: 15%;
+    left: 5%;
   }
   
   .orb-ambience-blob-2 {
-    width: 220px;
-    height: 220px;
+    width: 250px;
+    height: 250px;
+    top: 55%;
+    right: 10%;
   }
   
   .orb-ambience-blob-3 {
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
+    bottom: 15%;
+    left: 45%;
+  }
+  
+  /* Reduce animation distance on tablets */
+  @keyframes blob-float-1 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(20px, -25px) scale(1.08);
+    }
+  }
+  
+  @keyframes blob-float-2 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(-25px, 20px) scale(1.1);
+    }
+  }
+  
+  @keyframes blob-float-3 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(15px, -20px) scale(1.05);
+    }
   }
 }
 
+/* Mobile phones */
 @media (max-width: 480px) {
   .orb-ambience-gradient {
     filter: blur(50px);
     opacity: 0.5;
+    width: 250%;
+    height: 250%;
   }
   
   .orb-ambience-blob-1,
   .orb-ambience-blob-2,
   .orb-ambience-blob-3 {
-    filter: blur(30px);
-    opacity: 0.3;
+    filter: blur(35px);
+    opacity: 0.35;
+  }
+  
+  .orb-ambience-blob-1 {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: -5%;
+  }
+  
+  .orb-ambience-blob-2 {
+    width: 180px;
+    height: 180px;
+    top: 60%;
+    right: -5%;
+  }
+  
+  .orb-ambience-blob-3 {
+    width: 160px;
+    height: 160px;
+    bottom: 10%;
+    left: 40%;
+  }
+  
+  /* Further reduce animation on mobile for performance */
+  @keyframes blob-float-1 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(15px, -15px) scale(1.05);
+    }
+  }
+  
+  @keyframes blob-float-2 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(-15px, 15px) scale(1.05);
+    }
+  }
+  
+  @keyframes blob-float-3 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(10px, -10px) scale(1.03);
+    }
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .orb-ambience-gradient {
+    filter: blur(40px);
+    opacity: 0.4;
+  }
+  
+  .orb-ambience-blob-1,
+  .orb-ambience-blob-2,
+  .orb-ambience-blob-3 {
+    filter: blur(25px);
+    opacity: 0.25;
+  }
+  
+  .orb-ambience-blob-1 {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .orb-ambience-blob-2 {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .orb-ambience-blob-3 {
+    width: 130px;
+    height: 130px;
   }
 }
 
