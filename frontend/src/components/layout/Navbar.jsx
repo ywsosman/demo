@@ -106,10 +106,11 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Desktop navigation */}
-          {user && (
-            <div className="hidden md:flex items-center space-x-8">
-              {navLinks.map((link) => {
+          {/* Desktop navigation - Always visible */}
+          <div className="hidden md:flex items-center space-x-8">
+            {user ? (
+              // Show role-specific navigation for logged-in users
+              navLinks.map((link) => {
                 const Icon = link.icon;
                 return (
                   <Link
@@ -125,9 +126,43 @@ const Navbar = () => {
                     <span>{link.name}</span>
                   </Link>
                 );
-              })}
-            </div>
-          )}
+              })
+            ) : (
+              // Show general navigation for visitors
+              <>
+                <Link
+                  to="/"
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>Home</span>
+                </Link>
+                <Link
+                  to="/about"
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/about')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>About</span>
+                </Link>
+                <Link
+                  to="/contact"
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/contact')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>Contact</span>
+                </Link>
+              </>
+            )}
+          </div>
 
           {/* User menu */}
           <div className="flex items-center space-x-4">
@@ -252,19 +287,54 @@ const Navbar = () => {
               </>
             ) : (
               <>
+                {/* General navigation for visitors */}
+                <Link
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>Home</span>
+                </Link>
+                <Link
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/about')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>About</span>
+                </Link>
+                <Link
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/contact')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
+                >
+                  <span>Contact</span>
+                </Link>
+                <div className="border-t border-gray-200 dark:border-gray-600 my-2"></div>
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 hover:scale-110"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
                 >
-                  Login
+                  <span>Login</span>
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 transition-all duration-200 hover:scale-110"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-medical-600 text-white hover:bg-medical-500 hover:shadow-md hover:scale-110 transition-all duration-200"
                 >
-                  Get Started
+                  <span>Get Started</span>
                 </Link>
               </>
             )}
