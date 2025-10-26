@@ -113,3 +113,64 @@ code {
 .pulse-slow {
   animation: pulse-slow 2s infinite;
 }
+
+/* Aurora background animations */
+@keyframes aurora-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  33% {
+    transform: translate(10%, 10%) scale(1.1) rotate(5deg);
+    opacity: 0.4;
+  }
+  66% {
+    transform: translate(-5%, 15%) scale(1.05) rotate(-3deg);
+    opacity: 0.35;
+  }
+}
+
+@keyframes aurora-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  33% {
+    transform: translate(-15%, 5%) scale(1.15) rotate(-8deg);
+    opacity: 0.4;
+  }
+  66% {
+    transform: translate(8%, -10%) scale(1.08) rotate(4deg);
+    opacity: 0.35;
+  }
+}
+
+@keyframes aurora-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(8%, -8%) scale(1.12) rotate(6deg);
+    opacity: 0.35;
+  }
+  66% {
+    transform: translate(-10%, 5%) scale(1.06) rotate(-5deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes aurora-4 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.2;
+  }
+  33% {
+    transform: translate(-12%, 12%) scale(1.1) rotate(-7deg);
+    opacity: 0.3;
+  }
+  66% {
+    transform: translate(6%, -8%) scale(1.05) rotate(3deg);
+    opacity: 0.25;
+  }
+}

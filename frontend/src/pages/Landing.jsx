@@ -56,12 +56,9 @@ const Landing = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="relative transition-colors duration-300">
       {/* Hero section */}
       <div className="relative px-6 pt-20 lg:px-8">
-        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
-        </div>
         
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <ScrollReveal direction="down" delay={100} duration={800}>
@@ -119,15 +116,12 @@ const Landing = () => {
             </ScrollReveal>
           </div>
         </div>
-        
-        <div className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
-          <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" />
-        </div>
       </div>
 
       {/* Stats section */}
-      <div className="bg-white dark:bg-gray-800 py-24 sm:py-32 transition-colors duration-300">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="relative py-24 sm:py-32 transition-colors duration-300">
+        <div className="absolute inset-0 bg-white/40 dark:bg-gray-900/40 backdrop-blur-sm"></div>
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
             {stats.map((stat, index) => (
               <ScrollReveal 
@@ -154,8 +148,8 @@ const Landing = () => {
       </div>
 
       {/* Features section */}
-      <div id="features" className="bg-gray-50 dark:bg-gray-900 py-24 sm:py-32 transition-colors duration-300">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div id="features" className="relative py-24 sm:py-32 transition-colors duration-300">
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <ScrollReveal direction="up" delay={100} duration={800}>
               <h2 className="text-base font-semibold leading-7 text-medical-600">Advanced Healthcare</h2>
@@ -201,7 +195,7 @@ const Landing = () => {
       </div>
 
       {/* CTA section */}
-      <div className="bg-medical-600 dark:bg-medical-700">
+      <div className="relative bg-gradient-to-r from-medical-600 to-indigo-600 dark:from-medical-700 dark:to-indigo-700 backdrop-blur-sm">
         <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <ScrollReveal direction="up" delay={100} duration={800}>
