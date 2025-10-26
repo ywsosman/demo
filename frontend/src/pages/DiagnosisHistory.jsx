@@ -86,8 +86,8 @@ const DiagnosisHistory = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Diagnosis History</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis History</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
             View and manage your past diagnosis sessions
           </p>
         </div>
@@ -242,7 +242,7 @@ const DiagnosisHistory = () => {
         {/* Session Details Modal */}
         {selectedSession && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white">
@@ -250,7 +250,7 @@ const DiagnosisHistory = () => {
                   </h3>
                   <button
                     onClick={closeSessionDetails}
-                    className="text-gray-400 hover:text-gray-600 dark:text-gray-300"
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -298,7 +298,7 @@ const DiagnosisHistory = () => {
                       <h4 className="font-medium text-gray-900 dark:text-white">AI Analysis</h4>
                       <div className="mt-2 space-y-3">
                         {selectedSession.aiPrediction.map((prediction, index) => (
-                          <div key={index} className="border border-gray-200 rounded-lg p-3">
+                          <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
                             <div className="flex items-center justify-between mb-2">
                               <h5 className="font-medium text-gray-900 dark:text-white">{prediction.condition}</h5>
                               <span className="text-sm text-gray-500 dark:text-gray-400">

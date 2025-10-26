@@ -123,21 +123,21 @@ const SymptomChecker = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Diagnosis Results</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
               AI-powered analysis of your symptoms
             </p>
           </div>
 
           {/* Warning Banner */}
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
+          <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
             <div className="flex">
               <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400 mt-0.5" />
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
+                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                   Important Medical Disclaimer
                 </h3>
-                <p className="mt-1 text-sm text-yellow-700">
+                <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
                   This AI analysis is for informational purposes only and should not replace professional medical advice. 
                   Please consult with a healthcare professional for proper diagnosis and treatment.
                 </p>
@@ -156,12 +156,12 @@ const SymptomChecker = () => {
               {result.aiPrediction && result.aiPrediction.predictions.length > 0 ? (
                 <div className="space-y-4">
                   {result.aiPrediction.predictions.map((prediction, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                           {prediction.condition}
                         </h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(prediction.confidence)}`}>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(prediction.confidence)} dark:bg-opacity-20`}>
                           {Math.round(prediction.confidence * 100)}% confidence
                         </span>
                       </div>
@@ -348,8 +348,8 @@ const SymptomChecker = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <HeartIcon className="mx-auto h-12 w-12 text-medical-600 mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Symptom Checker</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
             Describe your symptoms and get AI-powered health insights
           </p>
         </div>
@@ -477,14 +477,14 @@ const SymptomChecker = () => {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
           <div className="flex">
             <InformationCircleIcon className="h-5 w-5 text-blue-400 mt-0.5" />
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
+              <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
                 Medical Disclaimer
               </h3>
-              <p className="mt-1 text-sm text-blue-700">
+              <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
                 This tool provides AI-generated health insights for informational purposes only. 
                 It does not replace professional medical advice, diagnosis, or treatment. 
                 Always consult with qualified healthcare professionals for medical concerns.

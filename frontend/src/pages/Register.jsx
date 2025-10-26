@@ -121,8 +121,8 @@ const Register = () => {
                   required
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`mt-1 form-input ${
-                    errors.firstName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                  className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                    errors.firstName ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                   }`}
                   placeholder="John"
                 />
@@ -142,8 +142,8 @@ const Register = () => {
                   required
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`mt-1 form-input ${
-                    errors.lastName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                  className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                    errors.lastName ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                   }`}
                   placeholder="Doe"
                 />
@@ -166,8 +166,8 @@ const Register = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 form-input ${
-                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                 }`}
                 placeholder="john@example.com"
               />
@@ -186,8 +186,8 @@ const Register = () => {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className={`mt-1 form-input ${
-                  errors.role ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                className={`mt-1 form-input dark:bg-gray-800 dark:text-white ${
+                  errors.role ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                 }`}
               >
                 <option value="patient">Patient</option>
@@ -212,8 +212,8 @@ const Register = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`form-input pr-10 ${
-                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                  className={`form-input pr-10 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                   }`}
                   placeholder="Enter your password"
                 />
@@ -248,8 +248,8 @@ const Register = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`form-input pr-10 ${
-                    errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                  className={`form-input pr-10 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                    errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                   }`}
                   placeholder="Confirm your password"
                 />
@@ -278,7 +278,7 @@ const Register = () => {
               name="terms"
               type="checkbox"
               required
-              className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 rounded"
+              className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
             />
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
               I agree to the{' '}

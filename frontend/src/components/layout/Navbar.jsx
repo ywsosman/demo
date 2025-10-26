@@ -78,7 +78,7 @@ const Navbar = () => {
   const navLinks = getNavLinks();
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+    <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-colors duration-300 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and brand */}
@@ -89,21 +89,6 @@ const Navbar = () => {
                 MediDiagnose
               </span>
             </Link>
-          </div>
-
-          {/* Dark mode toggle - always visible */}
-          <div className="hidden md:flex items-center">
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
-              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDarkMode ? (
-                <SunIcon className="h-5 w-5" />
-              ) : (
-                <MoonIcon className="h-5 w-5" />
-              )}
-            </button>
           </div>
 
           {/* Desktop navigation - ALWAYS visible and functional */}
@@ -176,8 +161,8 @@ const Navbar = () => {
                   </span>
                   <span className={`px-2 py-1 text-xs rounded-full ${
                     user.role === 'doctor' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-green-100 text-green-800'
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+                      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                   }`}>
                     {user.role}
                   </span>
@@ -195,6 +180,19 @@ const Navbar = () => {
               // No additional buttons needed - login/register are in main navigation
               <div></div>
             )}
+            
+            {/* Dark mode toggle - always visible on desktop */}
+            <button
+              onClick={toggleTheme}
+              className="hidden md:flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDarkMode ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </button>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
@@ -308,11 +306,7 @@ const Navbar = () => {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/register')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                      : 'bg-medical-600 text-white hover:bg-medical-500 hover:shadow-md'
-                  }`}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-medical-600 text-white hover:bg-medical-500 transition-all duration-200 hover:shadow-md hover:scale-110"
                 >
                   <span>Get Started</span>
                 </Link>
