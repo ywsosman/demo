@@ -54,7 +54,7 @@ const PatientDashboard = () => {
       case 'reviewed':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
       default:
-        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500" />;
+        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
     }
   };
 
@@ -65,7 +65,7 @@ const PatientDashboard = () => {
       case 'reviewed':
         return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:text-gray-200';
     }
   };
 
@@ -82,17 +82,17 @@ const PatientDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">
             Welcome back, {user.firstName}!
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
             Manage your health with our AI-powered diagnosis system
           </p>
         </div>
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white dark:text-white mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               to="/patient/symptom-checker"
@@ -104,10 +104,10 @@ const PatientDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Symptom Checker</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Get AI-powered health insights</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white dark:text-white">Symptom Checker</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Get AI-powered health insights</p>
               </div>
-              <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+              <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:text-gray-300" />
             </Link>
 
             <Link
@@ -120,8 +120,8 @@ const PatientDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900">View History</h3>
-                <p className="text-sm text-gray-500">Review past diagnoses</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">View History</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Review past diagnoses</p>
               </div>
             </Link>
 
@@ -135,8 +135,8 @@ const PatientDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900">Profile</h3>
-                <p className="text-sm text-gray-500">Update medical information</p>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Profile</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Update medical information</p>
               </div>
             </Link>
           </div>
@@ -144,7 +144,7 @@ const PatientDashboard = () => {
 
         {/* Stats Overview */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Overview</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="card p-6">
               <div className="flex items-center">
@@ -152,8 +152,8 @@ const PatientDashboard = () => {
                   <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Sessions</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
                 </div>
               </div>
             </div>
@@ -164,8 +164,8 @@ const PatientDashboard = () => {
                   <ClockIcon className="h-8 w-8 text-yellow-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Pending Review</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.pending}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
                 </div>
               </div>
             </div>
@@ -176,8 +176,8 @@ const PatientDashboard = () => {
                   <CheckCircleIcon className="h-8 w-8 text-green-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Reviewed</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.reviewed}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
                 </div>
               </div>
             </div>
@@ -187,7 +187,7 @@ const PatientDashboard = () => {
         {/* Recent Sessions */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-gray-900">Recent Diagnosis Sessions</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Diagnosis Sessions</h2>
             <Link
               to="/patient/history"
               className="text-sm text-medical-600 hover:text-medical-500 font-medium"
@@ -199,8 +199,8 @@ const PatientDashboard = () => {
           {recentSessions.length === 0 ? (
             <div className="card p-6 text-center">
               <HeartIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No diagnosis sessions</h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No diagnosis sessions</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Get started by checking your symptoms
               </p>
               <div className="mt-6">
@@ -219,16 +219,16 @@ const PatientDashboard = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Date
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Symptoms
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         AI Prediction
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Status
                       </th>
                     </tr>
@@ -236,21 +236,21 @@ const PatientDashboard = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {recentSessions.map((session) => (
                       <tr key={session.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           {format(new Date(session.createdAt), 'MMM dd, yyyy')}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                           <div className="max-w-xs truncate">
                             {session.symptoms}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                           {session.aiPrediction && session.aiPrediction.length > 0 ? (
                             <div>
                               <div className="font-medium">
                                 {session.aiPrediction[0].condition}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
                                 {Math.round(session.aiPrediction[0].confidence * 100)}% confidence
                               </div>
                             </div>

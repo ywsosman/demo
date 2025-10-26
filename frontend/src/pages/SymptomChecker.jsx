@@ -123,8 +123,8 @@ const SymptomChecker = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Diagnosis Results</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
               AI-powered analysis of your symptoms
             </p>
           </div>
@@ -149,7 +149,7 @@ const SymptomChecker = () => {
           <div className="space-y-6">
             {/* AI Predictions */}
             <div className="card p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 AI Analysis Results
               </h2>
               
@@ -158,7 +158,7 @@ const SymptomChecker = () => {
                   {result.aiPrediction.predictions.map((prediction, index) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                           {prediction.condition}
                         </h3>
                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(prediction.confidence)}`}>
@@ -166,13 +166,13 @@ const SymptomChecker = () => {
                         </span>
                       </div>
                       
-                      <p className="text-gray-600 mb-3">
+                      <p className="text-gray-600 dark:text-gray-300 mb-3">
                         {prediction.description}
                       </p>
                       
                       {prediction.matchedSymptoms && prediction.matchedSymptoms.length > 0 && (
                         <div className="mb-3">
-                          <h4 className="text-sm font-medium text-gray-700 mb-1">
+                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Matched Symptoms:
                           </h4>
                           <div className="flex flex-wrap gap-2">
@@ -187,10 +187,10 @@ const SymptomChecker = () => {
                       
                       {prediction.recommendations && prediction.recommendations.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">
+                          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Recommendations:
                           </h4>
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                             {prediction.recommendations.map((rec, idx) => (
                               <li key={idx} className="flex items-start">
                                 <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
@@ -206,10 +206,10 @@ const SymptomChecker = () => {
               ) : (
                 <div className="text-center py-8">
                   <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
                     No clear predictions found
                   </h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Please consult with a healthcare professional for proper evaluation.
                   </p>
                 </div>
@@ -219,10 +219,10 @@ const SymptomChecker = () => {
             {/* AI Explanation */}
             {result.aiPrediction && result.aiPrediction.explanation && (
               <div className="card p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                   Analysis Explanation
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {result.aiPrediction.explanation}
                 </p>
               </div>
@@ -231,10 +231,10 @@ const SymptomChecker = () => {
             {/* SHAP Word Importance Visualization */}
             {result.aiPrediction && result.aiPrediction.wordImportance && result.aiPrediction.wordImportance.length > 0 && (
               <div className="card p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                   AI Explainability: Key Symptom Words
                 </h2>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                   The following words from your symptom description had the most influence on the AI&apos;s prediction. 
                   Words highlighted in <span className="text-red-600 font-medium">red/pink</span> contributed positively to the diagnosis.
                 </p>
@@ -270,7 +270,7 @@ const SymptomChecker = () => {
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
                           Impact: {(item.importance * 100).toFixed(2)}%
                         </div>
                       </div>
@@ -290,17 +290,17 @@ const SymptomChecker = () => {
 
             {/* Next Steps */}
             <div className="card p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Next Steps
               </h2>
               <div className="space-y-3">
                 <div className="flex items-start">
                   <ClockIcon className="h-5 w-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                       Doctor Review Pending
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Your case has been submitted for professional medical review. 
                       You will be notified when a doctor reviews your case.
                     </p>
@@ -310,10 +310,10 @@ const SymptomChecker = () => {
                 <div className="flex items-start">
                   <InformationCircleIcon className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                       Track Your Session
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       Session ID: #{result.sessionId}. You can view this session in your history.
                     </p>
                   </div>
@@ -348,8 +348,8 @@ const SymptomChecker = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <HeartIcon className="mx-auto h-12 w-12 text-medical-600 mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Symptom Checker</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
             Describe your symptoms and get AI-powered health insights
           </p>
         </div>
@@ -359,7 +359,7 @@ const SymptomChecker = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Symptoms Description */}
             <div>
-              <label htmlFor="symptoms" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="symptoms" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Describe your symptoms *
               </label>
               <textarea
@@ -374,14 +374,14 @@ const SymptomChecker = () => {
               {errors.symptoms && (
                 <p className="mt-1 text-sm text-red-600">{errors.symptoms}</p>
               )}
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Be as specific as possible. Include when symptoms started, how they feel, and any patterns you notice.
               </p>
             </div>
 
             {/* Severity Scale */}
             <div>
-              <label htmlFor="severity" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="severity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Severity Level: {formData.severity}/10
               </label>
               <div className="space-y-2">
@@ -395,7 +395,7 @@ const SymptomChecker = () => {
                   onChange={handleChange}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 />
-                <div className="flex justify-between text-xs text-gray-500">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                   <span>1 - Mild</span>
                   <span className={`font-medium ${severityColors[formData.severity]}`}>
                     {severityLabels[formData.severity]}
@@ -407,7 +407,7 @@ const SymptomChecker = () => {
 
             {/* Duration */}
             <div>
-              <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 How long have you had these symptoms? *
               </label>
               <select
@@ -434,7 +434,7 @@ const SymptomChecker = () => {
 
             {/* Additional Information */}
             <div>
-              <label htmlFor="additionalInfo" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="additionalInfo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Additional Information (Optional)
               </label>
               <textarea
@@ -446,7 +446,7 @@ const SymptomChecker = () => {
                 className="form-input"
                 placeholder="Any additional context, recent travel, medications, allergies, or other relevant information..."
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Include any relevant medical history, current medications, or recent changes in your health.
               </p>
             </div>

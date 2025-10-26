@@ -141,24 +141,24 @@ const Navbar = () => {
                   <span>Home</span>
                 </Link>
                 <Link
-                  to="/about"
+                  to="/login"
                   className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/about')
+                    isActive('/login')
                       ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
                       : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
                   }`}
                 >
-                  <span>About</span>
+                  <span>Login</span>
                 </Link>
                 <Link
-                  to="/contact"
+                  to="/register"
                   className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/contact')
+                    isActive('/register')
                       ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
                       : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
                   }`}
                 >
-                  <span>Contact</span>
+                  <span>Get Started</span>
                 </Link>
               </>
             )}
@@ -190,20 +190,8 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <div className="hidden md:flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 hover:scale-110"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 transition-all duration-200 hover:scale-110"
-                >
-                  Get Started
-                </Link>
-              </div>
+              // No additional buttons needed - login/register are in main navigation
+              <div></div>
             )}
 
             {/* Mobile menu button */}
@@ -300,39 +288,24 @@ const Navbar = () => {
                   <span>Home</span>
                 </Link>
                 <Link
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/about')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>About</span>
-                </Link>
-                <Link
-                  to="/contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/contact')
-                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>Contact</span>
-                </Link>
-                <div className="border-t border-gray-200 dark:border-gray-600 my-2"></div>
-                <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/login')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
+                  }`}
                 >
                   <span>Login</span>
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-medical-600 text-white hover:bg-medical-500 hover:shadow-md hover:scale-110 transition-all duration-200"
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
+                    isActive('/register')
+                      ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 shadow-sm'
+                      : 'bg-medical-600 text-white hover:bg-medical-500 hover:shadow-md'
+                  }`}
                 >
                   <span>Get Started</span>
                 </Link>
