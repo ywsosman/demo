@@ -13,6 +13,7 @@ import SymptomChecker from './pages/SymptomChecker';
 import DiagnosisHistory from './pages/DiagnosisHistory';
 import PatientProfile from './pages/PatientProfile';
 import DoctorProfile from './pages/DoctorProfile';
+import DoctorPatients from './pages/DoctorPatients';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole = null }) => {
@@ -141,6 +142,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="doctor">
                     <DoctorProfile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/doctor/patients" 
+                element={
+                  <ProtectedRoute requiredRole="doctor">
+                    <DoctorPatients />
                   </ProtectedRoute>
                 } 
               />
