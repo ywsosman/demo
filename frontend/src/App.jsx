@@ -167,23 +167,26 @@ function App() {
           
           {/* Toast notifications */}
           <Toaster 
-            position="top-right"
+            position="top-center"
             toastOptions={{
-              duration: 4000,
+              duration: 3000,
               style: {
                 background: '#363636',
                 color: '#fff',
+                marginTop: '80px',
               },
               success: {
-                duration: 3000,
+                duration: 2500,
                 style: {
                   background: '#22c55e',
+                  marginTop: '80px',
                 },
               },
               error: {
-                duration: 5000,
+                duration: 2500,
                 style: {
                   background: '#ef4444',
+                  marginTop: '80px',
                 },
               },
             }}

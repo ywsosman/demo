@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -171,22 +171,36 @@ const Navbar = () => {
 
   const menuItems = getMenuItems();
 
+  // Ref to access the StaggeredMenu's close function
+  const menuRef = useRef(null);
+
   // Custom logo component for the menu
-  const LogoComponent = () => (
-    <Link to="/" className="flex items-center space-x-2 group">
+  const LogoComponent = ({ onLogoClick }) => (
+            <Link
+              to="/"
+      className="flex items-center space-x-2 group"
+      onClick={(e) => {
+        // Close menu if it's open
+        if (onLogoClick) {
+          onLogoClick();
+        }
+      }}
+    >
       <HeartIcon className="h-8 w-8 text-medical-600 dark:text-medical-400 group-hover:scale-110 transition-transform duration-200" />
       <span className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-medical-600 dark:group-hover:text-medical-400 transition-colors duration-200">
         MediDiagnose
-      </span>
-    </Link>
-  );
+                  </span>
+                    </Link>
+                  );
 
   return (
     <StaggeredMenu
+      ref={menuRef}
       items={menuItems}
       displaySocials={false}
       displayItemNumbering={false}
       logoComponent={<LogoComponent />}
+      onLogoClick={handleMenuClose}
       menuButtonColor={isDarkMode ? '#f9fafb' : '#111827'}
       openMenuButtonColor="#ffffff"
       accentColor="#ef4444"
