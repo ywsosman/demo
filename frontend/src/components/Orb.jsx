@@ -11,8 +11,8 @@ export default function Orb({
   const ctnDom = useRef(null);
   const { isDarkMode } = useTheme();
   
-  // Jade green for light mode (~160), Turquoise for dark mode (~180)
-  const hue = isDarkMode ? 180 : 160;
+  // Blue/Cyan for light mode (~190), Mint/Green for dark mode (~150)
+  const hue = isDarkMode ? 150 : 190;
 
   const vert = /* glsl */ `
     precision highp float;
@@ -311,14 +311,41 @@ export default function Orb({
       }
     };
 
+    const handleTouchMove = e => {
+      e.preventDefault(); // Prevent scrolling when touching the orb
+      const rect = container.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      const width = rect.width;
+      const height = rect.height;
+      const size = Math.min(width, height);
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const uvX = ((x - centerX) / size) * 2.0;
+      const uvY = ((y - centerY) / size) * 2.0;
+
+      if (Math.sqrt(uvX * uvX + uvY * uvY) < 0.8) {
+        targetHover = 1;
+      } else {
+        targetHover = 0;
+      }
+    };
+
     const handleTouchEnd = () => {
+      targetHover = 0;
+    };
+
+    const handleTouchCancel = () => {
       targetHover = 0;
     };
 
     container.addEventListener('mousemove', handleMouseMove);
     container.addEventListener('mouseleave', handleMouseLeave);
-    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchcancel', handleTouchCancel);
 
     let rafId;
     const update = t => {
@@ -347,7 +374,9 @@ export default function Orb({
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseleave', handleMouseLeave);
       container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchCancel);
       if (container.contains(gl.canvas)) {
         container.removeChild(gl.canvas);
       }
