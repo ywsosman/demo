@@ -103,13 +103,13 @@ const Login = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 form-input ${
-                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                className={`mt-1 form-input dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
+                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                 }`}
                 placeholder="Enter your email"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
               )}
             </div>
 
@@ -126,8 +126,8 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`form-input pr-10 ${
-                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                  className={`form-input pr-10 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
+                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
                   }`}
                   placeholder="Enter your password"
                 />
@@ -144,7 +144,7 @@ const Login = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
               )}
             </div>
           </div>
@@ -155,9 +155,9 @@ const Login = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 rounded"
+                className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                 Remember me
               </label>
             </div>
@@ -192,7 +192,7 @@ const Login = () => {
           </div>
 
           <div className="text-center">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
               Don't have an account?{' '}
               <Link
                 to="/register"

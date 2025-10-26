@@ -91,22 +91,35 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Load user on app start
+  // Load user on app start - with better error handling
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await api.get('/auth/profile');
+          // Add timeout to prevent hanging
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+          
+          const response = await api.get('/auth/profile', {
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
           dispatch({
             type: AUTH_ACTIONS.LOAD_USER,
             payload: response.data.user
           });
         } catch (error) {
-          console.error('Failed to load user:', error);
+          console.warn('Failed to load user, clearing token:', error.message);
+          // Clear invalid token immediately
           localStorage.removeItem('token');
           dispatch({ type: AUTH_ACTIONS.LOGOUT });
         }
+      } else {
+        // No token, ensure we're in logged out state
+        dispatch({ type: AUTH_ACTIONS.LOGOUT });
       }
     };
 
