@@ -274,6 +274,18 @@ export const StaggeredMenu = ({
       }
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
+  
+  // Update button color when theme changes, even if menu is open
+  React.useEffect(() => {
+    if (toggleBtnRef.current && openRef.current) {
+      // When menu is open and theme changes, update the color
+      gsap.to(toggleBtnRef.current, {
+        color: openMenuButtonColor,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    }
+  }, [isDarkMode, openMenuButtonColor]);
 
   const animateText = useCallback(opening => {
     const inner = textInnerRef.current;

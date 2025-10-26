@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
-import LiquidEther from '../components/LiquidEther';
+import Orb from '../components/Orb';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -17,12 +16,6 @@ import {
 
 const Landing = () => {
   const { user } = useAuth();
-  const { isDarkMode } = useTheme();
-
-  // Theme-aware colors for the liquid effect
-  const liquidColors = isDarkMode
-    ? ['#14b8a6', '#2dd4bf', '#5eead4'] // Teal shades for dark mode
-    : ['#86efac', '#22c55e', '#bbf7d0']; // Calm green shades for light mode
 
   const features = [
     {
@@ -66,31 +59,20 @@ const Landing = () => {
 
   return (
     <div className="relative transition-colors duration-300">
-      {/* LiquidEther Background */}
-      <div className="fixed inset-0 w-full h-full -z-10 overflow-hidden">
-        <LiquidEther
-          colors={liquidColors}
-          mouseForce={20}
-          cursorSize={100}
-          isViscous={false}
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          resolution={0.5}
-          isBounce={false}
-          autoDemo={true}
-          autoSpeed={0.5}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={3000}
-          autoRampDuration={0.6}
-        />
-      </div>
-
       {/* Hero section */}
-      <div className="relative px-6 pt-20 lg:px-8">
+      <div className="relative px-6 pt-20 lg:px-8 overflow-hidden">
+        {/* Orb Background */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-full max-w-4xl h-[500px] sm:h-[600px] lg:h-[700px] opacity-40">
+            <Orb 
+              hoverIntensity={0.75}
+              rotateOnHover={true}
+              forceHoverState={false}
+            />
+          </div>
+        </div>
         
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div className="relative mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <ScrollReveal direction="down" delay={100} duration={800}>
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">

@@ -108,7 +108,7 @@ const DoctorDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300 scroll-smooth">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <ScrollReveal direction="down" delay={0} duration={600}>
@@ -444,7 +444,7 @@ const DoctorDashboard = () => {
                   </button>
                 </div>
 
-                <div className="space-y-4 max-h-96 overflow-y-auto mb-6">
+                <div className="space-y-4 max-h-96 overflow-y-auto mb-6 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'auto' }}>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2">
                       Patient: {selectedSession.patientFirstName} {selectedSession.patientLastName}

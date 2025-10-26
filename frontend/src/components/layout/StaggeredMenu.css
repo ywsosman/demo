@@ -210,15 +210,20 @@
   border-color: rgba(107, 114, 128, 0.5);
 }
 
+/* Menu button when open - light mode */
 .staggered-menu-wrapper[data-open] .sm-toggle {
   background: rgba(55, 65, 81, 0.8);
   border-color: rgba(107, 114, 128, 0.6);
   color: #ffffff;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
+/* Menu button when open - dark mode */
 .dark .staggered-menu-wrapper[data-open] .sm-toggle {
-  background: rgba(55, 65, 81, 0.9);
-  border-color: rgba(107, 114, 128, 0.7);
+  background: rgba(75, 85, 99, 0.9);
+  border-color: rgba(156, 163, 175, 0.7);
+  color: #f9fafb;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .sm-toggle:active {
@@ -497,6 +502,13 @@
 }
 
 /* Responsive adjustments */
+/* Large tablets and small desktops */
+@media (max-width: 1280px) {
+  .sm-panel-item {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+  }
+}
+
 @media (max-width: 1024px) {
   .sm-panel-item {
     font-size: clamp(2rem, 5vw, 3.5rem);
@@ -512,8 +524,55 @@
     min-width: 100px;
     min-height: 44px; /* iOS minimum touch target */
   }
+  
+  .staggered-menu-header {
+    padding: 1.25rem 1.75rem;
+  }
 }
 
+/* Tablets */
+@media (max-width: 768px) {
+  .staggered-menu-header {
+    padding: 1.125rem 1.5rem;
+  }
+  
+  .sm-header-right {
+    gap: 0.875rem;
+  }
+  
+  .sm-theme-toggle {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  
+  .sm-theme-icon {
+    width: 21px;
+    height: 21px;
+  }
+  
+  .sm-welcome-message {
+    padding: 0.45rem 0.875rem;
+  }
+  
+  .sm-welcome-text {
+    font-size: 0.9rem;
+  }
+  
+  .sm-toggle {
+    padding: 0.75rem 1.2rem;
+    font-size: 0.975rem;
+    min-width: 105px;
+    min-height: 46px;
+  }
+  
+  .sm-panel-item {
+    font-size: clamp(1.875rem, 7vw, 2.75rem);
+  }
+}
+
+/* Mobile devices */
 @media (max-width: 640px) {
   .staggered-menu-header {
     padding: 1rem 1.25rem;
@@ -521,10 +580,12 @@
   
   .sm-logo {
     flex: 1;
+    max-width: calc(100% - 230px); /* Ensure logo doesn't overlap with controls */
   }
   
   .sm-header-right {
     gap: 0.65rem;
+    flex-shrink: 0;
   }
   
   .sm-theme-toggle {
@@ -532,6 +593,7 @@
     height: 38px;
     min-width: 38px;
     min-height: 38px;
+    flex-shrink: 0;
   }
   
   .sm-theme-icon {
@@ -541,10 +603,13 @@
   
   .sm-welcome-message {
     padding: 0.4rem 0.75rem;
+    max-width: 140px; /* Prevent overflow on small screens */
   }
   
   .sm-welcome-text {
     font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .sm-toggle {
@@ -552,8 +617,9 @@
     font-size: 1rem;
     gap: 0.6rem;
     min-width: 110px;
-    min-height: 48px; /* Larger for mobile */
+    min-height: 48px; /* Larger for mobile touch */
     border-width: 2.5px;
+    flex-shrink: 0;
   }
   
   .sm-icon {
@@ -590,6 +656,10 @@
     padding: 0.875rem 1rem;
   }
   
+  .sm-logo {
+    max-width: calc(100% - 200px);
+  }
+  
   .sm-header-right {
     gap: 0.5rem;
   }
@@ -608,6 +678,7 @@
   
   .sm-welcome-message {
     padding: 0.35rem 0.65rem;
+    max-width: 120px;
   }
   
   .sm-welcome-text {
@@ -618,10 +689,45 @@
     padding: 0.7rem 1rem;
     font-size: 0.9rem;
     min-width: 95px;
+    min-height: 48px;
   }
   
   .sm-logo-img {
     height: 28px;
+  }
+  
+  .sm-panel-item {
+    font-size: clamp(1.5rem, 8.5vw, 2.25rem);
+  }
+}
+
+/* Very small devices */
+@media (max-width: 320px) {
+  .staggered-menu-header {
+    padding: 0.75rem 0.875rem;
+  }
+  
+  .sm-logo {
+    max-width: calc(100% - 180px);
+  }
+  
+  .sm-header-right {
+    gap: 0.4rem;
+  }
+  
+  .sm-welcome-message {
+    display: none; /* Hide welcome message on very small screens */
+  }
+  
+  .sm-toggle {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.875rem;
+    min-width: 90px;
+  }
+  
+  .sm-panel-item {
+    font-size: clamp(1.35rem, 9vw, 2rem);
+    padding: 0.4rem 0.75rem;
   }
 }
 
