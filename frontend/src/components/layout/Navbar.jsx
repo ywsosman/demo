@@ -16,8 +16,26 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  // Add error handling for contexts
+  let user, logout;
+  let isDarkMode = false, toggleTheme = () => {};
+  
+  try {
+    const authContext = useAuth();
+    user = authContext.user;
+    logout = authContext.logout;
+  } catch (error) {
+    console.warn('Auth context not available:', error);
+  }
+  
+  try {
+    const themeContext = useTheme();
+    isDarkMode = themeContext.isDarkMode;
+    toggleTheme = themeContext.toggleTheme;
+  } catch (error) {
+    console.warn('Theme context not available:', error);
+  }
+  
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -134,13 +152,13 @@ const Navbar = () => {
               <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
+                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 hover:scale-110"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-primary-600 dark:bg-primary-500 text-white hover:bg-primary-700 dark:hover:bg-primary-600 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110"
+                  className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 transition-all duration-200 hover:scale-110"
                 >
                   Get Started
                 </Link>
@@ -231,14 +249,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
+                  className="block text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 hover:scale-110"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-primary-600 dark:bg-primary-500 text-white hover:bg-primary-700 dark:hover:bg-primary-600 hover:shadow-md hover:scale-110 transition-all duration-200"
+                  className="block rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 transition-all duration-200 hover:scale-110"
                 >
                   Get Started
                 </Link>
