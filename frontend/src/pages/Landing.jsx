@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
-import CardSwap, { Card } from '../components/CardSwap';
+import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -64,9 +64,9 @@ const Landing = () => {
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <ScrollReveal direction="down" delay={100} duration={800}>
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 dark:text-gray-300 ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
+              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
                 Revolutionizing healthcare with AI.{' '}
-                <a href="#features" className="font-semibold text-medical-600">
+                <a href="#features" className="font-semibold text-medical-600 dark:text-medical-400">
                   <span className="absolute inset-0" aria-hidden="true" />
                   Learn more <span aria-hidden="true">&rarr;</span>
                 </a>
@@ -82,7 +82,7 @@ const Landing = () => {
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={400} duration={900}>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+              <p className="mt-6 text-lg leading-8 text-gray-900 dark:text-white">
                 Get instant, accurate medical insights powered by advanced AI technology. 
                 Trusted by healthcare professionals and patients worldwide for better health outcomes.
               </p>
@@ -132,7 +132,7 @@ const Landing = () => {
                 duration={800}
               >
                 <div className="mx-auto flex max-w-xs flex-col gap-y-4">
-                  <dt className="text-base leading-7 text-gray-600 dark:text-gray-300">{stat.name}</dt>
+                  <dt className="text-base leading-7 text-gray-900 dark:text-white">{stat.name}</dt>
                   <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
                     <AnimatedCounter 
                       end={stat.numericValue}
@@ -163,33 +163,32 @@ const Landing = () => {
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={300} duration={900}>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+              <p className="mt-6 text-lg leading-8 text-gray-900 dark:text-white">
                 Our comprehensive platform combines cutting-edge AI technology with medical expertise 
                 to provide accurate, fast, and reliable health insights.
               </p>
             </ScrollReveal>
           </div>
           
-          <div className="mx-auto mt-16 sm:mt-20 lg:mt-24" style={{ height: '650px', position: 'relative' }}>
-            <CardSwap
-              width={420}
-              height={280}
-              cardDistance={60}
-              verticalDistance={70}
-              delay={4000}
-              pauseOnHover={true}
-              easing="elastic"
+          <div className="mx-auto mt-16 sm:mt-20 lg:mt-24 scroll-stack-container">
+            <ScrollStack
+              itemDistance={80}
+              itemScale={0.04}
+              itemStackDistance={25}
+              stackPosition="20%"
+              scaleEndPosition="15%"
+              baseScale={0.90}
             >
               {features.map((feature) => (
-                <Card key={feature.name}>
+                <ScrollStackItem key={feature.name}>
                   <div className="card-icon-wrapper">
                     <feature.icon className="card-icon" aria-hidden="true" />
                   </div>
                   <h3 className="card-title">{feature.name}</h3>
                   <p className="card-description">{feature.description}</p>
-                </Card>
+                </ScrollStackItem>
               ))}
-            </CardSwap>
+            </ScrollStack>
           </div>
         </div>
       </div>

@@ -5,13 +5,14 @@ const ThemeContext = createContext();
 
 // Theme Provider
 export const ThemeProvider = ({ children }) => {
-  // Initialize state from localStorage immediately (no delay)
+  // Initialize state - default to light mode
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window === 'undefined') {
       return false;
     }
     const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark';
+    // Default to light mode (false) unless explicitly set to dark
+    return savedTheme === 'dark' ? true : false;
   });
 
   useEffect(() => {
@@ -20,10 +21,14 @@ export const ThemeProvider = ({ children }) => {
       return;
     }
     
-    // Check localStorage on mount (for any edge cases)
+    // Check localStorage on mount - default to light if not set
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
+    } else {
+      // Set default to light mode if nothing saved
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
     }
   }, []);
 

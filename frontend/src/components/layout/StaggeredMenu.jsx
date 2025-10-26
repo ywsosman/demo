@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import './StaggeredMenu.css';
 
 export const StaggeredMenu = ({
@@ -18,7 +19,9 @@ export const StaggeredMenu = ({
   changeMenuColorOnOpen = true,
   onMenuOpen,
   onMenuClose,
-  user = null
+  user = null,
+  isDarkMode = false,
+  toggleTheme = () => {}
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -359,11 +362,25 @@ export const StaggeredMenu = ({
         </div>
         <div className="sm-header-right">
           {user && (
-            <div className="sm-welcome-message">
-              <span className="sm-welcome-text">
-                Welcome, <span className="sm-welcome-name">{user.firstName}</span>
-              </span>
-            </div>
+            <>
+              <button
+                className="sm-theme-toggle"
+                onClick={toggleTheme}
+                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDarkMode ? (
+                  <SunIcon className="sm-theme-icon" />
+                ) : (
+                  <MoonIcon className="sm-theme-icon" />
+                )}
+              </button>
+              <div className="sm-welcome-message">
+                <span className="sm-welcome-text">
+                  Welcome, <span className="sm-welcome-name">{user.firstName}</span>
+                </span>
+              </div>
+            </>
           )}
           <button
             ref={toggleBtnRef}

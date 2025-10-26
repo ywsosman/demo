@@ -1,0 +1,283 @@
+/* Container wrapper - controls overall height */
+.scroll-stack-container {
+  position: relative;
+  height: 700px;
+  width: 100%;
+}
+
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.scroll-stack-inner {
+  padding: 15vh 2rem 40rem;
+  min-height: 100vh;
+}
+
+.scroll-stack-card-wrapper {
+  position: relative;
+}
+
+.scroll-stack-card {
+  transform-origin: top center;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.06);
+  height: auto;
+  min-height: 280px;
+  width: 100%;
+  max-width: 520px;
+  margin: 30px auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-sizing: border-box;
+  /* Improve mobile performance */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  position: relative;
+  
+  /* Light mode styling */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.98));
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  backdrop-filter: blur(10px);
+  
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Dark mode styles */
+.dark .scroll-stack-card {
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.98));
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}
+
+/* Card content styling */
+.scroll-stack-card .card-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.scroll-stack-card .card-icon {
+  width: 2rem;
+  height: 2rem;
+  color: white;
+}
+
+.scroll-stack-card .card-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.dark .scroll-stack-card .card-title {
+  color: #ffffff;
+}
+
+.scroll-stack-card .card-description {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: #4b5563;
+  margin: 0;
+}
+
+.dark .scroll-stack-card .card-description {
+  color: #d1d5db;
+}
+
+/* Responsive adjustments */
+/* Large desktops */
+@media (min-width: 1536px) {
+  .scroll-stack-container {
+    height: 800px;
+  }
+  
+  .scroll-stack-card {
+    max-width: 600px;
+    padding: 3rem;
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.875rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 1.125rem;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 4rem;
+    height: 4rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) and (max-width: 1535px) {
+  .scroll-stack-container {
+    height: 700px;
+  }
+  
+  .scroll-stack-card {
+    max-width: 520px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scroll-stack-container {
+    height: 600px;
+  }
+  
+  .scroll-stack-inner {
+    padding: 12vh 1.5rem 35rem;
+  }
+  
+  .scroll-stack-card {
+    max-width: 480px;
+    padding: 2.25rem;
+    min-height: 260px;
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.5rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 1rem;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 1.875rem;
+    height: 1.875rem;
+  }
+}
+
+/* Mobile Large (portrait phones, landscape small phones) */
+@media (max-width: 767px) {
+  .scroll-stack-container {
+    height: 550px;
+  }
+  
+  .scroll-stack-inner {
+    padding: 10vh 1rem 30rem;
+  }
+  
+  .scroll-stack-card {
+    max-width: 90%;
+    padding: 2rem;
+    min-height: 240px;
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.375rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) {
+  .scroll-stack-container {
+    height: 500px;
+  }
+  
+  .scroll-stack-inner {
+    padding: 8vh 0.75rem 25rem;
+  }
+  
+  .scroll-stack-card {
+    padding: 1.75rem;
+    max-width: 95%;
+    min-height: 220px;
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .scroll-stack-container {
+    height: 450px;
+  }
+  
+  .scroll-stack-card {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.125rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 0.8125rem;
+  }
+}
+
