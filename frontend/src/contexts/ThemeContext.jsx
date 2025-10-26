@@ -13,14 +13,19 @@ export const ThemeProvider = ({ children }) => {
       return;
     }
     
-    // Check localStorage first, then default to light mode
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDarkMode(savedTheme === 'dark');
-    } else {
-      // Default to light mode instead of system preference
-      setIsDarkMode(false);
-    }
+    // Add a small delay to ensure DOM is ready, especially on mobile
+    const timer = setTimeout(() => {
+      // Check localStorage first, then default to light mode
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        setIsDarkMode(savedTheme === 'dark');
+      } else {
+        // Default to light mode instead of system preference
+        setIsDarkMode(false);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -33,11 +38,22 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     
     // Update document class for Tailwind dark mode
+    const htmlElement = document.documentElement;
+    
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      htmlElement.classList.add('dark');
+      htmlElement.classList.remove('light');
+      // Set color-scheme for better mobile support
+      htmlElement.style.colorScheme = 'dark';
     } else {
-      document.documentElement.classList.remove('dark');
+      htmlElement.classList.remove('dark');
+      htmlElement.classList.add('light');
+      // Set color-scheme for better mobile support
+      htmlElement.style.colorScheme = 'light';
     }
+    
+    // Force a reflow to ensure changes are applied on mobile
+    htmlElement.offsetHeight;
   }, [isDarkMode]);
 
   const toggleTheme = () => {
