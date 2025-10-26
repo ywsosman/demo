@@ -58,14 +58,6 @@ code {
   .dark {
     color-scheme: dark;
   }
-  
-  .dark body {
-    background-color: #111827 !important;
-  }
-  
-  .dark .min-h-screen {
-    background-color: #111827 !important;
-  }
 }
 
 /* Custom button styles */
