@@ -72,10 +72,10 @@ const Navbar = () => {
                   <Link
                     key={link.name}
                     to={link.href}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-105 ${
                       isActive(link.href)
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'text-primary-600 bg-primary-50 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -92,7 +92,7 @@ const Navbar = () => {
               <>
                 <div className="hidden md:flex items-center space-x-2">
                   <span className="text-sm text-gray-700">
-                    Welcome, {user.firstName}
+                    Welcome, {user.firstName || user.name || 'User'}
                   </span>
                   <span className={`px-2 py-1 text-xs rounded-full ${
                     user.role === 'doctor' 
@@ -104,7 +104,8 @@ const Navbar = () => {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="hidden md:flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                  className="hidden md:flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-200"
+                  aria-label="Logout from account"
                 >
                   <ArrowRightOnRectangleIcon className="h-4 w-4" />
                   <span>Logout</span>
@@ -114,13 +115,13 @@ const Navbar = () => {
               <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-200"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-primary-600 text-white hover:bg-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-primary-600 text-white hover:bg-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-105"
                 >
                   Get Started
                 </Link>
@@ -131,7 +132,9 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 hover:shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-200"
+                aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+                aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? (
                   <XMarkIcon className="h-6 w-6" />
@@ -145,13 +148,16 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+      <div className={`md:hidden transition-all duration-300 ease-in-out ${
+        mobileMenuOpen 
+          ? 'max-h-screen opacity-100' 
+          : 'max-h-0 opacity-0 overflow-hidden'
+      }`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200 shadow-lg">
             {user ? (
               <>
                 <div className="px-3 py-2 text-sm text-gray-700 border-b border-gray-200 mb-2">
-                  Welcome, {user.firstName}
+                  Welcome, {user.firstName || user.name || 'User'}
                   <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
                     user.role === 'doctor' 
                       ? 'bg-blue-100 text-blue-800' 
@@ -167,10 +173,10 @@ const Navbar = () => {
                       key={link.name}
                       to={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium ${
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-105 ${
                         isActive(link.href)
-                          ? 'text-primary-600 bg-primary-50'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          ? 'text-primary-600 bg-primary-50 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md'
                       }`}
                     >
                       <Icon className="h-5 w-5" />
@@ -180,7 +186,8 @@ const Navbar = () => {
                 })}
                 <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-200"
+                  aria-label="Logout from account"
                 >
                   <ArrowRightOnRectangleIcon className="h-5 w-5" />
                   <span>Logout</span>
@@ -191,14 +198,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-md hover:scale-105 transition-all duration-200"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-primary-600 text-white hover:bg-primary-700"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md hover:scale-105 transition-all duration-200"
                 >
                   Get Started
                 </Link>
@@ -206,7 +213,6 @@ const Navbar = () => {
             )}
           </div>
         </div>
-      )}
     </nav>
   );
 };
