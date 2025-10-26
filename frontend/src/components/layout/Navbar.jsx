@@ -142,17 +142,6 @@ const Navbar = () => {
       );
     }
 
-    // Add theme toggle as a menu item
-    items.push({
-      label: isDarkMode ? 'Light Mode' : 'Dark Mode',
-      ariaLabel: isDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
-      link: '#',
-      onClick: (e) => {
-        e?.preventDefault();
-        toggleTheme();
-      }
-    });
-
     // Add logout for authenticated users
     if (user) {
       items.push({
@@ -209,6 +198,8 @@ const Navbar = () => {
       onMenuOpen={handleMenuOpen}
       onMenuClose={handleMenuClose}
       user={user}
+      isDarkMode={isDarkMode}
+      toggleTheme={toggleTheme}
     />
   );
 };
