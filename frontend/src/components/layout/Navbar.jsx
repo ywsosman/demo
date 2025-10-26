@@ -208,6 +208,7 @@ const Navbar = () => {
       colors={isDarkMode ? ['#1f2937', '#111827'] : ['#374151', '#1f2937']}
       onMenuOpen={handleMenuOpen}
       onMenuClose={handleMenuClose}
+      user={user}
     />
   );
 };
