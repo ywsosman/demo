@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import {
-  Bars3Icon,
-  XMarkIcon,
   HeartIcon,
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
@@ -14,10 +12,11 @@ import {
   SunIcon,
   MoonIcon
 } from '@heroicons/react/24/outline';
+import StaggeredMenu from './StaggeredMenu';
 
 const Navbar = () => {
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   
   // Safely get auth context with fallbacks
   let user = null;
@@ -45,276 +44,157 @@ const Navbar = () => {
     console.warn('Theme context not available:', error);
   }
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
-
   const handleLogout = () => {
     logout();
-    setMobileMenuOpen(false);
   };
 
-  const getNavLinks = () => {
-    if (!user) return [];
+  const handleMenuOpen = () => {
+    document.body.classList.add('menu-open');
+  };
 
-    if (user.role === 'patient') {
-      return [
-        { name: 'Dashboard', href: '/patient/dashboard', icon: ChartBarIcon },
-        { name: 'Symptom Checker', href: '/patient/symptom-checker', icon: HeartIcon },
-        { name: 'History', href: '/patient/history', icon: ClipboardDocumentListIcon },
-        { name: 'Profile', href: '/patient/profile', icon: UserIcon }
-      ];
-    } else if (user.role === 'doctor') {
-      return [
-        { name: 'Dashboard', href: '/doctor/dashboard', icon: ChartBarIcon },
-        { name: 'Patients', href: '/doctor/patients', icon: UserIcon },
-        { name: 'Profile', href: '/doctor/profile', icon: UserCircleIcon }
-      ];
+  const handleMenuClose = () => {
+    document.body.classList.remove('menu-open');
+  };
+
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('menu-open');
+    };
+  }, []);
+
+  // Build menu items for StaggeredMenu
+  const getMenuItems = () => {
+    const items = [
+      { 
+        label: 'Home', 
+        ariaLabel: 'Go to home page', 
+        link: '/',
+        onClick: () => navigate('/')
+      }
+    ];
+
+    if (!user) {
+      items.push(
+        { 
+          label: 'Login', 
+          ariaLabel: 'Login to your account', 
+          link: '/login',
+          onClick: () => navigate('/login')
+        },
+        { 
+          label: 'Get Started', 
+          ariaLabel: 'Register a new account', 
+          link: '/register',
+          onClick: () => navigate('/register')
+        }
+      );
     }
 
-    return [];
+    if (user && user.role === 'patient') {
+      items.push(
+        { 
+          label: 'Dashboard', 
+          ariaLabel: 'View your dashboard', 
+          link: '/patient/dashboard',
+          onClick: () => navigate('/patient/dashboard')
+        },
+        { 
+          label: 'Symptom Checker', 
+          ariaLabel: 'Check your symptoms', 
+          link: '/patient/symptom-checker',
+          onClick: () => navigate('/patient/symptom-checker')
+        },
+        { 
+          label: 'History', 
+          ariaLabel: 'View diagnosis history', 
+          link: '/patient/history',
+          onClick: () => navigate('/patient/history')
+        },
+        { 
+          label: 'Profile', 
+          ariaLabel: 'View your profile', 
+          link: '/patient/profile',
+          onClick: () => navigate('/patient/profile')
+        }
+      );
+    }
+
+    if (user && user.role === 'doctor') {
+      items.push(
+        { 
+          label: 'Dashboard', 
+          ariaLabel: 'View your dashboard', 
+          link: '/doctor/dashboard',
+          onClick: () => navigate('/doctor/dashboard')
+        },
+        { 
+          label: 'Patients', 
+          ariaLabel: 'View your patients', 
+          link: '/doctor/patients',
+          onClick: () => navigate('/doctor/patients')
+        },
+        { 
+          label: 'Profile', 
+          ariaLabel: 'View your profile', 
+          link: '/doctor/profile',
+          onClick: () => navigate('/doctor/profile')
+        }
+      );
+    }
+
+    // Add theme toggle as a menu item
+    items.push({
+      label: isDarkMode ? 'Light Mode' : 'Dark Mode',
+      ariaLabel: isDarkMode ? 'Switch to light mode' : 'Switch to dark mode',
+      link: '#',
+      onClick: (e) => {
+        e?.preventDefault();
+        toggleTheme();
+      }
+    });
+
+    // Add logout for authenticated users
+    if (user) {
+      items.push({
+        label: 'Logout',
+        ariaLabel: 'Logout from your account',
+        link: '#',
+        onClick: (e) => {
+          e?.preventDefault();
+          handleLogout();
+        }
+      });
+    }
+
+    return items;
   };
 
-  const navLinks = getNavLinks();
+  const menuItems = getMenuItems();
+
+  // Custom logo component for the menu
+  const LogoComponent = () => (
+    <Link to="/" className="flex items-center space-x-2 group">
+      <HeartIcon className="h-8 w-8 text-medical-600 dark:text-medical-400 group-hover:scale-110 transition-transform duration-200" />
+      <span className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-medical-600 dark:group-hover:text-medical-400 transition-colors duration-200">
+        MediDiagnose
+      </span>
+    </Link>
+  );
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-colors duration-300 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo and brand */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <HeartIcon className="h-8 w-8 text-medical-600" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                MediDiagnose
-              </span>
-            </Link>
-          </div>
-
-          {/* Desktop navigation - ALWAYS visible and functional */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* Always show basic navigation for all users */}
-            <Link
-              to="/"
-              className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                isActive('/')
-                  ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-              }`}
-            >
-              <span>Home</span>
-            </Link>
-            
-            {/* Show role-specific navigation for logged-in users */}
-            {user && navLinks.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive(link.href)
-                      ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{link.name}</span>
-                </Link>
-              );
-            })}
-            
-            {/* Always show login/register for non-logged-in users */}
-            {!user && (
-              <>
-                <Link
-                  to="/login"
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/login')
-                      ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>Login</span>
-                </Link>
-                <Link
-                  to="/register"
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/register')
-                      ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>Get Started</span>
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* User menu */}
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <div className="hidden md:flex items-center space-x-2">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Welcome, {user.firstName || user.name || 'User'}
-                  </span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    user.role === 'doctor' 
-                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-                      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                  }`}>
-                    {user.role}
-                  </span>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="hidden md:flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
-                  aria-label="Logout from account"
-                >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                  <span>Logout</span>
-                </button>
-              </>
-            ) : (
-              // No additional buttons needed - login/register are in main navigation
-              <div></div>
-            )}
-            
-            {/* Dark mode toggle - always visible on desktop */}
-            <button
-              onClick={toggleTheme}
-              className="hidden md:flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
-              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDarkMode ? (
-                <SunIcon className="h-5 w-5" />
-              ) : (
-                <MoonIcon className="h-5 w-5" />
-              )}
-            </button>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-medical-500 transition-all duration-200"
-                aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                aria-expanded={mobileMenuOpen}
-              >
-                {mobileMenuOpen ? (
-                  <XMarkIcon className="h-6 w-6" />
-                ) : (
-                  <Bars3Icon className="h-6 w-6" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${
-        mobileMenuOpen 
-          ? 'max-h-screen opacity-100' 
-          : 'max-h-0 opacity-0 overflow-hidden'
-      }`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">
-            {/* Mobile dark mode toggle - always visible */}
-            <button
-              onClick={toggleTheme}
-              className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
-              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDarkMode ? (
-                <SunIcon className="h-5 w-5" />
-              ) : (
-                <MoonIcon className="h-5 w-5" />
-              )}
-              <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-            </button>
-            
-            {/* Always show basic navigation for all users */}
-            <Link
-              to="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                isActive('/')
-                  ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-              }`}
-            >
-              <span>Home</span>
-            </Link>
-            
-            {/* Show role-specific navigation for logged-in users */}
-            {user && (
-              <>
-                <div className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 mb-2">
-                  Welcome, {user.firstName || user.name || 'User'}
-                  <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                    user.role === 'doctor' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {user.role}
-                  </span>
-                </div>
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Link
-                      key={link.name}
-                      to={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                        isActive(link.href)
-                          ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{link.name}</span>
-                    </Link>
-                  );
-                })}
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 w-full px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md hover:scale-110 transition-all duration-200"
-                  aria-label="Logout from account"
-                >
-                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                  <span>Logout</span>
-                </button>
-              </>
-            )}
-            
-            {/* Always show login/register for non-logged-in users */}
-            {!user && (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-all duration-200 hover:shadow-md hover:scale-110 ${
-                    isActive('/login')
-                      ? 'text-medical-600 dark:text-medical-400 bg-medical-50 dark:bg-medical-900/20 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md'
-                  }`}
-                >
-                  <span>Login</span>
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium bg-medical-600 text-white hover:bg-medical-500 transition-all duration-200 hover:shadow-md hover:scale-110"
-                >
-                  <span>Get Started</span>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-    </nav>
+    <StaggeredMenu
+      items={menuItems}
+      displaySocials={false}
+      displayItemNumbering={false}
+      logoComponent={<LogoComponent />}
+      menuButtonColor={isDarkMode ? '#9ca3af' : '#6b7280'}
+      openMenuButtonColor={isDarkMode ? '#818cf8' : '#4f46e5'}
+      accentColor="#ef4444"
+      changeMenuColorOnOpen={true}
+      colors={isDarkMode ? ['#1f2937', '#111827'] : ['#374151', '#1f2937']}
+      onMenuOpen={handleMenuOpen}
+      onMenuClose={handleMenuClose}
+    />
   );
 };
 

@@ -64,12 +64,12 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen relative transition-colors duration-300">
+          <div className="min-h-screen relative transition-colors duration-300 bg-white dark:bg-gray-900">
             {/* Aurora Background */}
             <AuroraBackground />
             
             <Navbar />
-            <main className="relative z-0">
+            <main className="relative z-0 pt-0">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
