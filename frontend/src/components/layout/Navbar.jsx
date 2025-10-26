@@ -16,28 +16,34 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
-  // Add error handling for contexts
-  let user, logout;
-  let isDarkMode = false, toggleTheme = () => {};
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Safely get auth context with fallbacks
+  let user = null;
+  let logout = () => {};
+  let loading = false;
   
   try {
     const authContext = useAuth();
     user = authContext.user;
-    logout = authContext.logout;
+    logout = authContext.logout || (() => {});
+    loading = authContext.loading || false;
   } catch (error) {
     console.warn('Auth context not available:', error);
   }
   
+  // Safely get theme context with fallbacks
+  let isDarkMode = false;
+  let toggleTheme = () => {};
+  
   try {
     const themeContext = useTheme();
-    isDarkMode = themeContext.isDarkMode;
-    toggleTheme = themeContext.toggleTheme;
+    isDarkMode = themeContext.isDarkMode || false;
+    toggleTheme = themeContext.toggleTheme || (() => {});
   } catch (error) {
     console.warn('Theme context not available:', error);
   }
-  
-  const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path) => {
     return location.pathname === path;

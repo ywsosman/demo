@@ -121,7 +121,7 @@ const DoctorDashboard = () => {
 
         {/* Stats Overview */}
         <div className="mb-8">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Overview</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="card p-6">
               <div className="flex items-center">
@@ -129,8 +129,8 @@ const DoctorDashboard = () => {
                   <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Sessions</p>
-                  <p className="text-2xl font-semibold text-gray-900">{stats.totalSessions}</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
                 </div>
               </div>
             </div>
