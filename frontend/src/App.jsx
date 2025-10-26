@@ -60,12 +60,12 @@ const PublicRoute = ({ children }) => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <Router>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-          <Navbar />
-          <main>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <Navbar />
+            <main>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
@@ -186,8 +186,8 @@ function App() {
           />
         </div>
       </Router>
-    </AuthProvider>
     </ThemeProvider>
+    </AuthProvider>
   );
 }
 
