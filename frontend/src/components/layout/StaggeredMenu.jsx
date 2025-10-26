@@ -11,6 +11,7 @@ export const StaggeredMenu = ({
   className,
   logoUrl,
   logoComponent,
+  onLogoClick,
   menuButtonColor = '#6b7280',
   openMenuButtonColor = '#4f46e5',
   accentColor = '#ef4444',
@@ -333,7 +334,16 @@ export const StaggeredMenu = ({
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
         <div className="sm-logo" aria-label="Logo">
-          {logoComponent ? logoComponent : (
+          {logoComponent ? (
+            React.cloneElement(logoComponent, { 
+              onLogoClick: () => {
+                if (openRef.current && onLogoClick) {
+                  // Only close if menu is open
+                  toggleMenu();
+                }
+              }
+            })
+          ) : (
             logoUrl ? (
               <img
                 src={logoUrl}
