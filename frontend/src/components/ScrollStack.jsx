@@ -186,15 +186,15 @@ const ScrollStack = ({
   const setupLenis = useCallback(() => {
     if (useWindowScroll) {
       const lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.0, // Reduced for better performance
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1.8,
         infinite: false,
         wheelMultiplier: 1,
-        lerp: 0.1,
+        lerp: 0.12, // Slightly faster interpolation
         syncTouch: true,
-        syncTouchLerp: 0.075
+        syncTouchLerp: 0.1
       });
 
       lenis.on('scroll', handleScroll);
@@ -214,19 +214,19 @@ const ScrollStack = ({
       const lenis = new Lenis({
         wrapper: scroller,
         content: scroller.querySelector('.scroll-stack-inner'),
-        duration: 1.2,
+        duration: 1.0, // Reduced for better performance
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1.8,
         infinite: false,
         gestureOrientationHandler: true,
         normalizeWheel: true,
         wheelMultiplier: 1,
-        touchInertiaMultiplier: 35,
-        lerp: 0.1,
+        touchInertiaMultiplier: 30, // Slightly reduced
+        lerp: 0.12, // Faster interpolation for snappier feel
         syncTouch: true,
-        syncTouchLerp: 0.075,
-        touchInertia: 0.6
+        syncTouchLerp: 0.1,
+        touchInertia: 0.55 // Slightly reduced
       });
 
       lenis.on('scroll', handleScroll);
@@ -259,13 +259,11 @@ const ScrollStack = ({
       if (i < cards.length - 1) {
         card.style.marginBottom = `${itemDistance}px`;
       }
-      card.style.willChange = 'transform, filter';
+      // Don't set will-change here - let CSS handle it only when needed
       card.style.transformOrigin = 'top center';
       card.style.backfaceVisibility = 'hidden';
       card.style.transform = 'translateZ(0)';
       card.style.webkitTransform = 'translateZ(0)';
-      card.style.perspective = '1000px';
-      card.style.webkitPerspective = '1000px';
     });
 
     setupLenis();

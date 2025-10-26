@@ -258,7 +258,7 @@ const DiagnosisHistory = () => {
                   </button>
                 </div>
 
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-4 max-h-96 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'auto' }}>
                   {/* Basic Info */}
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">Session Information</h4>
