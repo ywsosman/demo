@@ -21,6 +21,7 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+
   const isActive = (path) => {
     return location.pathname === path;
   };

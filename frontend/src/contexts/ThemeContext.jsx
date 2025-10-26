@@ -5,16 +5,29 @@ const ThemeContext = createContext();
 
 // Theme Provider
 export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     // Check localStorage first, then system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
-      return savedTheme === 'dark';
+      setIsDarkMode(savedTheme === 'dark');
+    } else {
+      setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
+  }, []);
 
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     // Update localStorage when theme changes
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     
