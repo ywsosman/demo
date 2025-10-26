@@ -41,7 +41,7 @@ const DiagnosisHistory = () => {
       case 'reviewed':
         return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
       default:
-        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500" />;
+        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
     }
   };
 
@@ -52,7 +52,7 @@ const DiagnosisHistory = () => {
       case 'reviewed':
         return 'bg-green-100 text-green-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:text-gray-200';
     }
   };
 
@@ -86,8 +86,8 @@ const DiagnosisHistory = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis History</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">Diagnosis History</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
             View and manage your past diagnosis sessions
           </p>
         </div>
@@ -135,7 +135,7 @@ const DiagnosisHistory = () => {
 
         {/* Results Count */}
         <div className="mb-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Showing {filteredSessions.length} of {sessions.length} sessions
           </p>
         </div>
@@ -144,10 +144,10 @@ const DiagnosisHistory = () => {
         {filteredSessions.length === 0 ? (
           <div className="card p-12 text-center">
             <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
               {searchTerm || statusFilter !== 'all' ? 'No matching sessions found' : 'No diagnosis sessions'}
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {searchTerm || statusFilter !== 'all' 
                 ? 'Try adjusting your search or filter criteria'
                 : 'Get started by checking your symptoms'
@@ -172,7 +172,7 @@ const DiagnosisHistory = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                         Session #{session.id}
                       </h3>
                       <div className="flex items-center space-x-2">
@@ -183,25 +183,25 @@ const DiagnosisHistory = () => {
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-500 mb-3">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                       {format(new Date(session.createdAt), 'MMMM dd, yyyy at h:mm a')}
                     </div>
 
                     <div className="mb-3">
-                      <h4 className="text-sm font-medium text-gray-700 mb-1">Symptoms:</h4>
-                      <p className="text-sm text-gray-900 line-clamp-2">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Symptoms:</h4>
+                      <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
                         {session.symptoms}
                       </p>
                     </div>
 
                     {session.aiPrediction && session.aiPrediction.length > 0 && (
                       <div className="mb-3">
-                        <h4 className="text-sm font-medium text-gray-700 mb-1">AI Prediction:</h4>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">AI Prediction:</h4>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm font-medium text-gray-900">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
                             {session.aiPrediction[0].condition}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             ({Math.round(session.aiPrediction[0].confidence * 100)}% confidence)
                           </span>
                         </div>
@@ -210,15 +210,15 @@ const DiagnosisHistory = () => {
 
                     {session.doctorNotes && (
                       <div className="mb-3">
-                        <h4 className="text-sm font-medium text-gray-700 mb-1">Doctor's Notes:</h4>
-                        <p className="text-sm text-gray-900 line-clamp-2">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Doctor's Notes:</h4>
+                        <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
                           {session.doctorNotes}
                         </p>
                       </div>
                     )}
 
                     {session.doctorFirstName && session.doctorLastName && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         Reviewed by Dr. {session.doctorFirstName} {session.doctorLastName}
                       </div>
                     )}
@@ -245,12 +245,12 @@ const DiagnosisHistory = () => {
             <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                     Session #{selectedSession.id} Details
                   </h3>
                   <button
                     onClick={closeSessionDetails}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 dark:text-gray-300"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -261,8 +261,8 @@ const DiagnosisHistory = () => {
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {/* Basic Info */}
                   <div>
-                    <h4 className="font-medium text-gray-900">Session Information</h4>
-                    <div className="mt-2 text-sm text-gray-600">
+                    <h4 className="font-medium text-gray-900 dark:text-white">Session Information</h4>
+                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                       <p><strong>Date:</strong> {format(new Date(selectedSession.createdAt), 'MMMM dd, yyyy at h:mm a')}</p>
                       <p><strong>Status:</strong> 
                         <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedSession.status)}`}>
@@ -276,8 +276,8 @@ const DiagnosisHistory = () => {
 
                   {/* Symptoms */}
                   <div>
-                    <h4 className="font-medium text-gray-900">Symptoms</h4>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <h4 className="font-medium text-gray-900 dark:text-white">Symptoms</h4>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                       {selectedSession.symptoms}
                     </p>
                   </div>
@@ -285,8 +285,8 @@ const DiagnosisHistory = () => {
                   {/* Additional Info */}
                   {selectedSession.additionalInfo && (
                     <div>
-                      <h4 className="font-medium text-gray-900">Additional Information</h4>
-                      <p className="mt-2 text-sm text-gray-600">
+                      <h4 className="font-medium text-gray-900 dark:text-white">Additional Information</h4>
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         {selectedSession.additionalInfo}
                       </p>
                     </div>
@@ -295,21 +295,21 @@ const DiagnosisHistory = () => {
                   {/* AI Predictions */}
                   {selectedSession.aiPrediction && selectedSession.aiPrediction.length > 0 && (
                     <div>
-                      <h4 className="font-medium text-gray-900">AI Analysis</h4>
+                      <h4 className="font-medium text-gray-900 dark:text-white">AI Analysis</h4>
                       <div className="mt-2 space-y-3">
                         {selectedSession.aiPrediction.map((prediction, index) => (
                           <div key={index} className="border border-gray-200 rounded-lg p-3">
                             <div className="flex items-center justify-between mb-2">
-                              <h5 className="font-medium text-gray-900">{prediction.condition}</h5>
-                              <span className="text-sm text-gray-500">
+                              <h5 className="font-medium text-gray-900 dark:text-white">{prediction.condition}</h5>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
                                 {Math.round(prediction.confidence * 100)}% confidence
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{prediction.description}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{prediction.description}</p>
                             {prediction.recommendations && (
                               <div>
-                                <h6 className="text-xs font-medium text-gray-700 mb-1">Recommendations:</h6>
-                                <ul className="text-xs text-gray-600 list-disc list-inside">
+                                <h6 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Recommendations:</h6>
+                                <ul className="text-xs text-gray-600 dark:text-gray-300 list-disc list-inside">
                                   {prediction.recommendations.map((rec, idx) => (
                                     <li key={idx}>{rec}</li>
                                   ))}
@@ -325,12 +325,12 @@ const DiagnosisHistory = () => {
                   {/* Doctor's Review */}
                   {selectedSession.doctorNotes && (
                     <div>
-                      <h4 className="font-medium text-gray-900">Doctor's Review</h4>
-                      <p className="mt-2 text-sm text-gray-600">
+                      <h4 className="font-medium text-gray-900 dark:text-white">Doctor's Review</h4>
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         {selectedSession.doctorNotes}
                       </p>
                       {selectedSession.doctorFirstName && (
-                        <p className="mt-2 text-xs text-gray-500">
+                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                           Reviewed by Dr. {selectedSession.doctorFirstName} {selectedSession.doctorLastName}
                         </p>
                       )}

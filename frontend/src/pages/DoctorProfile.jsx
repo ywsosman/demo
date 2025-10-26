@@ -133,8 +133,8 @@ const DoctorProfile = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">My Profile</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
             Manage your professional information and credentials
           </p>
         </div>
@@ -142,44 +142,44 @@ const DoctorProfile = () => {
         <div className="space-y-6">
           {/* Basic Information (Read-only) */}
           <div className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <UserIcon className="inline h-4 w-4 mr-1" />
                   Full Name
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   Dr. {user.firstName} {user.lastName}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                   Email Address
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   {user.email}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <IdentificationIcon className="inline h-4 w-4 mr-1" />
                   Account Type
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 capitalize">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300 capitalize">
                   {user.role}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <CalendarIcon className="inline h-4 w-4 mr-1" />
                   Member Since
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                 </div>
               </div>
@@ -188,11 +188,11 @@ const DoctorProfile = () => {
 
           {/* Professional Information */}
           <form onSubmit={handleSubmit} className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Professional Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Professional Information</h2>
             
             <div className="space-y-6">
               <div>
-                <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <AcademicCapIcon className="inline h-4 w-4 mr-1" />
                   Medical Specialization
                 </label>
@@ -210,13 +210,13 @@ const DoctorProfile = () => {
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Select your primary area of medical specialization.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <IdentificationIcon className="inline h-4 w-4 mr-1" />
                   Medical License Number
                 </label>
@@ -229,13 +229,13 @@ const DoctorProfile = () => {
                   className="form-input"
                   placeholder="Enter your medical license number"
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Your professional medical license number for verification purposes.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <ClockIcon className="inline h-4 w-4 mr-1" />
                   Years of Experience
                 </label>
@@ -253,13 +253,13 @@ const DoctorProfile = () => {
                 {errors.yearsOfExperience && (
                   <p className="mt-1 text-sm text-red-600">{errors.yearsOfExperience}</p>
                 )}
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Total years of medical practice experience.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="hospital" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="hospital" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <BuildingOfficeIcon className="inline h-4 w-4 mr-1" />
                   Hospital/Clinic Affiliation
                 </label>
@@ -272,7 +272,7 @@ const DoctorProfile = () => {
                   className="form-input"
                   placeholder="Enter your primary hospital or clinic affiliation"
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Name of the hospital, clinic, or medical institution where you practice.
                 </p>
               </div>
@@ -320,19 +320,19 @@ const DoctorProfile = () => {
 
           {/* Practice Statistics */}
           <div className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Practice Statistics</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Practice Statistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-gray-500">Sessions Reviewed</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Sessions Reviewed</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">8</div>
-                <div className="text-sm text-gray-500">Patients Helped</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Patients Helped</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">95%</div>
-                <div className="text-sm text-gray-500">Accuracy Rating</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Accuracy Rating</div>
               </div>
             </div>
           </div>

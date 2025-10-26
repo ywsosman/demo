@@ -107,8 +107,8 @@ const PatientProfile = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">My Profile</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 dark:text-gray-300">
             Manage your personal information and medical details
           </p>
         </div>
@@ -116,44 +116,44 @@ const PatientProfile = () => {
         <div className="space-y-6">
           {/* Basic Information (Read-only) */}
           <div className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <UserIcon className="inline h-4 w-4 mr-1" />
                   Full Name
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   {user.firstName} {user.lastName}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                   Email Address
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   {user.email}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <IdentificationIcon className="inline h-4 w-4 mr-1" />
                   Account Type
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 capitalize">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300 capitalize">
                   {user.role}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <CalendarIcon className="inline h-4 w-4 mr-1" />
                   Member Since
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600">
+                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
                   {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                 </div>
               </div>
@@ -162,11 +162,11 @@ const PatientProfile = () => {
 
           {/* Medical Information */}
           <form onSubmit={handleSubmit} className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Medical Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Medical Information</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="age" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Age
                 </label>
                 <input
@@ -186,7 +186,7 @@ const PatientProfile = () => {
               </div>
 
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Gender
                 </label>
                 <select
@@ -206,7 +206,7 @@ const PatientProfile = () => {
 
             <div className="space-y-6">
               <div>
-                <label htmlFor="medicalHistory" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="medicalHistory" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <HeartIcon className="inline h-4 w-4 mr-1" />
                   Medical History
                 </label>
@@ -219,13 +219,13 @@ const PatientProfile = () => {
                   className="form-input"
                   placeholder="Describe any significant medical conditions, surgeries, or chronic illnesses..."
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Include any past medical conditions, surgeries, or chronic illnesses that may be relevant to your care.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="allergies" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="allergies" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <ExclamationTriangleIcon className="inline h-4 w-4 mr-1" />
                   Allergies
                 </label>
@@ -238,13 +238,13 @@ const PatientProfile = () => {
                   className="form-input"
                   placeholder="List any known allergies to medications, foods, or other substances..."
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Include drug allergies, food allergies, environmental allergies, etc.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="currentMedications" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="currentMedications" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Current Medications
                 </label>
                 <textarea
@@ -256,13 +256,13 @@ const PatientProfile = () => {
                   className="form-input"
                   placeholder="List all current medications, including dosages and frequency..."
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Include prescription medications, over-the-counter drugs, vitamins, and supplements.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <PhoneIcon className="inline h-4 w-4 mr-1" />
                   Emergency Contact
                 </label>
@@ -275,7 +275,7 @@ const PatientProfile = () => {
                   className="form-input"
                   placeholder="Name, relationship, and phone number of emergency contact..."
                 />
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Provide the name, relationship, and contact information for someone to reach in case of emergency.
                 </p>
               </div>
