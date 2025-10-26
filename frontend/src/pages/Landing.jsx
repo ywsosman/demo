@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import AnimatedCounter from '../components/AnimatedCounter';
 import {
   HeartIcon,
   ShieldCheckIcon,
@@ -47,10 +48,10 @@ const Landing = () => {
   ];
 
   const stats = [
-    { id: 1, name: 'Accuracy Rate', value: '94%' },
-    { id: 2, name: 'Patients Helped', value: '10,000+' },
-    { id: 3, name: 'Medical Conditions', value: '200+' },
-    { id: 4, name: 'Partner Hospitals', value: '50+' },
+    { id: 1, name: 'Accuracy Rate', value: '94%', numericValue: 94, suffix: '%' },
+    { id: 2, name: 'Patients Helped', value: '10,000+', numericValue: 10000, suffix: '+' },
+    { id: 3, name: 'Medical Conditions', value: '200+', numericValue: 200, suffix: '+' },
+    { id: 4, name: 'Partner Hospitals', value: '50+', numericValue: 50, suffix: '+' },
   ];
 
   return (
@@ -122,7 +123,12 @@ const Landing = () => {
               <div key={stat.id} className="mx-auto flex max-w-xs flex-col gap-y-4">
                 <dt className="text-base leading-7 text-gray-600 dark:text-gray-300">{stat.name}</dt>
                 <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                  {stat.value}
+                  <AnimatedCounter 
+                    end={stat.numericValue}
+                    suffix={stat.suffix}
+                    duration={2000}
+                    className="inline-block"
+                  />
                 </dd>
               </div>
             ))}
