@@ -212,16 +212,16 @@
 
 /* Menu button when open - light mode */
 .staggered-menu-wrapper[data-open] .sm-toggle {
-  background: rgba(55, 65, 81, 0.8);
-  border-color: rgba(107, 114, 128, 0.6);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #111827;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 /* Menu button when open - dark mode */
 .dark .staggered-menu-wrapper[data-open] .sm-toggle {
-  background: rgba(75, 85, 99, 0.9);
-  border-color: rgba(156, 163, 175, 0.7);
+  background: rgba(31, 41, 55, 0.5);
+  border-color: rgba(107, 114, 128, 0.5);
   color: #f9fafb;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }

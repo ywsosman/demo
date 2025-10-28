@@ -254,13 +254,10 @@ const PatientDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {recentSessions.map((session, index) => (
+                    {recentSessions.map((session) => (
                       <tr 
                         key={session.id} 
                         className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
-                        style={{
-                          animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
-                        }}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           {format(new Date(session.createdAt), 'MMM dd, yyyy')}

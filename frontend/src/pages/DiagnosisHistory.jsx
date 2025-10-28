@@ -104,7 +104,7 @@ const DiagnosisHistory = () => {
                   placeholder="Search diagnosis..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="form-input pl-11"
+                  className="form-input pl-10"
                 />
               </div>
             </div>

@@ -14,8 +14,11 @@ const ScrollReveal = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Toggle visibility based on whether element is in viewport
-        setIsVisible(entry.isIntersecting);
+        // Only set visible when entering viewport (scrolling down)
+        // Once visible, stay visible (don't toggle back to false)
+        if (entry.isIntersecting && !isVisible) {
+          setIsVisible(true);
+        }
       },
       {
         threshold: 0.1,
@@ -32,7 +35,7 @@ const ScrollReveal = ({
         observer.unobserve(ref.current);
       }
     };
-  }, []);
+  }, [isVisible]);
 
   const getInitialTransform = () => {
     switch (direction) {
