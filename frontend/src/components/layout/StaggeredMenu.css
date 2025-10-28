@@ -133,12 +133,12 @@
 
 .sm-welcome-name {
   font-weight: 700;
-  color: #ef4444;
+  color: #374151;
   margin-left: 0.25rem;
 }
 
 .dark .sm-welcome-name {
-  color: #f87171;
+  color: #d1d5db;
 }
 
 .dark .staggered-menu-header {

@@ -190,8 +190,8 @@ const Navbar = () => {
       displayItemNumbering={false}
       logoComponent={<LogoComponent />}
       onLogoClick={handleMenuClose}
-      menuButtonColor={isDarkMode ? '#111827' : '#f9fafb'}
-      openMenuButtonColor={isDarkMode ? '#111827' : '#f9fafb'}
+      menuButtonColor={isDarkMode ? '#f9fafb' : '#111827'}
+      openMenuButtonColor={isDarkMode ? '#f9fafb' : '#111827'}
       accentColor="#ef4444"
       changeMenuColorOnOpen={true}
       colors={isDarkMode ? ['#1f2937', '#111827'] : ['#e5e7eb', '#f3f4f6']}
