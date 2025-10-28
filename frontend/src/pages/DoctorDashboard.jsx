@@ -238,13 +238,10 @@ const DoctorDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {pendingSessions.map((session, index) => (
+                  {pendingSessions.map((session) => (
                 <div 
                   key={session.id} 
                   className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
-                  style={{
-                    animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
-                  }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -351,13 +348,10 @@ const DoctorDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {reviewedSessions.map((session, index) => (
+                  {reviewedSessions.map((session) => (
                     <div 
                       key={session.id || session._id} 
                       className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
-                      style={{
-                        animation: `fadeIn 0.4s ease-out ${index * 0.1}s both`
-                      }}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
