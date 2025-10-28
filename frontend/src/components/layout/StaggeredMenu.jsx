@@ -373,26 +373,24 @@ export const StaggeredMenu = ({
           )}
         </div>
         <div className="sm-header-right">
+          <button
+            className="sm-theme-toggle"
+            onClick={toggleTheme}
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDarkMode ? (
+              <SunIcon className="sm-theme-icon" />
+            ) : (
+              <MoonIcon className="sm-theme-icon" />
+            )}
+          </button>
           {user && (
-            <>
-              <button
-                className="sm-theme-toggle"
-                onClick={toggleTheme}
-                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {isDarkMode ? (
-                  <SunIcon className="sm-theme-icon" />
-                ) : (
-                  <MoonIcon className="sm-theme-icon" />
-                )}
-              </button>
-              <div className="sm-welcome-message">
-                <span className="sm-welcome-text">
-                  Welcome, <span className="sm-welcome-name">{user.firstName}</span>
-                </span>
-              </div>
-            </>
+            <div className="sm-welcome-message">
+              <span className="sm-welcome-text">
+                Welcome, <span className="sm-welcome-name">{user.firstName}</span>
+              </span>
+            </div>
           )}
           <button
             ref={toggleBtnRef}
