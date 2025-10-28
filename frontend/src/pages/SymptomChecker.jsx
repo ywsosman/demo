@@ -119,25 +119,25 @@ const SymptomChecker = () => {
 
   if (result) {
     return (
-      <div className="min-h-screen py-8 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">
+          <div className="mb-4 sm:mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
               AI-powered analysis of your symptoms
             </p>
           </div>
 
           {/* Warning Banner */}
-          <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-4">
+          <div className="mb-4 sm:mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 sm:p-4">
             <div className="flex">
-              <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400 mt-0.5" />
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+              <ExclamationTriangleIcon className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+              <div className="ml-2 sm:ml-3">
+                <h3 className="text-xs sm:text-sm font-medium text-yellow-800 dark:text-yellow-200">
                   Important Medical Disclaimer
                 </h3>
-                <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
+                <p className="mt-1 text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
                   This AI analysis is for informational purposes only and should not replace professional medical advice. 
                   Please consult with a healthcare professional for proper diagnosis and treatment.
                 </p>
@@ -146,22 +146,22 @@ const SymptomChecker = () => {
           </div>
 
           {/* Results */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* AI Predictions */}
-            <div className="card p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="card p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                 AI Analysis Results
               </h2>
               
               {result.aiPrediction && result.aiPrediction.predictions.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {result.aiPrediction.predictions.map((prediction, index) => (
-                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-gray-700">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">
                           {prediction.condition}
                         </h3>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(prediction.confidence)} dark:bg-opacity-20`}>
+                        <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getConfidenceColor(prediction.confidence)} dark:bg-opacity-20 self-start sm:self-auto whitespace-nowrap`}>
                           {Math.round(prediction.confidence * 100)}% confidence
                         </span>
                       </div>
@@ -323,16 +323,16 @@ const SymptomChecker = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               onClick={() => navigate('/patient/history')}
-              className="btn-primary flex-1"
+              className="btn-primary flex-1 text-sm sm:text-base"
             >
               View All Sessions
             </button>
             <button
               onClick={handleStartNew}
-              className="btn-secondary flex-1"
+              className="btn-secondary flex-1 text-sm sm:text-base"
             >
               New Symptom Check
             </button>
@@ -343,19 +343,19 @@ const SymptomChecker = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 transition-colors duration-300">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <HeartIcon className="mx-auto h-12 w-12 text-medical-600 mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+        <div className="text-center mb-6 sm:mb-8">
+          <HeartIcon className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-medical-600 mb-3 sm:mb-4" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 px-4">
             Describe your symptoms and get AI-powered health insights
           </p>
         </div>
 
         {/* Form */}
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Symptoms Description */}
             <div>

@@ -79,26 +79,26 @@ const PatientDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <ScrollReveal direction="down" delay={0} duration={600}>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Welcome back, {user.firstName}!
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
               Manage your health with our AI-powered diagnosis system
             </p>
           </div>
         </ScrollReveal>
 
         {/* Quick Actions */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <ScrollReveal direction="up" delay={100} duration={600}>
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+            <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Quick Actions</h2>
           </ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <ScrollReveal direction="up" delay={150} duration={600}>
               <Link
                 to="/patient/symptom-checker"
@@ -154,48 +154,48 @@ const PatientDashboard = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <ScrollReveal direction="up" delay={100} duration={600}>
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+            <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Overview</h2>
           </ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             <ScrollReveal direction="up" delay={150} duration={600}>
-              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <ClipboardDocumentListIcon className="h-8 w-8 text-blue-600" />
+                    <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
+                  <div className="ml-3 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
                   </div>
                 </div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={250} duration={600}>
-              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <ClockIcon className="h-8 w-8 text-yellow-600" />
+                    <ClockIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
+                  <div className="ml-3 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
                   </div>
                 </div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={350} duration={600}>
-              <div className="card p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-8 w-8 text-green-600" />
+                    <CheckCircleIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
+                  <div className="ml-3 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
                   </div>
                 </div>
               </div>
