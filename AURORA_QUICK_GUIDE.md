@@ -116,3 +116,4 @@ The aurora consists of multiple animated layers that create depth and movement:
 
 The aurora background adds a modern, professional, and calming aesthetic to your medical diagnosis platform while maintaining excellent readability and performance across all devices.
 
+
