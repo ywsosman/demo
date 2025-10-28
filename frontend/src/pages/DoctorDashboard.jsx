@@ -187,10 +187,9 @@ const DoctorDashboard = () => {
         </div>
 
         {/* Sessions Tabs */}
-        <ScrollReveal direction="up" delay={100} duration={600}>
-          <div>
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+        <div>
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
               <nav className="-mb-px flex space-x-8">
                 <button
                   onClick={() => setActiveTab('pending')}
@@ -227,18 +226,19 @@ const DoctorDashboard = () => {
 
           {/* Pending Tab Content */}
           {activeTab === 'pending' && (
-            <div className="animate-fadeIn">
-              {pendingSessions.length === 0 ? (
-                <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
-                  <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">All caught up!</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    No pending diagnosis sessions to review at this time.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {pendingSessions.map((session) => (
+            <ScrollReveal direction="up" delay={0} duration={600}>
+              <div className="animate-fadeIn">
+                {pendingSessions.length === 0 ? (
+                  <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
+                    <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">All caught up!</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      No pending diagnosis sessions to review at this time.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingSessions.map((session) => (
                 <div 
                   key={session.id} 
                   className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
@@ -330,25 +330,27 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+              </div>
+            </ScrollReveal>
           )}
 
           {/* Reviewed Tab Content */}
           {activeTab === 'reviewed' && (
-            <div className="animate-fadeIn">
-              {reviewedSessions.length === 0 ? (
-                <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
-                  <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No reviewed sessions yet</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Sessions you review will appear here.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {reviewedSessions.map((session) => (
+            <ScrollReveal direction="up" delay={0} duration={600}>
+              <div className="animate-fadeIn">
+                {reviewedSessions.length === 0 ? (
+                  <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
+                    <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No reviewed sessions yet</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Sessions you review will appear here.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reviewedSessions.map((session) => (
                     <div 
                       key={session.id || session._id} 
                       className="card p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
@@ -411,13 +413,13 @@ const DoctorDashboard = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </ScrollReveal>
           )}
-          </div>
-        </ScrollReveal>
+        </div>
 
         {/* Review Modal */}
         {selectedSession && (
