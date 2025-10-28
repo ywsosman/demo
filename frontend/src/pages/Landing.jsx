@@ -61,13 +61,13 @@ const Landing = () => {
   return (
     <div className="relative transition-colors duration-300">
       {/* Hero section */}
-      <div className="relative px-6 pt-20 lg:px-8 overflow-hidden">
+      <div className="relative px-4 sm:px-6 pt-16 sm:pt-20 lg:px-8 overflow-hidden">
         {/* Ambient Background */}
         <OrbAmbience />
         
         {/* Orb */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full max-w-[90vw] sm:max-w-3xl lg:max-w-4xl h-[400px] xs:h-[450px] sm:h-[550px] md:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
+          <div className="w-full max-w-[90vw] sm:max-w-3xl lg:max-w-4xl h-[300px] xs:h-[350px] sm:h-[550px] md:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
             <Orb 
               hoverIntensity={0.75}
               rotateOnHover={true}
@@ -76,7 +76,7 @@ const Landing = () => {
           </div>
         </div>
         
-        <div className="relative mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div className="relative mx-auto max-w-2xl py-20 sm:py-32 md:py-48 lg:py-56">
           <ScrollReveal direction="down" delay={100} duration={800}>
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
@@ -89,26 +89,26 @@ const Landing = () => {
             </div>
           </ScrollReveal>
           
-          <div className="text-center">
+          <div className="text-center px-2">
             <ScrollReveal direction="up" delay={200} duration={900}>
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
                 AI-Powered Medical Diagnosis System
               </h1>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={400} duration={900}>
-              <p className="mt-6 text-lg leading-8 text-gray-900 dark:text-white">
+              <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-900 dark:text-white px-2">
                 Get instant, accurate medical insights powered by advanced AI technology. 
                 Trusted by healthcare professionals and patients worldwide for better health outcomes.
               </p>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={600} duration={900}>
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+              <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 px-4">
                 {user ? (
                   <Link
                     to="/dashboard"
-                    className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600"
+                    className="w-full sm:w-auto rounded-md bg-medical-600 px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 text-center"
                   >
                     Go to Dashboard
                   </Link>
@@ -116,13 +116,13 @@ const Landing = () => {
                   <>
                     <Link
                       to="/register"
-                      className="rounded-md bg-medical-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600"
+                      className="w-full sm:w-auto rounded-md bg-medical-600 px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 text-center"
                     >
                       Get Started
                     </Link>
                     <Link
                       to="/login"
-                      className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+                      className="w-full sm:w-auto text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 text-center py-2.5"
                     >
                       Sign in <span aria-hidden="true">→</span>
                     </Link>
@@ -135,10 +135,10 @@ const Landing = () => {
       </div>
 
       {/* Stats section */}
-      <div className="relative py-24 sm:py-32 transition-colors duration-300">
+      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300">
         <div className="absolute inset-0 bg-white/40 dark:bg-gray-900/40 backdrop-blur-sm"></div>
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <dl className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 text-center lg:grid-cols-4">
             {stats.map((stat, index) => (
               <ScrollReveal 
                 key={stat.id} 
@@ -146,9 +146,9 @@ const Landing = () => {
                 delay={index * 100}
                 duration={800}
               >
-                <div className="mx-auto flex max-w-xs flex-col gap-y-4">
-                  <dt className="text-base leading-7 text-gray-900 dark:text-white">{stat.name}</dt>
-                  <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                <div className="mx-auto flex max-w-xs flex-col gap-y-2 sm:gap-y-4">
+                  <dt className="text-xs sm:text-sm md:text-base leading-5 sm:leading-7 text-gray-900 dark:text-white">{stat.name}</dt>
+                  <dd className="order-first text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
                     <AnimatedCounter 
                       end={stat.numericValue}
                       suffix={stat.suffix}
@@ -164,28 +164,28 @@ const Landing = () => {
       </div>
 
       {/* Features section */}
-      <div id="features" className="relative py-24 sm:py-32 transition-colors duration-300 overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
+      <div id="features" className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center px-2">
             <ScrollReveal direction="up" delay={100} duration={800}>
-              <h2 className="text-base font-semibold leading-7 text-medical-600">Advanced Healthcare</h2>
+              <h2 className="text-sm sm:text-base font-semibold leading-6 sm:leading-7 text-medical-600">Advanced Healthcare</h2>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={200} duration={900}>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              <p className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Everything you need for medical diagnosis
               </p>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={300} duration={900}>
-              <p className="mt-6 text-lg leading-8 text-gray-900 dark:text-white">
+              <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-900 dark:text-white">
                 Our comprehensive platform combines cutting-edge AI technology with medical expertise 
                 to provide accurate, fast, and reliable health insights.
               </p>
             </ScrollReveal>
           </div>
           
-          <div className="mx-auto mt-16 sm:mt-20 lg:mt-24 scroll-stack-container">
+          <div className="mx-auto mt-12 sm:mt-16 lg:mt-24 scroll-stack-container">
             <ScrollStack
               itemDistance={80}
               itemScale={0.04}
@@ -210,32 +210,32 @@ const Landing = () => {
 
       {/* CTA section */}
       <div className="relative bg-gradient-to-r from-medical-600 to-indigo-600 dark:from-medical-700 dark:to-indigo-700 backdrop-blur-sm">
-        <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+        <div className="px-4 py-12 sm:px-6 sm:py-16 md:py-24 lg:py-32 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <ScrollReveal direction="up" delay={100} duration={800}>
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white px-4">
                 Ready to experience the future of healthcare?
               </h2>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={300} duration={900}>
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-medical-100">
+              <p className="mx-auto mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-7 sm:leading-8 text-medical-100 px-4">
                 Join thousands of healthcare professionals and patients who trust our AI-powered 
                 medical diagnosis system for better health outcomes.
               </p>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={500} duration={900}>
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+              <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 px-4">
                 {!user && (
                   <Link
                     to="/register"
-                    className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-medical-600 shadow-sm hover:bg-medical-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    className="w-full sm:w-auto rounded-md bg-white px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-medical-600 shadow-sm hover:bg-medical-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white text-center"
                   >
                     Get started today
                   </Link>
                 )}
-                <a href="#features" className="text-sm font-semibold leading-6 text-white">
+                <a href="#features" className="w-full sm:w-auto text-sm font-semibold leading-6 text-white text-center py-2.5">
                   Learn more <span aria-hidden="true">→</span>
                 </a>
               </div>

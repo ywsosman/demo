@@ -60,13 +60,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div>
           <div className="flex justify-center">
-            <HeartIcon className="h-12 w-12 text-medical-600" />
+            <HeartIcon className="h-10 w-10 sm:h-12 sm:w-12 text-medical-600" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
             Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
@@ -81,8 +81,8 @@ const Login = () => {
         </div>
 
         {/* Demo credentials info */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
-          <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Demo Credentials:</h3>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Demo Credentials:</h3>
           <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
             <div><strong>Doctor:</strong> doctor@demo.com / demo123</div>
             <div><strong>Patient:</strong> patient@demo.com / demo123</div>

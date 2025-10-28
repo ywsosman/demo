@@ -82,19 +82,19 @@ const DiagnosisHistory = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Diagnosis History</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Diagnosis History</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
             View and manage your past diagnosis sessions
           </p>
         </div>
 
         {/* Filters and Search */}
-        <div className="mb-6 card p-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="mb-4 sm:mb-6 card p-3 sm:p-4">
+          <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
@@ -125,10 +125,11 @@ const DiagnosisHistory = () => {
             {/* New Session Button */}
             <Link
               to="/patient/symptom-checker"
-              className="btn-medical flex items-center justify-center whitespace-nowrap"
+              className="btn-medical flex items-center justify-center whitespace-nowrap text-sm sm:text-base"
             >
               <PlusIcon className="w-4 h-4 mr-2" />
-              New Check
+              <span className="hidden sm:inline">New Check</span>
+              <span className="sm:hidden">New</span>
             </Link>
           </div>
         </div>
@@ -166,10 +167,10 @@ const DiagnosisHistory = () => {
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredSessions.map((session) => (
-              <div key={session.id} className="card p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between">
+              <div key={session.id} className="card p-4 sm:p-6 hover:shadow-md transition-shadow">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white">

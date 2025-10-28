@@ -129,21 +129,21 @@ const DoctorProfile = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 transition-colors duration-300">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
+      <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
             Manage your professional information and credentials
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Basic Information (Read-only) */}
-          <div className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Basic Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <UserIcon className="inline h-4 w-4 mr-1" />
@@ -187,10 +187,10 @@ const DoctorProfile = () => {
           </div>
 
           {/* Professional Information */}
-          <form onSubmit={handleSubmit} className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Professional Information</h2>
+          <form onSubmit={handleSubmit} className="card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Professional Information</h2>
             
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   <AcademicCapIcon className="inline h-4 w-4 mr-1" />
