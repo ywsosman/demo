@@ -78,6 +78,11 @@ code {
   @apply block w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500;
 }
 
+/* Form input with icon */
+.form-input-with-icon {
+  @apply form-input pl-10;
+}
+
 /* Textarea specific styling for better contrast */
 textarea.form-input {
   @apply bg-gray-50 dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-500 text-gray-900 dark:text-gray-100;
