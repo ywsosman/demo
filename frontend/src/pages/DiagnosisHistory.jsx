@@ -104,7 +104,8 @@ const DiagnosisHistory = () => {
                   placeholder="Search diagnosis..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="form-input w-full pl-10 pr-4"
+                  className="form-input w-full !pl-11 pr-4"
+                  style={{ paddingLeft: '2.75rem' }}
                 />
               </div>
             </div>
