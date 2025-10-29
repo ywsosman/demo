@@ -114,6 +114,8 @@
   border-radius: 0.5rem;
   pointer-events: auto;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .dark .sm-welcome-message {
@@ -142,6 +144,44 @@
   color: #d1d5db;
 }
 
+.sm-user-initials {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  pointer-events: auto;
+  cursor: default;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dark .sm-user-initials {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sm-user-initials:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.dark .sm-user-initials:hover {
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+}
+
+.sm-initials-text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
 .dark .staggered-menu-header {
   background: rgba(31, 41, 55, 0.95);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
@@ -164,6 +204,24 @@
   align-items: center;
   user-select: none;
   z-index: 21;
+  overflow: hidden;
+}
+
+.sm-logo a {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sm-logo svg {
+  flex-shrink: 0;
+}
+
+.sm-logo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sm-logo-img {
@@ -544,39 +602,50 @@
 /* Tablets */
 @media (max-width: 768px) {
   .staggered-menu-header {
-    padding: 1.125rem 1.5rem;
-    min-height: 84px;
+    padding: 1rem 1.25rem;
+    min-height: 76px;
   }
   
   .sm-header-right {
-    gap: 0.875rem;
+    gap: 0.75rem;
   }
   
   .sm-theme-toggle {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
   }
   
   .sm-theme-icon {
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
   }
   
   .sm-welcome-message {
-    padding: 0.45rem 0.875rem;
+    padding: 0.4rem 0.75rem;
   }
   
   .sm-welcome-text {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+  }
+  
+  .sm-user-initials {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+  
+  .sm-initials-text {
+    font-size: 0.813rem;
   }
   
   .sm-toggle {
-    padding: 0.75rem 1.2rem;
-    font-size: 0.975rem;
-    min-width: 105px;
-    min-height: 46px;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.938rem;
+    min-width: 100px;
+    min-height: 44px;
   }
   
   .sm-panel-item {
@@ -587,62 +656,82 @@
 /* Mobile devices */
 @media (max-width: 640px) {
   .staggered-menu-header {
-    padding: 1rem 1.25rem;
-    min-height: 80px;
+    padding: 0.875rem 1rem;
+    min-height: 72px;
   }
   
   .sm-logo {
     flex: 1;
-    max-width: calc(100% - 230px); /* Ensure logo doesn't overlap with controls */
+    max-width: calc(100% - 200px); /* Ensure logo doesn't overlap with controls */
+  }
+  
+  .sm-logo span {
+    font-size: 1.125rem; /* Slightly smaller on mobile */
+  }
+  
+  .sm-logo svg {
+    width: 28px;
+    height: 28px;
   }
   
   .sm-header-right {
-    gap: 0.65rem;
+    gap: 0.5rem;
     flex-shrink: 0;
   }
   
   .sm-theme-toggle {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     flex-shrink: 0;
   }
   
   .sm-theme-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
   
   .sm-welcome-message {
-    padding: 0.4rem 0.75rem;
-    max-width: 140px; /* Prevent overflow on small screens */
+    padding: 0.35rem 0.65rem;
+    max-width: 120px; /* Prevent overflow on small screens */
   }
   
   .sm-welcome-text {
-    font-size: 0.85rem;
+    font-size: 0.813rem;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   
+  .sm-user-initials {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  
+  .sm-initials-text {
+    font-size: 0.75rem;
+  }
+  
   .sm-toggle {
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-    gap: 0.6rem;
-    min-width: 110px;
-    min-height: 48px; /* Larger for mobile touch */
-    border-width: 2.5px;
+    padding: 0.65rem 1rem;
+    font-size: 0.875rem;
+    gap: 0.5rem;
+    min-width: 95px;
+    min-height: 44px; /* Larger for mobile touch */
+    border-width: 2px;
     flex-shrink: 0;
   }
   
   .sm-icon {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 18px;
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
   }
   
   .sm-icon-line {
-    height: 3px;
+    height: 2.5px;
   }
   
   .sm-panel-item {
@@ -655,7 +744,7 @@
   }
   
   .staggered-menu-panel {
-    padding: 7rem 1.25rem 2rem 1.25rem;
+    padding: 6.5rem 1rem 2rem 1rem;
   }
   
   .sm-panel-list {
@@ -666,48 +755,68 @@
 /* Extra small devices */
 @media (max-width: 375px) {
   .staggered-menu-header {
-    padding: 0.875rem 1rem;
-    min-height: 76px;
+    padding: 0.75rem 0.875rem;
+    min-height: 68px;
   }
   
   .sm-logo {
-    max-width: calc(100% - 200px);
+    max-width: calc(100% - 170px);
+  }
+  
+  .sm-logo span {
+    font-size: 1rem;
+  }
+  
+  .sm-logo svg {
+    width: 26px;
+    height: 26px;
   }
   
   .sm-header-right {
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
   
   .sm-theme-toggle {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
   }
   
   .sm-theme-icon {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
   }
   
   .sm-welcome-message {
-    padding: 0.35rem 0.65rem;
-    max-width: 120px;
+    padding: 0.3rem 0.6rem;
+    max-width: 110px;
   }
   
   .sm-welcome-text {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+  
+  .sm-user-initials {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+  }
+  
+  .sm-initials-text {
+    font-size: 0.688rem;
   }
   
   .sm-toggle {
-    padding: 0.7rem 1rem;
-    font-size: 0.9rem;
-    min-width: 95px;
-    min-height: 48px;
+    padding: 0.6rem 0.875rem;
+    font-size: 0.813rem;
+    min-width: 85px;
+    min-height: 44px;
   }
   
   .sm-logo-img {
-    height: 28px;
+    height: 26px;
   }
   
   .sm-panel-item {
@@ -718,26 +827,69 @@
 /* Very small devices */
 @media (max-width: 320px) {
   .staggered-menu-header {
-    padding: 0.75rem 0.875rem;
-    min-height: 72px;
+    padding: 0.625rem 0.75rem;
+    min-height: 64px;
   }
   
   .sm-logo {
-    max-width: calc(100% - 180px);
+    max-width: calc(100% - 155px);
+  }
+  
+  .sm-logo span {
+    font-size: 0.875rem;
+  }
+  
+  .sm-logo svg {
+    width: 24px;
+    height: 24px;
   }
   
   .sm-header-right {
-    gap: 0.4rem;
+    gap: 0.35rem;
+  }
+  
+  .sm-theme-toggle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .sm-theme-icon {
+    width: 16px;
+    height: 16px;
   }
   
   .sm-welcome-message {
     display: none; /* Hide welcome message on very small screens */
   }
   
+  .sm-user-initials {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .sm-initials-text {
+    font-size: 0.625rem;
+  }
+  
   .sm-toggle {
-    padding: 0.65rem 0.875rem;
-    font-size: 0.875rem;
-    min-width: 90px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 80px;
+    min-height: 42px;
+  }
+  
+  .sm-icon {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+  }
+  
+  .sm-icon-line {
+    height: 2px;
   }
   
   .sm-panel-item {

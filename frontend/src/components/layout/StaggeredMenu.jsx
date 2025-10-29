@@ -34,6 +34,7 @@ export const StaggeredMenu = ({
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
   const [textLines, setTextLines] = useState(['Menu', 'Close']);
+  const [welcomeAnimated, setWelcomeAnimated] = useState(false);
 
   const openTlRef = useRef(null);
   const closeTweenRef = useRef(null);
@@ -43,6 +44,9 @@ export const StaggeredMenu = ({
   const toggleBtnRef = useRef(null);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
+  const welcomeMessageRef = useRef(null);
+  const welcomeAnimationRef = useRef(null);
+  const userInitialsRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -287,6 +291,69 @@ export const StaggeredMenu = ({
     }
   }, [isDarkMode, openMenuButtonColor]);
 
+  // Welcome message animation effect
+  React.useEffect(() => {
+    if (user && welcomeMessageRef.current && !welcomeAnimated && userInitialsRef.current) {
+      const welcomeEl = welcomeMessageRef.current;
+      const initialsEl = userInitialsRef.current;
+      
+      // Kill any existing animation
+      welcomeAnimationRef.current?.kill();
+      
+      // Set initial states
+      gsap.set(welcomeEl, { 
+        width: 0, 
+        opacity: 0, 
+        overflow: 'hidden',
+        display: 'flex'
+      });
+      gsap.set(initialsEl, { 
+        opacity: 0, 
+        scale: 0.8,
+        display: 'none'
+      });
+      
+      // Create timeline for welcome message animation
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setWelcomeAnimated(true);
+        }
+      });
+      
+      // Open from right to left
+      tl.to(welcomeEl, {
+        width: 'auto',
+        opacity: 1,
+        duration: 0.6,
+        ease: 'power3.out'
+      })
+      // Stay for 3 seconds
+      .to({}, { duration: 3 })
+      // Close from left to right
+      .to(welcomeEl, {
+        width: 0,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.in'
+      })
+      // Show initials
+      .set(welcomeEl, { display: 'none' })
+      .set(initialsEl, { display: 'flex' })
+      .to(initialsEl, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: 'back.out(1.7)'
+      });
+      
+      welcomeAnimationRef.current = tl;
+    }
+    
+    return () => {
+      welcomeAnimationRef.current?.kill();
+    };
+  }, [user, welcomeAnimated]);
+
   const animateText = useCallback(opening => {
     const inner = textInnerRef.current;
     if (!inner) return;
@@ -386,11 +453,18 @@ export const StaggeredMenu = ({
             )}
           </button>
           {user && (
-            <div className="sm-welcome-message">
-              <span className="sm-welcome-text">
-                Welcome, <span className="sm-welcome-name">{user.firstName}</span>
-              </span>
-            </div>
+            <>
+              <div ref={welcomeMessageRef} className="sm-welcome-message">
+                <span className="sm-welcome-text">
+                  Welcome, <span className="sm-welcome-name">{user.firstName}</span>
+                </span>
+              </div>
+              <div ref={userInitialsRef} className="sm-user-initials" title={`${user.firstName} ${user.lastName || ''}`}>
+                <span className="sm-initials-text">
+                  {user.firstName?.charAt(0).toUpperCase()}{user.lastName?.charAt(0).toUpperCase() || ''}
+                </span>
+              </div>
+            </>
           )}
           <button
             ref={toggleBtnRef}
