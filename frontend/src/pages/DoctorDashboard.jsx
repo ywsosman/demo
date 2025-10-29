@@ -123,12 +123,10 @@ const DoctorDashboard = () => {
         </ScrollReveal>
 
         {/* Stats Overview */}
-        <div className="mb-8">
-          <ScrollReveal direction="up" delay={100} duration={600}>
+        <ScrollReveal direction="up" delay={0} duration={600}>
+          <div className="mb-8">
             <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
-          </ScrollReveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <ScrollReveal direction="up" delay={150} duration={600}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -140,9 +138,7 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
 
-            <ScrollReveal direction="up" delay={250} duration={600}>
               <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -154,9 +150,7 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
 
-            <ScrollReveal direction="up" delay={350} duration={600}>
               <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -168,9 +162,7 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
 
-            <ScrollReveal direction="up" delay={450} duration={600}>
               <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -182,9 +174,9 @@ const DoctorDashboard = () => {
                   </div>
                 </div>
               </div>
-            </ScrollReveal>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Sessions Tabs */}
         <div>
