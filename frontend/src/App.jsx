@@ -69,7 +69,7 @@ function App() {
             <AuroraBackground />
             
             <Navbar />
-            <main className="relative z-0 pt-20">
+            <main className="relative z-0 pt-[88px] xl:pt-20">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
