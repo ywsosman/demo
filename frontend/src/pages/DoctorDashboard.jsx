@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
-import ScrollReveal from '../components/ScrollReveal';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -111,20 +110,17 @@ const DoctorDashboard = () => {
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <ScrollReveal direction="down" delay={0} duration={600}>
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Welcome, Dr. {user.firstName}!
-            </h1>
-            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
-              Review patient diagnoses and provide professional medical guidance
-            </p>
-          </div>
-        </ScrollReveal>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome, Dr. {user.firstName}!
+          </h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            Review patient diagnoses and provide professional medical guidance
+          </p>
+        </div>
 
         {/* Stats Overview */}
-        <ScrollReveal direction="up" delay={0} duration={600}>
-          <div className="mb-8">
+        <div className="mb-8">
             <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
@@ -176,7 +172,7 @@ const DoctorDashboard = () => {
               </div>
             </div>
           </div>
-        </ScrollReveal>
+        </div>
 
         {/* Sessions Tabs */}
         <div>
@@ -220,8 +216,7 @@ const DoctorDashboard = () => {
 
           {/* Pending Tab Content */}
           {activeTab === 'pending' && (
-            <ScrollReveal direction="up" delay={0} duration={600}>
-              <div className="animate-fadeIn">
+            <div className="animate-fadeIn">
                 {pendingSessions.length === 0 ? (
                   <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
                     <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
@@ -329,13 +324,11 @@ const DoctorDashboard = () => {
                   </div>
                 )}
               </div>
-            </ScrollReveal>
           )}
 
           {/* Reviewed Tab Content */}
           {activeTab === 'reviewed' && (
-            <ScrollReveal direction="up" delay={0} duration={600}>
-              <div className="animate-fadeIn">
+            <div className="animate-fadeIn">
                 {reviewedSessions.length === 0 ? (
                   <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
                     <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
@@ -415,7 +408,6 @@ const DoctorDashboard = () => {
                   </div>
                 )}
               </div>
-            </ScrollReveal>
           )}
         </div>
 
