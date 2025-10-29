@@ -30,6 +30,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 2rem;
+  min-height: 80px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -536,6 +537,7 @@
   
   .staggered-menu-header {
     padding: 1.25rem 1.75rem;
+    min-height: 88px;
   }
 }
 
@@ -543,6 +545,7 @@
 @media (max-width: 768px) {
   .staggered-menu-header {
     padding: 1.125rem 1.5rem;
+    min-height: 84px;
   }
   
   .sm-header-right {
@@ -585,6 +588,7 @@
 @media (max-width: 640px) {
   .staggered-menu-header {
     padding: 1rem 1.25rem;
+    min-height: 80px;
   }
   
   .sm-logo {
@@ -663,6 +667,7 @@
 @media (max-width: 375px) {
   .staggered-menu-header {
     padding: 0.875rem 1rem;
+    min-height: 76px;
   }
   
   .sm-logo {
@@ -714,6 +719,7 @@
 @media (max-width: 320px) {
   .staggered-menu-header {
     padding: 0.75rem 0.875rem;
+    min-height: 72px;
   }
   
   .sm-logo {
