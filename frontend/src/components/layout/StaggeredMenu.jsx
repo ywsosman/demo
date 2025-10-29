@@ -47,6 +47,7 @@ export const StaggeredMenu = ({
   const welcomeMessageRef = useRef(null);
   const welcomeAnimationRef = useRef(null);
   const userInitialsRef = useRef(null);
+  const previousUserIdRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -291,12 +292,51 @@ export const StaggeredMenu = ({
     }
   }, [isDarkMode, openMenuButtonColor]);
 
-  // Welcome message animation effect
+  // Reset animation state when user changes (logout/login as different user)
   React.useEffect(() => {
-    if (user && welcomeMessageRef.current && !welcomeAnimated && userInitialsRef.current) {
-      const welcomeEl = welcomeMessageRef.current;
-      const initialsEl = userInitialsRef.current;
-      
+    const currentUserId = user ? (user.id || user._id || user.email) : null;
+    
+    // If user changed (different user or logged out), reset the animation state
+    if (previousUserIdRef.current !== null && previousUserIdRef.current !== currentUserId) {
+      setWelcomeAnimated(false);
+      welcomeAnimationRef.current?.kill();
+    }
+    
+    previousUserIdRef.current = currentUserId;
+  }, [user]);
+
+  // Welcome message animation effect - only runs once per session
+  React.useEffect(() => {
+    if (!user || !welcomeMessageRef.current || !userInitialsRef.current) {
+      return;
+    }
+
+    const welcomeEl = welcomeMessageRef.current;
+    const initialsEl = userInitialsRef.current;
+    const userId = user.id || user._id || user.email;
+    const sessionKey = `welcomeAnimationShown_${userId}`;
+    
+    // Check if animation has already been shown this session
+    const hasShownAnimation = sessionStorage.getItem(sessionKey);
+    
+    if (hasShownAnimation) {
+      // Skip animation, show initials directly
+      gsap.set(welcomeEl, { 
+        width: 0, 
+        opacity: 0, 
+        display: 'none'
+      });
+      gsap.set(initialsEl, { 
+        opacity: 1, 
+        scale: 1,
+        display: 'flex'
+      });
+      setWelcomeAnimated(true);
+      return;
+    }
+    
+    // First time this session - run the animation
+    if (!welcomeAnimated) {
       // Kill any existing animation
       welcomeAnimationRef.current?.kill();
       
@@ -317,6 +357,8 @@ export const StaggeredMenu = ({
       const tl = gsap.timeline({
         onComplete: () => {
           setWelcomeAnimated(true);
+          // Mark animation as shown for this session
+          sessionStorage.setItem(sessionKey, 'true');
         }
       });
       
@@ -327,8 +369,8 @@ export const StaggeredMenu = ({
         duration: 0.6,
         ease: 'power3.out'
       })
-      // Stay for 3 seconds
-      .to({}, { duration: 3 })
+      // Stay for 2 seconds
+      .to({}, { duration: 2 })
       // Close from left to right
       .to(welcomeEl, {
         width: 0,
