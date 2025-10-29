@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
-import ScrollReveal from '../components/ScrollReveal';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -32,9 +31,12 @@ const DoctorDashboard = () => {
     doctorNotes: '',
     status: 'reviewed'
   });
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
+    // Trigger fade-in animation immediately on mount
+    setTimeout(() => setIsVisible(true), 50);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -110,7 +112,13 @@ const DoctorDashboard = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        <ScrollReveal direction="up" delay={0} duration={800}>
+        <div 
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+            transition: 'opacity 800ms ease-out, transform 800ms ease-out'
+          }}
+        >
           {/* Header */}
           <div className="mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
@@ -411,7 +419,7 @@ const DoctorDashboard = () => {
               </div>
           )}
           </div>
-        </ScrollReveal>
+        </div>
 
         {/* Review Modal */}
         {selectedSession && (
