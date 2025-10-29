@@ -81,7 +81,8 @@ const Register = () => {
     const result = await register(userData);
     
     if (result.success) {
-      navigate('/dashboard');
+      // Navigate to landing page after registration to show welcome animation
+      navigate('/');
     }
   };
 
