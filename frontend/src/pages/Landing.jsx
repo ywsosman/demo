@@ -60,6 +60,12 @@ const Landing = () => {
 
   return (
     <div className="relative transition-colors duration-300">
+      {/* Seamless Gradient Overlay - Spans entire page for smooth color transition */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-50/20 via-30% to-cyan-100/40 to-70% dark:from-transparent dark:via-emerald-900/10 dark:via-30% dark:to-emerald-950/30 dark:to-70%"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-transparent from-20% via-transparent via-50% to-cyan-100/30 dark:to-gray-900/30"></div>
+      </div>
+
       {/* Hero section */}
       <div className="relative px-4 sm:px-6 pt-16 sm:pt-20 lg:px-8 overflow-hidden">
         {/* Ambient Background */}
@@ -132,13 +138,10 @@ const Landing = () => {
             </ScrollReveal>
           </div>
         </div>
-        
-        {/* Gradient Transition Overlay - Seamless blend to stats section */}
-        <div className="absolute bottom-0 left-0 right-0 h-48 sm:h-64 bg-gradient-to-b from-transparent via-cyan-100/30 to-cyan-200/50 dark:via-emerald-900/20 dark:to-emerald-950/40 pointer-events-none"></div>
       </div>
 
       {/* Stats section */}
-      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300 bg-gradient-to-b from-cyan-200/30 via-sky-100/20 to-transparent dark:from-emerald-950/30 dark:via-gray-900/20 dark:to-transparent">
+      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <dl className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 text-center lg:grid-cols-4">
             {stats.map((stat, index) => (
@@ -166,7 +169,7 @@ const Landing = () => {
       </div>
 
       {/* Features section */}
-      <div id="features" className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300 overflow-hidden bg-gradient-to-b from-transparent via-cyan-50/30 to-sky-50/40 dark:from-transparent dark:via-gray-900/30 dark:to-gray-900/40">
+      <div id="features" className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center px-2">
             <ScrollReveal direction="up" delay={100} duration={800}>
@@ -211,7 +214,7 @@ const Landing = () => {
       </div>
 
       {/* CTA section */}
-      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-sky-50/50 via-cyan-100/40 to-sky-100/50 dark:from-gray-900/50 dark:via-emerald-950/30 dark:to-gray-900/50">
+      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <ScrollReveal direction="up" delay={100} duration={800}>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm px-4">
