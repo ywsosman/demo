@@ -136,7 +136,6 @@ const Landing = () => {
 
       {/* Stats section */}
       <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300">
-        <div className="absolute inset-0 bg-white/40 dark:bg-gray-900/40 backdrop-blur-sm"></div>
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <dl className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 text-center lg:grid-cols-4">
             {stats.map((stat, index) => (
@@ -146,9 +145,9 @@ const Landing = () => {
                 delay={index * 100}
                 duration={800}
               >
-                <div className="mx-auto flex max-w-xs flex-col gap-y-2 sm:gap-y-4">
-                  <dt className="text-xs sm:text-sm md:text-base leading-5 sm:leading-7 text-gray-900 dark:text-white">{stat.name}</dt>
-                  <dd className="order-first text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                <div className="mx-auto flex max-w-xs flex-col gap-y-2 sm:gap-y-4 p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                  <dt className="text-xs sm:text-sm md:text-base leading-5 sm:leading-7 text-gray-800 dark:text-gray-100 font-medium">{stat.name}</dt>
+                  <dd className="order-first text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">
                     <AnimatedCounter 
                       end={stat.numericValue}
                       suffix={stat.suffix}
