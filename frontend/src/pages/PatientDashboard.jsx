@@ -235,20 +235,20 @@ const PatientDashboard = () => {
             </div>
           ) : (
             <div className="card">
-              <div className="overflow-hidden">
+              <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Date
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Symptoms
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         AI Prediction
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Status
                       </th>
                     </tr>
@@ -259,21 +259,21 @@ const PatientDashboard = () => {
                         key={session.id} 
                         className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 dark:text-white">
                           {format(new Date(session.createdAt), 'MMM dd, yyyy')}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                          <div className="max-w-xs truncate">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-900 dark:text-white">
+                          <div className="max-w-[150px] sm:max-w-xs truncate">
                             {session.symptoms}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-900 dark:text-white">
                           {session.aiPrediction && session.aiPrediction.length > 0 ? (
                             <div>
-                              <div className="font-medium">
+                              <div className="font-medium max-w-[120px] sm:max-w-none truncate">
                                 {session.aiPrediction[0].condition}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                              <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                 {Math.round(session.aiPrediction[0].confidence * 100)}% confidence
                               </div>
                             </div>
@@ -281,8 +281,8 @@ const PatientDashboard = () => {
                             <span className="text-gray-400 dark:text-gray-500">Processing...</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-2">
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center space-x-1 sm:space-x-2">
                             {getStatusIcon(session.status)}
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(session.status)}`}>
                               {session.status}
