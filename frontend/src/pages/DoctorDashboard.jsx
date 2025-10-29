@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import ScrollReveal from '../components/ScrollReveal';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -109,73 +110,73 @@ const DoctorDashboard = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome, Dr. {user.firstName}!
-          </h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
-            Review patient diagnoses and provide professional medical guidance
-          </p>
-        </div>
+        <ScrollReveal direction="up" delay={0} duration={800}>
+          {/* Header */}
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+              Welcome, Dr. {user.firstName}!
+            </h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+              Review patient diagnoses and provide professional medical guidance
+            </p>
+          </div>
 
-        {/* Stats Overview */}
-        <div className="mb-8">
-            <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
-                  </div>
+          {/* Stats Overview */}
+          <div className="mb-8">
+          <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                </div>
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
                 </div>
               </div>
+            </div>
 
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClockIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.pendingSessions}</p>
-                  </div>
+            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <ClockIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
+                </div>
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.pendingSessions}</p>
                 </div>
               </div>
+            </div>
 
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewedSessions}</p>
-                  </div>
+            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <CheckCircleIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
+                </div>
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewedSessions}</p>
                 </div>
               </div>
+            </div>
 
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <UserGroupIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalPatients}</p>
-                  </div>
+            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <UserGroupIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
+                </div>
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalPatients}</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+          </div>
 
-        {/* Sessions Tabs */}
-        <div>
+          {/* Sessions Tabs */}
+          <div>
           {/* Tab Navigation */}
           <div className="border-b border-gray-200 dark:border-gray-700 mb-4 sm:mb-6 overflow-x-auto">
               <nav className="-mb-px flex space-x-4 sm:space-x-8">
@@ -409,7 +410,8 @@ const DoctorDashboard = () => {
                 )}
               </div>
           )}
-        </div>
+          </div>
+        </ScrollReveal>
 
         {/* Review Modal */}
         {selectedSession && (
