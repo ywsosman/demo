@@ -353,7 +353,7 @@ export const StaggeredMenu = ({
         display: 'none'
       });
       
-      // Create timeline for welcome message animation
+      // Create timeline for welcome message animation with smooth easing
       const tl = gsap.timeline({
         onComplete: () => {
           setWelcomeAnimated(true);
@@ -362,30 +362,30 @@ export const StaggeredMenu = ({
         }
       });
       
-      // Open from right to left
+      // Open from right to left with smooth elastic ease
       tl.to(welcomeEl, {
         width: 'auto',
         opacity: 1,
-        duration: 0.6,
-        ease: 'power3.out'
+        duration: 0.8,
+        ease: 'power4.out'
       })
       // Stay for 2 seconds
       .to({}, { duration: 2 })
-      // Close from left to right
+      // Close from left to right with smooth ease
       .to(welcomeEl, {
         width: 0,
         opacity: 0,
-        duration: 0.5,
-        ease: 'power3.in'
+        duration: 0.6,
+        ease: 'power4.in'
       })
-      // Show initials
+      // Show initials with smooth bounce
       .set(welcomeEl, { display: 'none' })
       .set(initialsEl, { display: 'flex' })
       .to(initialsEl, {
         opacity: 1,
         scale: 1,
-        duration: 0.4,
-        ease: 'back.out(1.7)'
+        duration: 0.6,
+        ease: 'elastic.out(1, 0.5)'
       });
       
       welcomeAnimationRef.current = tl;

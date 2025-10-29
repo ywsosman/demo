@@ -113,9 +113,10 @@
   background: rgba(107, 114, 128, 0.08);
   border-radius: 0.5rem;
   pointer-events: auto;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
   white-space: nowrap;
   overflow: hidden;
+  will-change: width, opacity;
 }
 
 .dark .sm-welcome-message {
@@ -128,6 +129,7 @@
   color: #374151;
   white-space: nowrap;
   transition: color 0.3s ease;
+  display: inline-block;
 }
 
 .dark .sm-welcome-text {
@@ -138,10 +140,18 @@
   font-weight: 700;
   color: #374151;
   margin-left: 0.25rem;
+  display: inline-block;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .dark .sm-welcome-name {
-  color: #d1d5db;
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .sm-user-initials {
@@ -157,7 +167,8 @@
   pointer-events: auto;
   cursor: default;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, box-shadow;
 }
 
 .dark .sm-user-initials {
@@ -166,12 +177,12 @@
 }
 
 .sm-user-initials:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
 }
 
 .dark .sm-user-initials:hover {
-  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 6px 12px rgba(220, 38, 38, 0.5);
 }
 
 .sm-initials-text {
@@ -180,6 +191,11 @@
   color: #ffffff;
   letter-spacing: 0.5px;
   user-select: none;
+  transition: transform 0.3s ease;
+}
+
+.sm-user-initials:hover .sm-initials-text {
+  transform: scale(1.05);
 }
 
 .dark .staggered-menu-header {

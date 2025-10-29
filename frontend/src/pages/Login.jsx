@@ -55,7 +55,8 @@ const Login = () => {
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
-      navigate('/dashboard');
+      // Navigate to landing page after login to show welcome animation
+      navigate('/');
     }
   };
 
