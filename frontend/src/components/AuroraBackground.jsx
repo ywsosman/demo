@@ -3,7 +3,7 @@ import './AuroraBackgroundResponsive.css';
 
 const AuroraBackground = () => {
   return (
-    <div className="aurora-background-wrapper fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div className="aurora-background-wrapper fixed inset-0 z-0 overflow-hidden pointer-events-none">
       {/* Base gradient background - Blue/Cyan for light, Mint/Green for dark */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-cyan-50 to-sky-50 dark:from-gray-900 dark:via-emerald-950/20 dark:to-gray-900 transition-colors duration-500" />
       

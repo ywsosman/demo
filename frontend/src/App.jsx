@@ -64,12 +64,13 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen relative transition-colors duration-300 bg-white dark:bg-gray-900">
+          <div className="min-h-screen relative transition-colors duration-300">
             {/* Aurora Background */}
             <AuroraBackground />
             
-            <Navbar />
-            <main className="relative z-0 pt-[88px] xl:pt-20">
+            <div className="relative z-10">
+              <Navbar />
+              <main className="pt-[88px] xl:pt-20">
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
@@ -163,35 +164,36 @@ function App() {
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </main>
-          
-          {/* Toast notifications */}
-          <Toaster 
-            position="top-center"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-                marginTop: '80px',
-              },
-              success: {
-                duration: 2500,
-                style: {
-                  background: '#22c55e',
-                  marginTop: '80px',
-                },
-              },
-              error: {
-                duration: 2500,
-                style: {
-                  background: '#ef4444',
-                  marginTop: '80px',
-                },
-              },
-            }}
-          />
-        </div>
+              </main>
+              
+              {/* Toast notifications */}
+              <Toaster 
+                position="top-center"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                    marginTop: '80px',
+                  },
+                  success: {
+                    duration: 2500,
+                    style: {
+                      background: '#22c55e',
+                      marginTop: '80px',
+                    },
+                  },
+                  error: {
+                    duration: 2500,
+                    style: {
+                      background: '#ef4444',
+                      marginTop: '80px',
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
       </Router>
     </ThemeProvider>
     </AuthProvider>
