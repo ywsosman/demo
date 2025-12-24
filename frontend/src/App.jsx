@@ -16,6 +16,8 @@ import DiagnosisHistory from './pages/DiagnosisHistory';
 import PatientProfile from './pages/PatientProfile';
 import DoctorProfile from './pages/DoctorProfile';
 import DoctorPatients from './pages/DoctorPatients';
+import AdminDashboard from './pages/AdminDashboard';
+import ManageUsers from './pages/ManageUsers';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole = null }) => {
@@ -157,6 +159,24 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="doctor">
                     <DoctorPatients />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Admin routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/users" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <ManageUsers />
                   </ProtectedRoute>
                 } 
               />

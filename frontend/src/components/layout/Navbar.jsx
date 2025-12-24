@@ -142,6 +142,23 @@ const Navbar = () => {
       );
     }
 
+    if (user && user.role === 'admin') {
+      items.push(
+        { 
+          label: 'Admin Dashboard', 
+          ariaLabel: 'View admin dashboard', 
+          link: '/admin/dashboard',
+          onClick: () => navigate('/admin/dashboard')
+        },
+        { 
+          label: 'Manage Users', 
+          ariaLabel: 'Manage all users', 
+          link: '/admin/users',
+          onClick: () => navigate('/admin/users')
+        }
+      );
+    }
+
     // Add logout for authenticated users
     if (user) {
       items.push({

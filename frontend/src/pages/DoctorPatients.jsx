@@ -26,7 +26,7 @@ const DoctorPatients = () => {
   const fetchPatients = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/doctor/patients');
+      const response = await api.get('/users/patients');
       setPatients(response.data.patients || []);
     } catch (error) {
       console.error('Error fetching patients:', error);
@@ -62,13 +62,13 @@ const DoctorPatients = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       default:
-        return 'bg-gray-100 text-gray-800 dark:text-gray-200';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
   };
 

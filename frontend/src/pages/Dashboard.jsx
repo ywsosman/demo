@@ -13,6 +13,8 @@ const Dashboard = () => {
         navigate('/patient/dashboard', { replace: true });
       } else if (user.role === 'doctor') {
         navigate('/doctor/dashboard', { replace: true });
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
       }
     }
   }, [user, navigate]);
