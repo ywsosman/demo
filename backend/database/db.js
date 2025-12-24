@@ -63,6 +63,15 @@ class Database {
       // Create demo users
       const hashedPassword = await bcrypt.hash('demo123', 10);
 
+      // Demo admin
+      const admin = await User.create({
+        email: 'admin@demo.com',
+        password: hashedPassword,
+        role: 'admin',
+        firstName: 'Admin',
+        lastName: 'User'
+      });
+
       // Demo doctor
       const doctor = await User.create({
         email: 'doctor@demo.com',
@@ -98,6 +107,7 @@ class Database {
       });
 
       console.log('🌱 Demo data seeded successfully');
+      console.log('👑 Demo Admin: admin@demo.com / demo123');
       console.log('👨‍⚕️ Demo Doctor: doctor@demo.com / demo123');
       console.log('🧑‍🦱 Demo Patient: patient@demo.com / demo123');
     } catch (error) {

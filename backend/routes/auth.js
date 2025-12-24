@@ -16,7 +16,7 @@ const registerSchema = Joi.object({
   password: Joi.string().min(6).required(),
   firstName: Joi.string().min(2).max(50).required(),
   lastName: Joi.string().min(2).max(50).required(),
-  role: Joi.string().valid('patient', 'doctor').required()
+  role: Joi.string().valid('patient', 'doctor', 'admin').required()
 });
 
 const loginSchema = Joi.object({
