@@ -9,6 +9,7 @@ require('dotenv').config();
 const authRoutes = require('../routes/auth');
 const diagnosisRoutes = require('../routes/diagnosis');
 const userRoutes = require('../routes/users');
+const adminRoutes = require('../routes/admin');
 
 // Import database initialization
 const db = require('../database/db');
@@ -63,6 +64,7 @@ app.use(async (req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/diagnosis', diagnosisRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -82,7 +84,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       auth: '/api/auth',
       diagnosis: '/api/diagnosis',
-      users: '/api/users'
+      users: '/api/users',
+      admin: '/api/admin'
     }
   });
 });
