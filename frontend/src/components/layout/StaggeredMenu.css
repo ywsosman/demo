@@ -537,7 +537,7 @@
   position: relative;
   color: #111827;
   font-weight: 700;
-  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
   cursor: pointer;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -613,13 +613,13 @@
 /* Large tablets and small desktops */
 @media (max-width: 1280px) {
   .sm-panel-item {
-    font-size: clamp(1.875rem, 4.5vw, 3.25rem);
+    font-size: clamp(1.375rem, 3.5vw, 2.5rem);
   }
 }
 
 @media (max-width: 1024px) {
   .sm-panel-item {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-size: clamp(1.25rem, 3vw, 2.25rem);
   }
   
   .sm-panel-inner {
@@ -689,7 +689,7 @@
   }
   
   .sm-panel-item {
-    font-size: clamp(1.5rem, 5.5vw, 2.25rem);
+    font-size: clamp(1.125rem, 4.5vw, 1.875rem);
   }
 }
 
@@ -775,9 +775,9 @@
   }
   
   .sm-panel-item {
-    font-size: clamp(1.375rem, 6.5vw, 2rem);
+    font-size: clamp(1rem, 5vw, 1.625rem);
     padding: 0.4rem 0.875rem;
-    min-height: 54px;
+    min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -860,7 +860,7 @@
   }
   
   .sm-panel-item {
-    font-size: clamp(1.25rem, 7vw, 1.875rem);
+    font-size: clamp(0.938rem, 5.5vw, 1.5rem);
   }
 }
 
@@ -933,9 +933,9 @@
   }
   
   .sm-panel-item {
-    font-size: clamp(1.125rem, 7.5vw, 1.75rem);
+    font-size: clamp(0.875rem, 6vw, 1.375rem);
     padding: 0.35rem 0.65rem;
-    min-height: 48px;
+    min-height: 46px;
   }
 }
 
