@@ -192,12 +192,12 @@ const Landing = () => {
           
           <div className="mx-auto mt-12 sm:mt-16 lg:mt-24 scroll-stack-container">
             <ScrollStack
-              itemDistance={80}
-              itemScale={0.04}
-              itemStackDistance={25}
-              stackPosition="20%"
-              scaleEndPosition="15%"
-              baseScale={0.90}
+              itemDistance={50}
+              itemScale={0.03}
+              itemStackDistance={18}
+              stackPosition="18%"
+              scaleEndPosition="12%"
+              baseScale={0.92}
             >
               {features.map((feature) => (
                 <ScrollStackItem key={feature.name}>

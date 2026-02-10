@@ -1,9 +1,63 @@
 /* Container wrapper - controls overall height */
 .scroll-stack-container {
   position: relative;
-  height: 700px;
+  height: 550px;
   width: 100%;
   contain: layout style; /* Optimize rendering performance */
+  /* Ensure container fits complete cards */
+  overflow: visible;
+}
+
+/* Blurred background wrapper for better card integration */
+.scroll-stack-container::before {
+  content: '';
+  position: absolute;
+  inset: -5%;
+  background: linear-gradient(
+    180deg,
+    rgba(240, 249, 255, 0.3) 0%,
+    rgba(224, 242, 254, 0.5) 50%,
+    rgba(240, 249, 255, 0.3) 100%
+  );
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 32px;
+  z-index: -1;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.dark .scroll-stack-container::before {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 78, 59, 0.1) 0%,
+    rgba(4, 120, 87, 0.18) 45%,
+    rgba(15, 23, 42, 0.6) 100%
+  );
+  opacity: 0.5;
+}
+
+/* Add subtle shadow to blend with page */
+.scroll-stack-container::after {
+  content: '';
+  position: absolute;
+  inset: -3%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(14, 165, 233, 0.08) 0%,
+    transparent 70%
+  );
+  border-radius: 32px;
+  z-index: -2;
+  filter: blur(30px);
+}
+
+.dark .scroll-stack-container::after {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(16, 185, 129, 0.12) 0%,
+    transparent 70%
+  );
 }
 
 .scroll-stack-scroller {
@@ -14,9 +68,11 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: auto; /* Changed from smooth to reduce lag */
+  scroll-behavior: smooth;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  /* Add scroll padding to prevent cards from being cut off */
+  scroll-padding: 20px 0;
   /* Removed will-change for better performance - only use when actively scrolling */
 }
 
@@ -24,8 +80,40 @@
   will-change: scroll-position;
 }
 
+/* Custom scrollbar styling for better UX */
+.scroll-stack-scroller::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar-track {
+  background: rgba(156, 163, 175, 0.1);
+  border-radius: 10px;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.3);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.scroll-stack-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.5);
+}
+
+.dark .scroll-stack-scroller::-webkit-scrollbar-track {
+  background: rgba(75, 85, 99, 0.2);
+}
+
+.dark .scroll-stack-scroller::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+.dark .scroll-stack-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.5);
+}
+
 .scroll-stack-inner {
-  padding: 15vh 2rem 40rem;
+  padding: 8vh 1.5rem 20vh;
   min-height: 100vh;
   contain: layout; /* Optimize rendering */
 }
@@ -39,14 +127,14 @@
   transform-origin: top center;
   /* Only use will-change during transitions */
   backface-visibility: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
   height: auto;
-  min-height: 280px;
+  min-height: 220px;
   width: 100%;
-  max-width: 520px;
-  margin: 30px auto;
-  padding: 2.5rem;
-  border-radius: 16px;
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 1.75rem;
+  border-radius: 14px;
   box-sizing: border-box;
   /* Improve mobile performance */
   -webkit-transform: translate3d(0, 0, 0);
@@ -55,26 +143,47 @@
   contain: layout style paint; /* Aggressive optimization */
   
   /* Light mode styling */
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.98));
-  border: 1px solid rgba(156, 163, 175, 0.3);
-  backdrop-filter: blur(8px); /* Reduced blur for better performance */
-  -webkit-backdrop-filter: blur(8px);
+  background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.9), rgba(229, 231, 235, 0.85));
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(12px); /* Increased for better blend */
+  -webkit-backdrop-filter: blur(12px);
   
   display: flex;
   flex-direction: column;
   gap: 1rem;
   
+  /* Smooth scroll snapping for better alignment */
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  
   /* Add transition for smoother transforms */
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effect for better interactivity */
+.scroll-stack-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Dark mode styles */
 .dark .scroll-stack-card {
-  background: linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.98));
-  border: 1px solid rgba(75, 85, 99, 0.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px); /* Reduced blur for better performance */
-  -webkit-backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.28), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.28), transparent 60%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+  border: 1px solid rgba(45, 212, 191, 0.45);
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(16, 185, 129, 0.25) inset;
+  backdrop-filter: blur(12px); /* Increased for better blend */
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .scroll-stack-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .scroll-stack-end {
@@ -87,22 +196,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.875rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
   background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   flex-shrink: 0;
 }
 
 .scroll-stack-card .card-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   color: white;
 }
 
 .scroll-stack-card .card-title {
-  font-size: 1.625rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -114,8 +223,8 @@
 }
 
 .scroll-stack-card .card-description {
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   color: #4b5563;
   margin: 0;
 }
@@ -128,58 +237,16 @@
 /* Large desktops */
 @media (min-width: 1536px) {
   .scroll-stack-container {
-    height: 800px;
-  }
-  
-  .scroll-stack-card {
-    max-width: 600px;
-    padding: 3rem;
-  }
-  
-  .scroll-stack-card .card-title {
-    font-size: 1.875rem;
-  }
-  
-  .scroll-stack-card .card-description {
-    font-size: 1.125rem;
-  }
-  
-  .scroll-stack-card .card-icon-wrapper {
-    width: 4rem;
-    height: 4rem;
-  }
-  
-  .scroll-stack-card .card-icon {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
-}
-
-/* Desktop */
-@media (min-width: 1024px) and (max-width: 1535px) {
-  .scroll-stack-container {
-    height: 700px;
-  }
-  
-  .scroll-stack-card {
-    max-width: 520px;
-  }
-}
-
-/* Tablets */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .scroll-stack-container {
     height: 600px;
   }
   
   .scroll-stack-inner {
-    padding: 12vh 1.5rem 35rem;
+    padding: 8vh 1.5rem 20vh;
   }
   
   .scroll-stack-card {
-    max-width: 480px;
-    padding: 2.25rem;
-    min-height: 260px;
+    max-width: 500px;
+    padding: 2rem;
   }
   
   .scroll-stack-card .card-title {
@@ -201,68 +268,42 @@
   }
 }
 
-/* Mobile Large (portrait phones, landscape small phones) */
-@media (max-width: 767px) {
+/* Desktop */
+@media (min-width: 1024px) and (max-width: 1535px) {
   .scroll-stack-container {
     height: 550px;
   }
   
   .scroll-stack-inner {
-    padding: 10vh 1rem 30rem;
+    padding: 8vh 1.5rem 20vh;
   }
   
   .scroll-stack-card {
-    max-width: 90%;
-    padding: 2rem;
-    min-height: 240px;
-    /* Further optimize for mobile */
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-  
-  .scroll-stack-card .card-title {
-    font-size: 1.375rem;
-  }
-  
-  .scroll-stack-card .card-description {
-    font-size: 0.9375rem;
-    line-height: 1.6;
-  }
-  
-  .scroll-stack-card .card-icon-wrapper {
-    width: 3rem;
-    height: 3rem;
-  }
-  
-  .scroll-stack-card .card-icon {
-    width: 1.75rem;
-    height: 1.75rem;
+    max-width: 450px;
   }
 }
 
-/* Mobile Small */
-@media (max-width: 480px) {
+/* Tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
   .scroll-stack-container {
-    height: 500px;
+    height: 480px;
+  }
+  
+  .scroll-stack-container::before {
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
   }
   
   .scroll-stack-inner {
-    padding: 8vh 0.75rem 25rem;
+    padding: 6vh 1.25rem 18vh;
   }
   
   .scroll-stack-card {
-    padding: 1.75rem;
-    max-width: 95%;
-    min-height: 220px;
-    /* Minimal blur for better performance on smaller devices */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    /* Reduce shadow complexity on mobile */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 1px 5px rgba(0, 0, 0, 0.05);
-  }
-  
-  .dark .scroll-stack-card {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), 0 1px 5px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    padding: 1.5rem;
+    min-height: 200px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   
   .scroll-stack-card .card-title {
@@ -271,13 +312,11 @@
   
   .scroll-stack-card .card-description {
     font-size: 0.875rem;
-    line-height: 1.55;
   }
   
   .scroll-stack-card .card-icon-wrapper {
     width: 2.75rem;
     height: 2.75rem;
-    margin-bottom: 0.5rem;
   }
   
   .scroll-stack-card .card-icon {
@@ -286,23 +325,33 @@
   }
 }
 
-/* Extra small devices */
-@media (max-width: 360px) {
+/* Mobile Large (portrait phones, landscape small phones) */
+@media (max-width: 767px) {
   .scroll-stack-container {
-    height: 450px;
+    height: 420px;
+  }
+  
+  .scroll-stack-container::before {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+  }
+  
+  .scroll-stack-container::after {
+    filter: blur(20px);
+  }
+  
+  .scroll-stack-inner {
+    padding: 5vh 1rem 15vh;
   }
   
   .scroll-stack-card {
+    max-width: 90%;
     padding: 1.5rem;
-    min-height: 200px;
-    /* Minimal effects for best performance */
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
-  }
-  
-  .dark .scroll-stack-card {
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.12);
+    min-height: 180px;
+    /* Optimized blur for mobile */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   
   .scroll-stack-card .card-title {
@@ -311,6 +360,101 @@
   
   .scroll-stack-card .card-description {
     font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) {
+  .scroll-stack-container {
+    height: 380px;
+  }
+  
+  .scroll-stack-container::before {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+  }
+  
+  .scroll-stack-container::after {
+    filter: blur(16px);
+  }
+  
+  .scroll-stack-inner {
+    padding: 5vh 0.75rem 16rem;
+  }
+  
+  .scroll-stack-card {
+    padding: 1.25rem;
+    max-width: 95%;
+    min-height: 170px;
+    /* Minimal blur for better performance on smaller devices */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    /* Reduce shadow complexity on mobile */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .dark .scroll-stack-card {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1.0625rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  
+  .scroll-stack-card .card-icon-wrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.375rem;
+  }
+  
+  .scroll-stack-card .card-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .scroll-stack-container {
+    height: 350px;
+  }
+  
+  .scroll-stack-card {
+    padding: 1.125rem;
+    min-height: 160px;
+    /* Minimal effects for best performance */
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
+  
+  .dark .scroll-stack-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scroll-stack-card .card-title {
+    font-size: 1rem;
+  }
+  
+  .scroll-stack-card .card-description {
+    font-size: 0.75rem;
   }
 }
 

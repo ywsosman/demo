@@ -1,41 +1,112 @@
 /* Responsive styles for AuroraBackground component */
 
+/* Base responsive sizing for aurora blobs */
+.aurora-blob {
+  max-width: 800px;
+  max-height: 800px;
+}
+
 /* Mobile and tablet optimizations */
 @media (max-width: 1024px) {
-  .aurora-background-wrapper > div {
-    /* Reduce blur on smaller screens for better performance */
-    filter: blur(48px) !important;
+  .aurora-blob {
+    filter: blur(56px) !important;
+    max-width: 600px;
+    max-height: 600px;
   }
 }
 
 @media (max-width: 768px) {
-  .aurora-background-wrapper > div {
+  .aurora-blob {
     /* Further reduce blur on tablets */
-    filter: blur(40px) !important;
+    filter: blur(48px) !important;
+    max-width: 450px;
+    max-height: 450px;
   }
   
   /* Reduce opacity on mobile for better readability */
-  .aurora-background-wrapper > div[class*="aurora-"] {
-    opacity: 0.7 !important;
+  .aurora-blob {
+    opacity: 0.75 !important;
+  }
+  
+  /* Adjust positioning for better fit */
+  .aurora-blob-1 {
+    top: -10% !important;
+    left: -20% !important;
+  }
+  
+  .aurora-blob-2 {
+    top: 20% !important;
+    right: -20% !important;
+  }
+  
+  .aurora-blob-3 {
+    bottom: -10% !important;
+  }
+  
+  .aurora-blob-5 {
+    transform: translate(-50%, -50%) scale(0.85) !important;
   }
 }
 
 @media (max-width: 480px) {
-  .aurora-background-wrapper > div {
+  .aurora-blob {
     /* Minimal blur on small phones for performance */
-    filter: blur(32px) !important;
+    filter: blur(40px) !important;
+    max-width: 320px;
+    max-height: 320px;
   }
   
-  .aurora-background-wrapper > div[class*="aurora-"] {
-    opacity: 0.6 !important;
+  .aurora-blob {
+    opacity: 0.65 !important;
+  }
+  
+  /* Better positioning for small screens */
+  .aurora-blob-1 {
+    top: -15% !important;
+    left: -25% !important;
+  }
+  
+  .aurora-blob-2 {
+    top: 15% !important;
+    right: -25% !important;
+  }
+  
+  .aurora-blob-3 {
+    bottom: -15% !important;
+    left: 10% !important;
+  }
+  
+  .aurora-blob-4 {
+    bottom: 20% !important;
+    right: 25% !important;
+  }
+  
+  .aurora-blob-5 {
+    transform: translate(-50%, -50%) scale(0.7) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .aurora-blob {
+    filter: blur(32px) !important;
+    max-width: 250px;
+    max-height: 250px;
+  }
+  
+  .aurora-blob {
+    opacity: 0.55 !important;
   }
 }
 
 /* Landscape orientation adjustments */
 @media (orientation: landscape) and (max-height: 600px) {
-  .aurora-background-wrapper {
-    /* Reduce vertical space usage in landscape */
-    transform: scale(0.9);
+  .aurora-blob {
+    /* Reduce size in landscape */
+    transform: scale(0.8) !important;
+  }
+  
+  .aurora-blob-5 {
+    transform: translate(-50%, -50%) scale(0.65) !important;
   }
 }
 
