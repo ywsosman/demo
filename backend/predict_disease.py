@@ -79,7 +79,14 @@ class DiseasePredictor:
         """
         try:
             # Get predictions
-            predictions = self.pipeline(symptom_text)[0]
+            # Note: pipeline with return_all_scores=True returns list of dicts directly
+            predictions = self.pipeline(symptom_text)
+            
+            # Handle different return formats
+            if isinstance(predictions, list) and len(predictions) > 0:
+                # If it's a list of lists, unwrap it
+                if isinstance(predictions[0], list):
+                    predictions = predictions[0]
             
             # Find the disease with highest score
             best_prediction = max(predictions, key=lambda x: x['score'])

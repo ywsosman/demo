@@ -4,7 +4,7 @@ const path = require('path');
 // Configuration
 const PYTHON_SCRIPT_PATH = path.join(__dirname, '..', 'predict_disease.py');
 const PYTHON_COMMAND = process.env.PYTHON_PATH || 'python';  // or 'python3' on some systems
-const MODEL_TIMEOUT = 60000; // 60 seconds timeout for model prediction
+const MODEL_TIMEOUT = 180000; // 180 seconds (3 minutes) - allows time for BERT model + SHAP initialization
 
 class AIModel {
   constructor() {
@@ -20,30 +20,30 @@ class AIModel {
   async predictDiagnosis(patientData) {
     try {
       const { symptoms, severity, duration, additionalInfo } = patientData;
-      
+
       // Construct full symptom text
       let fullSymptomText = symptoms;
-      
+
       // Optionally enhance with additional context
       if (additionalInfo) {
         fullSymptomText += `. Additional info: ${additionalInfo}`;
       }
-      
+
       // Call Python prediction script
       const pythonResult = await this.callPythonPredictor(fullSymptomText);
-      
+
       if (!pythonResult.success) {
         console.error('Python prediction failed:', pythonResult.error);
         // Fallback to basic response
-      return {
+        return {
           predictions: [],
           confidence: 0,
           explanation: pythonResult.message || 'Model prediction failed. Please try again.',
           error: pythonResult.error,
-        timestamp: new Date().toISOString()
-      };
+          timestamp: new Date().toISOString()
+        };
       }
-      
+
       // Format predictions for frontend
       const predictions = pythonResult.top_predictions.map(pred => ({
         condition: pred.disease,
@@ -52,14 +52,14 @@ class AIModel {
         recommendations: this.getRecommendations(pred.disease),
         matchedSymptoms: []
       }));
-      
+
       // Build explanation text
       const explanation = this.generateExplanationFromShap(
         pythonResult.predicted_disease,
         pythonResult.confidence,
         pythonResult.word_importance
       );
-      
+
       return {
         predictions,
         confidence: pythonResult.confidence,
@@ -70,7 +70,7 @@ class AIModel {
         timestamp: new Date().toISOString(),
         modelDevice: pythonResult.device
       };
-      
+
     } catch (error) {
       console.error('AI Model prediction error:', error);
       return {
@@ -175,13 +175,13 @@ class AIModel {
       .join(', ');
 
     let explanation = `Based on AI analysis, the model predicts ${disease} with ${(confidence * 100).toFixed(1)}% confidence. `;
-    
+
     if (topWords) {
       explanation += `Key symptoms that contributed to this prediction include: ${topWords}. `;
     }
-    
+
     explanation += 'This assessment uses advanced natural language processing and should be reviewed by a healthcare professional.';
-    
+
     return explanation;
   }
 
