@@ -186,15 +186,15 @@ const ScrollStack = ({
   const setupLenis = useCallback(() => {
     if (useWindowScroll) {
       const lenis = new Lenis({
-        duration: 1.0, // Reduced for better performance
+        duration: 1.2, // Smoother, more fluid duration
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 1.8,
+        touchMultiplier: 2,
         infinite: false,
-        wheelMultiplier: 1,
-        lerp: 0.12, // Slightly faster interpolation
+        wheelMultiplier: 1.2,
+        lerp: 0.1, // Smoother interpolation
         syncTouch: true,
-        syncTouchLerp: 0.1
+        syncTouchLerp: 0.08
       });
 
       lenis.on('scroll', handleScroll);
@@ -214,19 +214,19 @@ const ScrollStack = ({
       const lenis = new Lenis({
         wrapper: scroller,
         content: scroller.querySelector('.scroll-stack-inner'),
-        duration: 1.0, // Reduced for better performance
+        duration: 1.2, // Smoother, more fluid duration
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 1.8,
+        touchMultiplier: 2,
         infinite: false,
         gestureOrientationHandler: true,
         normalizeWheel: true,
-        wheelMultiplier: 1,
-        touchInertiaMultiplier: 30, // Slightly reduced
-        lerp: 0.12, // Faster interpolation for snappier feel
+        wheelMultiplier: 1.2,
+        touchInertiaMultiplier: 35, // Better inertia for smooth feel
+        lerp: 0.1, // Smoother interpolation
         syncTouch: true,
-        syncTouchLerp: 0.1,
-        touchInertia: 0.55 // Slightly reduced
+        syncTouchLerp: 0.08,
+        touchInertia: 0.6 // Better touch response
       });
 
       lenis.on('scroll', handleScroll);
