@@ -1,10 +1,11 @@
 const { spawn } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
-// Configuration
 const PYTHON_SCRIPT_PATH = path.join(__dirname, '..', 'predict_disease.py');
-const PYTHON_COMMAND = process.env.PYTHON_PATH || 'python';  // or 'python3' on some systems
-const MODEL_TIMEOUT = 180000; // 180 seconds (3 minutes) - allows time for BERT model + SHAP initialization
+const VENV_PYTHON = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
+const PYTHON_COMMAND = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : (process.env.PYTHON_PATH || 'python');
+const MODEL_TIMEOUT = 180000; // 3 minutes — BERT model + SHAP + LIME init
 
 class AIModel {
   constructor() {
@@ -13,28 +14,33 @@ class AIModel {
   }
 
   /**
-   * Call Python script to predict disease using fine-tuned BERT model
-   * @param {Object} patientData - Patient symptom data
-   * @returns {Promise<Object>} Prediction results with SHAP explanations
+   * Predict disease from patient data.
+   * Accepts both free-text symptoms and structured dropdown selections.
    */
   async predictDiagnosis(patientData) {
     try {
-      const { symptoms, severity, duration, additionalInfo } = patientData;
+      const { symptoms, selectedSymptoms, severity, duration, additionalInfo } = patientData;
 
-      // Construct full symptom text
-      let fullSymptomText = symptoms;
+      // Build the JSON payload that predict_disease.py now expects
+      const payload = {};
 
-      // Optionally enhance with additional context
-      if (additionalInfo) {
-        fullSymptomText += `. Additional info: ${additionalInfo}`;
+      if (selectedSymptoms && selectedSymptoms.length > 0) {
+        payload.selectedSymptoms = selectedSymptoms;
       }
 
-      // Call Python prediction script
-      const pythonResult = await this.callPythonPredictor(fullSymptomText);
+      // Free-text goes into "text" field; append additionalInfo if present
+      let text = symptoms || '';
+      if (additionalInfo) {
+        text += `. Additional info: ${additionalInfo}`;
+      }
+      if (text) {
+        payload.text = text;
+      }
+
+      const pythonResult = await this.callPythonPredictor(JSON.stringify(payload));
 
       if (!pythonResult.success) {
         console.error('Python prediction failed:', pythonResult.error);
-        // Fallback to basic response
         return {
           predictions: [],
           confidence: 0,
@@ -44,16 +50,19 @@ class AIModel {
         };
       }
 
-      // Format predictions for frontend
+      // Use real precautions returned by the Python script (from Disease precaution.csv)
+      const precautions = pythonResult.precautions || [];
+
       const predictions = pythonResult.top_predictions.map(pred => ({
         condition: pred.disease,
         confidence: pred.confidence,
         description: `AI-predicted condition: ${pred.disease}`,
-        recommendations: this.getRecommendations(pred.disease),
-        matchedSymptoms: []
+        recommendations: pred.disease === pythonResult.predicted_disease && precautions.length
+          ? precautions
+          : this.getGenericRecommendations(),
+        matchedSymptoms: (pythonResult.matched_symptoms || []).map(s => s.label)
       }));
 
-      // Build explanation text
       const explanation = this.generateExplanationFromShap(
         pythonResult.predicted_disease,
         pythonResult.confidence,
@@ -64,9 +73,11 @@ class AIModel {
         predictions,
         confidence: pythonResult.confidence,
         explanation,
-        shapExplanation: pythonResult.explanation,  // Raw SHAP data
-        wordImportance: pythonResult.word_importance,  // Top important words
+        wordImportance: pythonResult.word_importance,
         predictedDisease: pythonResult.predicted_disease,
+        matchedSymptoms: pythonResult.matched_symptoms,
+        normalisedInput: pythonResult.normalised_input,
+        precautions,
         timestamp: new Date().toISOString(),
         modelDevice: pythonResult.device
       };
@@ -84,34 +95,35 @@ class AIModel {
   }
 
   /**
-   * Spawn Python process to run disease prediction
-   * @param {string} symptomText - Patient's symptom description
-   * @returns {Promise<Object>} Prediction result from Python
+   * Spawn Python process with a JSON payload instead of plain text.
    */
-  callPythonPredictor(symptomText) {
-    return new Promise((resolve, reject) => {
+  callPythonPredictor(jsonPayload) {
+    return new Promise((resolve) => {
+      console.log('[AI] Python command:', PYTHON_COMMAND);
+      console.log('[AI] Script path:', PYTHON_SCRIPT_PATH);
+      console.log('[AI] Payload:', jsonPayload);
+
       const pythonProcess = spawn(PYTHON_COMMAND, [
         PYTHON_SCRIPT_PATH,
-        symptomText
+        jsonPayload
       ]);
 
       let outputData = '';
       let errorData = '';
 
-      // Collect stdout
       pythonProcess.stdout.on('data', (data) => {
         outputData += data.toString();
       });
 
-      // Collect stderr
       pythonProcess.stderr.on('data', (data) => {
         errorData += data.toString();
       });
 
-      // Handle process completion
       pythonProcess.on('close', (code) => {
+        console.log('[AI] Python exit code:', code);
+        if (errorData) console.log('[AI] stderr:', errorData.slice(-500));
         if (code !== 0) {
-          console.error('Python script error:', errorData);
+          console.error('Python script error:', errorData || '(empty stderr)');
           resolve({
             success: false,
             error: errorData || 'Python script execution failed',
@@ -133,7 +145,6 @@ class AIModel {
         }
       });
 
-      // Handle process errors
       pythonProcess.on('error', (error) => {
         console.error('Failed to start Python process:', error);
         resolve({
@@ -143,7 +154,6 @@ class AIModel {
         });
       });
 
-      // Set timeout
       setTimeout(() => {
         pythonProcess.kill();
         resolve({
@@ -155,19 +165,11 @@ class AIModel {
     });
   }
 
-  /**
-   * Generate human-readable explanation from SHAP word importance
-   * @param {string} disease - Predicted disease
-   * @param {number} confidence - Confidence score
-   * @param {Array} wordImportance - Array of word importance objects
-   * @returns {string} Explanation text
-   */
   generateExplanationFromShap(disease, confidence, wordImportance) {
     if (!wordImportance || wordImportance.length === 0) {
       return `The AI model predicts ${disease} with ${(confidence * 100).toFixed(1)}% confidence.`;
     }
 
-    // Get top positive contributors
     const topWords = wordImportance
       .filter(w => w.importance > 0)
       .slice(0, 5)
@@ -181,28 +183,17 @@ class AIModel {
     }
 
     explanation += 'This assessment uses advanced natural language processing and should be reviewed by a healthcare professional.';
-
     return explanation;
   }
 
-  /**
-   * Get general recommendations for a disease
-   * @param {string} diseaseName - Name of the disease
-   * @returns {Array<string>} List of recommendations
-   */
-  getRecommendations(diseaseName) {
-    // Generic recommendations - can be expanded based on disease database
-    const genericRecommendations = [
+  getGenericRecommendations() {
+    return [
       'Consult with a healthcare professional for proper diagnosis',
       'Monitor your symptoms and note any changes',
       'Keep track of symptom severity and duration',
       'Seek immediate medical attention if symptoms worsen'
     ];
-
-    // You can add disease-specific recommendations here
-    return genericRecommendations;
   }
-
 }
 
 module.exports = new AIModel();

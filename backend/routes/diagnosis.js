@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const Joi = require('joi');
 const DiagnosisSession = require('../models/DiagnosisSession');
 const AuditLog = require('../models/AuditLog');
@@ -9,38 +11,69 @@ const aiModel = require('../models/aiModel');
 
 const router = express.Router();
 
-// Validation schemas
+// Load symptom vocabulary once at startup
+const VOCAB_PATH = path.join(__dirname, '..', 'symptom_vocabulary.json');
+let symptomVocabulary = null;
+try {
+  symptomVocabulary = JSON.parse(fs.readFileSync(VOCAB_PATH, 'utf-8'));
+} catch (err) {
+  console.warn('Could not load symptom vocabulary:', err.message);
+}
+
+// Validation schema — now accepts either free text OR structured symptom ids
 const diagnosisSchema = Joi.object({
-  symptoms: Joi.string().min(5).max(1000).required(),
+  symptoms: Joi.string().max(1000).allow('').default(''),
+  selectedSymptoms: Joi.array().items(Joi.string().max(100)).max(20).default([]),
   severity: Joi.number().integer().min(1).max(10).required(),
   duration: Joi.string().max(100).required(),
   additionalInfo: Joi.string().max(500).allow('')
+}).custom((value, helpers) => {
+  // At least one of symptoms or selectedSymptoms must be provided
+  if ((!value.symptoms || value.symptoms.trim().length < 3) &&
+      (!value.selectedSymptoms || value.selectedSymptoms.length === 0)) {
+    return helpers.error('any.custom', {
+      message: 'Please provide symptoms via the dropdown or text description'
+    });
+  }
+  return value;
 });
 
-// Submit new diagnosis request
+// ---------- Symptom vocabulary endpoint ----------
+
+router.get('/symptoms', (req, res) => {
+  if (!symptomVocabulary) {
+    return res.status(503).json({ message: 'Symptom vocabulary not available' });
+  }
+  res.json({
+    symptoms: symptomVocabulary.symptoms,
+    diseases: symptomVocabulary.diseases
+  });
+});
+
+// ---------- Submit diagnosis ----------
+
 router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res) => {
   try {
-    // Validate input
     const { error, value } = diagnosisSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      const msg = error.details?.[0]?.message || error.message || 'Validation failed';
+      return res.status(400).json({ message: msg });
     }
 
-    const { symptoms, severity, duration, additionalInfo } = value;
+    const { symptoms, selectedSymptoms, severity, duration, additionalInfo } = value;
     const patientId = req.user._id;
 
-    // Get AI prediction
     const aiPrediction = await aiModel.predictDiagnosis({
       symptoms,
+      selectedSymptoms,
       severity,
       duration,
       additionalInfo
     });
 
-    // Save diagnosis session
     const session = await DiagnosisSession.create({
       patientId,
-      symptoms,
+      symptoms: symptoms || (selectedSymptoms || []).join(', '),
       severity,
       duration,
       additionalInfo,
@@ -51,7 +84,6 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
       predictedDisease: aiPrediction.predictedDisease
     });
 
-    // Log audit event
     await AuditLog.create({
       userId: patientId,
       action: 'DIAGNOSIS_SUBMITTED',

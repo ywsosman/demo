@@ -50,6 +50,7 @@ export const authAPI = {
 
 export const diagnosisAPI = {
   submit: (diagnosisData) => api.post('/diagnosis/submit', diagnosisData),
+  getSymptoms: () => api.get('/diagnosis/symptoms'),
   getHistory: () => api.get('/diagnosis/history'),
   getPending: () => api.get('/diagnosis/pending'),
   getAll: () => api.get('/diagnosis/all'),

@@ -1,0 +1,2371 @@
+{
+  "symptoms": [
+    {
+      "id": "abdominal_pain",
+      "label": "Abdominal Pain",
+      "raw": "abdominal_pain"
+    },
+    {
+      "id": "abnormal_menstruation",
+      "label": "Abnormal Menstruation",
+      "raw": "abnormal_menstruation"
+    },
+    {
+      "id": "acidity",
+      "label": "Acidity",
+      "raw": "acidity"
+    },
+    {
+      "id": "acute_liver_failure",
+      "label": "Acute Liver Failure",
+      "raw": "acute_liver_failure"
+    },
+    {
+      "id": "altered_sensorium",
+      "label": "Altered Sensorium",
+      "raw": "altered_sensorium"
+    },
+    {
+      "id": "anxiety",
+      "label": "Anxiety",
+      "raw": "anxiety"
+    },
+    {
+      "id": "back_pain",
+      "label": "Back Pain",
+      "raw": "back_pain"
+    },
+    {
+      "id": "belly_pain",
+      "label": "Belly Pain",
+      "raw": "belly_pain"
+    },
+    {
+      "id": "blackheads",
+      "label": "Blackheads",
+      "raw": "blackheads"
+    },
+    {
+      "id": "bladder_discomfort",
+      "label": "Bladder Discomfort",
+      "raw": "bladder_discomfort"
+    },
+    {
+      "id": "blister",
+      "label": "Blister",
+      "raw": "blister"
+    },
+    {
+      "id": "blood_in_sputum",
+      "label": "Blood In Sputum",
+      "raw": "blood_in_sputum"
+    },
+    {
+      "id": "bloody_stool",
+      "label": "Bloody Stool",
+      "raw": "bloody_stool"
+    },
+    {
+      "id": "blurred_and_distorted_vision",
+      "label": "Blurred And Distorted Vision",
+      "raw": "blurred_and_distorted_vision"
+    },
+    {
+      "id": "breathlessness",
+      "label": "Breathlessness",
+      "raw": "breathlessness"
+    },
+    {
+      "id": "brittle_nails",
+      "label": "Brittle Nails",
+      "raw": "brittle_nails"
+    },
+    {
+      "id": "bruising",
+      "label": "Bruising",
+      "raw": "bruising"
+    },
+    {
+      "id": "burning_micturition",
+      "label": "Burning Micturition",
+      "raw": "burning_micturition"
+    },
+    {
+      "id": "chest_pain",
+      "label": "Chest Pain",
+      "raw": "chest_pain"
+    },
+    {
+      "id": "chills",
+      "label": "Chills",
+      "raw": "chills"
+    },
+    {
+      "id": "cold_hands_and_feets",
+      "label": "Cold Hands And Feets",
+      "raw": "cold_hands_and_feets"
+    },
+    {
+      "id": "coma",
+      "label": "Coma",
+      "raw": "coma"
+    },
+    {
+      "id": "congestion",
+      "label": "Congestion",
+      "raw": "congestion"
+    },
+    {
+      "id": "constipation",
+      "label": "Constipation",
+      "raw": "constipation"
+    },
+    {
+      "id": "continuous_feel_of_urine",
+      "label": "Continuous Feel Of Urine",
+      "raw": "continuous_feel_of_urine"
+    },
+    {
+      "id": "continuous_sneezing",
+      "label": "Continuous Sneezing",
+      "raw": "continuous_sneezing"
+    },
+    {
+      "id": "cough",
+      "label": "Cough",
+      "raw": "cough"
+    },
+    {
+      "id": "cramps",
+      "label": "Cramps",
+      "raw": "cramps"
+    },
+    {
+      "id": "dark_urine",
+      "label": "Dark Urine",
+      "raw": "dark_urine"
+    },
+    {
+      "id": "dehydration",
+      "label": "Dehydration",
+      "raw": "dehydration"
+    },
+    {
+      "id": "depression",
+      "label": "Depression",
+      "raw": "depression"
+    },
+    {
+      "id": "diarrhoea",
+      "label": "Diarrhoea",
+      "raw": "diarrhoea"
+    },
+    {
+      "id": "dischromic _patches",
+      "label": "Dischromic  Patches",
+      "raw": "dischromic _patches"
+    },
+    {
+      "id": "distention_of_abdomen",
+      "label": "Distention Of Abdomen",
+      "raw": "distention_of_abdomen"
+    },
+    {
+      "id": "dizziness",
+      "label": "Dizziness",
+      "raw": "dizziness"
+    },
+    {
+      "id": "drying_and_tingling_lips",
+      "label": "Drying And Tingling Lips",
+      "raw": "drying_and_tingling_lips"
+    },
+    {
+      "id": "enlarged_thyroid",
+      "label": "Enlarged Thyroid",
+      "raw": "enlarged_thyroid"
+    },
+    {
+      "id": "excessive_hunger",
+      "label": "Excessive Hunger",
+      "raw": "excessive_hunger"
+    },
+    {
+      "id": "extra_marital_contacts",
+      "label": "Extra Marital Contacts",
+      "raw": "extra_marital_contacts"
+    },
+    {
+      "id": "family_history",
+      "label": "Family History",
+      "raw": "family_history"
+    },
+    {
+      "id": "fast_heart_rate",
+      "label": "Fast Heart Rate",
+      "raw": "fast_heart_rate"
+    },
+    {
+      "id": "fatigue",
+      "label": "Fatigue",
+      "raw": "fatigue"
+    },
+    {
+      "id": "fluid_overload",
+      "label": "Fluid Overload",
+      "raw": "fluid_overload"
+    },
+    {
+      "id": "foul_smell_of urine",
+      "label": "Foul Smell Of Urine",
+      "raw": "foul_smell_of urine"
+    },
+    {
+      "id": "headache",
+      "label": "Headache",
+      "raw": "headache"
+    },
+    {
+      "id": "high_fever",
+      "label": "High Fever",
+      "raw": "high_fever"
+    },
+    {
+      "id": "hip_joint_pain",
+      "label": "Hip Joint Pain",
+      "raw": "hip_joint_pain"
+    },
+    {
+      "id": "history_of_alcohol_consumption",
+      "label": "History Of Alcohol Consumption",
+      "raw": "history_of_alcohol_consumption"
+    },
+    {
+      "id": "increased_appetite",
+      "label": "Increased Appetite",
+      "raw": "increased_appetite"
+    },
+    {
+      "id": "indigestion",
+      "label": "Indigestion",
+      "raw": "indigestion"
+    },
+    {
+      "id": "inflammatory_nails",
+      "label": "Inflammatory Nails",
+      "raw": "inflammatory_nails"
+    },
+    {
+      "id": "internal_itching",
+      "label": "Internal Itching",
+      "raw": "internal_itching"
+    },
+    {
+      "id": "irregular_sugar_level",
+      "label": "Irregular Sugar Level",
+      "raw": "irregular_sugar_level"
+    },
+    {
+      "id": "irritability",
+      "label": "Irritability",
+      "raw": "irritability"
+    },
+    {
+      "id": "irritation_in_anus",
+      "label": "Irritation In Anus",
+      "raw": "irritation_in_anus"
+    },
+    {
+      "id": "itching",
+      "label": "Itching",
+      "raw": "itching"
+    },
+    {
+      "id": "joint_pain",
+      "label": "Joint Pain",
+      "raw": "joint_pain"
+    },
+    {
+      "id": "knee_pain",
+      "label": "Knee Pain",
+      "raw": "knee_pain"
+    },
+    {
+      "id": "lack_of_concentration",
+      "label": "Lack Of Concentration",
+      "raw": "lack_of_concentration"
+    },
+    {
+      "id": "lethargy",
+      "label": "Lethargy",
+      "raw": "lethargy"
+    },
+    {
+      "id": "loss_of_appetite",
+      "label": "Loss Of Appetite",
+      "raw": "loss_of_appetite"
+    },
+    {
+      "id": "loss_of_balance",
+      "label": "Loss Of Balance",
+      "raw": "loss_of_balance"
+    },
+    {
+      "id": "loss_of_smell",
+      "label": "Loss Of Smell",
+      "raw": "loss_of_smell"
+    },
+    {
+      "id": "malaise",
+      "label": "Malaise",
+      "raw": "malaise"
+    },
+    {
+      "id": "mild_fever",
+      "label": "Mild Fever",
+      "raw": "mild_fever"
+    },
+    {
+      "id": "mood_swings",
+      "label": "Mood Swings",
+      "raw": "mood_swings"
+    },
+    {
+      "id": "movement_stiffness",
+      "label": "Movement Stiffness",
+      "raw": "movement_stiffness"
+    },
+    {
+      "id": "mucoid_sputum",
+      "label": "Mucoid Sputum",
+      "raw": "mucoid_sputum"
+    },
+    {
+      "id": "muscle_pain",
+      "label": "Muscle Pain",
+      "raw": "muscle_pain"
+    },
+    {
+      "id": "muscle_wasting",
+      "label": "Muscle Wasting",
+      "raw": "muscle_wasting"
+    },
+    {
+      "id": "muscle_weakness",
+      "label": "Muscle Weakness",
+      "raw": "muscle_weakness"
+    },
+    {
+      "id": "nausea",
+      "label": "Nausea",
+      "raw": "nausea"
+    },
+    {
+      "id": "neck_pain",
+      "label": "Neck Pain",
+      "raw": "neck_pain"
+    },
+    {
+      "id": "nodal_skin_eruptions",
+      "label": "Nodal Skin Eruptions",
+      "raw": "nodal_skin_eruptions"
+    },
+    {
+      "id": "obesity",
+      "label": "Obesity",
+      "raw": "obesity"
+    },
+    {
+      "id": "pain_behind_the_eyes",
+      "label": "Pain Behind The Eyes",
+      "raw": "pain_behind_the_eyes"
+    },
+    {
+      "id": "pain_during_bowel_movements",
+      "label": "Pain During Bowel Movements",
+      "raw": "pain_during_bowel_movements"
+    },
+    {
+      "id": "pain_in_anal_region",
+      "label": "Pain In Anal Region",
+      "raw": "pain_in_anal_region"
+    },
+    {
+      "id": "painful_walking",
+      "label": "Painful Walking",
+      "raw": "painful_walking"
+    },
+    {
+      "id": "palpitations",
+      "label": "Palpitations",
+      "raw": "palpitations"
+    },
+    {
+      "id": "passage_of_gases",
+      "label": "Passage Of Gases",
+      "raw": "passage_of_gases"
+    },
+    {
+      "id": "patches_in_throat",
+      "label": "Patches In Throat",
+      "raw": "patches_in_throat"
+    },
+    {
+      "id": "phlegm",
+      "label": "Phlegm",
+      "raw": "phlegm"
+    },
+    {
+      "id": "polyuria",
+      "label": "Polyuria",
+      "raw": "polyuria"
+    },
+    {
+      "id": "prominent_veins_on_calf",
+      "label": "Prominent Veins On Calf",
+      "raw": "prominent_veins_on_calf"
+    },
+    {
+      "id": "puffy_face_and_eyes",
+      "label": "Puffy Face And Eyes",
+      "raw": "puffy_face_and_eyes"
+    },
+    {
+      "id": "pus_filled_pimples",
+      "label": "Pus Filled Pimples",
+      "raw": "pus_filled_pimples"
+    },
+    {
+      "id": "receiving_blood_transfusion",
+      "label": "Receiving Blood Transfusion",
+      "raw": "receiving_blood_transfusion"
+    },
+    {
+      "id": "receiving_unsterile_injections",
+      "label": "Receiving Unsterile Injections",
+      "raw": "receiving_unsterile_injections"
+    },
+    {
+      "id": "red_sore_around_nose",
+      "label": "Red Sore Around Nose",
+      "raw": "red_sore_around_nose"
+    },
+    {
+      "id": "red_spots_over_body",
+      "label": "Red Spots Over Body",
+      "raw": "red_spots_over_body"
+    },
+    {
+      "id": "redness_of_eyes",
+      "label": "Redness Of Eyes",
+      "raw": "redness_of_eyes"
+    },
+    {
+      "id": "restlessness",
+      "label": "Restlessness",
+      "raw": "restlessness"
+    },
+    {
+      "id": "runny_nose",
+      "label": "Runny Nose",
+      "raw": "runny_nose"
+    },
+    {
+      "id": "rusty_sputum",
+      "label": "Rusty Sputum",
+      "raw": "rusty_sputum"
+    },
+    {
+      "id": "scurring",
+      "label": "Scurring",
+      "raw": "scurring"
+    },
+    {
+      "id": "shivering",
+      "label": "Shivering",
+      "raw": "shivering"
+    },
+    {
+      "id": "silver_like_dusting",
+      "label": "Silver Like Dusting",
+      "raw": "silver_like_dusting"
+    },
+    {
+      "id": "sinus_pressure",
+      "label": "Sinus Pressure",
+      "raw": "sinus_pressure"
+    },
+    {
+      "id": "skin_peeling",
+      "label": "Skin Peeling",
+      "raw": "skin_peeling"
+    },
+    {
+      "id": "skin_rash",
+      "label": "Skin Rash",
+      "raw": "skin_rash"
+    },
+    {
+      "id": "slurred_speech",
+      "label": "Slurred Speech",
+      "raw": "slurred_speech"
+    },
+    {
+      "id": "small_dents_in_nails",
+      "label": "Small Dents In Nails",
+      "raw": "small_dents_in_nails"
+    },
+    {
+      "id": "spinning_movements",
+      "label": "Spinning Movements",
+      "raw": "spinning_movements"
+    },
+    {
+      "id": "spotting_ urination",
+      "label": "Spotting  Urination",
+      "raw": "spotting_ urination"
+    },
+    {
+      "id": "stiff_neck",
+      "label": "Stiff Neck",
+      "raw": "stiff_neck"
+    },
+    {
+      "id": "stomach_bleeding",
+      "label": "Stomach Bleeding",
+      "raw": "stomach_bleeding"
+    },
+    {
+      "id": "stomach_pain",
+      "label": "Stomach Pain",
+      "raw": "stomach_pain"
+    },
+    {
+      "id": "sunken_eyes",
+      "label": "Sunken Eyes",
+      "raw": "sunken_eyes"
+    },
+    {
+      "id": "sweating",
+      "label": "Sweating",
+      "raw": "sweating"
+    },
+    {
+      "id": "swelled_lymph_nodes",
+      "label": "Swelled Lymph Nodes",
+      "raw": "swelled_lymph_nodes"
+    },
+    {
+      "id": "swelling_joints",
+      "label": "Swelling Joints",
+      "raw": "swelling_joints"
+    },
+    {
+      "id": "swelling_of_stomach",
+      "label": "Swelling Of Stomach",
+      "raw": "swelling_of_stomach"
+    },
+    {
+      "id": "swollen_blood_vessels",
+      "label": "Swollen Blood Vessels",
+      "raw": "swollen_blood_vessels"
+    },
+    {
+      "id": "swollen_extremeties",
+      "label": "Swollen Extremeties",
+      "raw": "swollen_extremeties"
+    },
+    {
+      "id": "swollen_legs",
+      "label": "Swollen Legs",
+      "raw": "swollen_legs"
+    },
+    {
+      "id": "throat_irritation",
+      "label": "Throat Irritation",
+      "raw": "throat_irritation"
+    },
+    {
+      "id": "toxic_look_(typhos)",
+      "label": "Toxic Look (Typhos)",
+      "raw": "toxic_look_(typhos)"
+    },
+    {
+      "id": "ulcers_on_tongue",
+      "label": "Ulcers On Tongue",
+      "raw": "ulcers_on_tongue"
+    },
+    {
+      "id": "unsteadiness",
+      "label": "Unsteadiness",
+      "raw": "unsteadiness"
+    },
+    {
+      "id": "visual_disturbances",
+      "label": "Visual Disturbances",
+      "raw": "visual_disturbances"
+    },
+    {
+      "id": "vomiting",
+      "label": "Vomiting",
+      "raw": "vomiting"
+    },
+    {
+      "id": "watering_from_eyes",
+      "label": "Watering From Eyes",
+      "raw": "watering_from_eyes"
+    },
+    {
+      "id": "weakness_in_limbs",
+      "label": "Weakness In Limbs",
+      "raw": "weakness_in_limbs"
+    },
+    {
+      "id": "weakness_of_one_body_side",
+      "label": "Weakness Of One Body Side",
+      "raw": "weakness_of_one_body_side"
+    },
+    {
+      "id": "weight_gain",
+      "label": "Weight Gain",
+      "raw": "weight_gain"
+    },
+    {
+      "id": "weight_loss",
+      "label": "Weight Loss",
+      "raw": "weight_loss"
+    },
+    {
+      "id": "yellow_crust_ooze",
+      "label": "Yellow Crust Ooze",
+      "raw": "yellow_crust_ooze"
+    },
+    {
+      "id": "yellow_urine",
+      "label": "Yellow Urine",
+      "raw": "yellow_urine"
+    },
+    {
+      "id": "yellowing_of_eyes",
+      "label": "Yellowing Of Eyes",
+      "raw": "yellowing_of_eyes"
+    },
+    {
+      "id": "yellowish_skin",
+      "label": "Yellowish Skin",
+      "raw": "yellowish_skin"
+    }
+  ],
+  "diseases": [
+    "(vertigo) Paroymsal  Positional Vertigo",
+    "AIDS",
+    "Acne",
+    "Alcoholic hepatitis",
+    "Allergy",
+    "Arthritis",
+    "Bronchial Asthma",
+    "Cervical spondylosis",
+    "Chicken pox",
+    "Chronic cholestasis",
+    "Common Cold",
+    "Dengue",
+    "Diabetes",
+    "Dimorphic hemmorhoids(piles)",
+    "Drug Reaction",
+    "Fungal infection",
+    "GERD",
+    "Gastroenteritis",
+    "Heart attack",
+    "Hepatitis B",
+    "Hepatitis C",
+    "Hepatitis D",
+    "Hepatitis E",
+    "Hypertension",
+    "Hyperthyroidism",
+    "Hypoglycemia",
+    "Hypothyroidism",
+    "Impetigo",
+    "Jaundice",
+    "Malaria",
+    "Migraine",
+    "Osteoarthristis",
+    "Paralysis (brain hemorrhage)",
+    "Peptic ulcer diseae",
+    "Pneumonia",
+    "Psoriasis",
+    "Tuberculosis",
+    "Typhoid",
+    "Urinary tract infection",
+    "Varicose veins",
+    "hepatitis A"
+  ],
+  "symptom_to_diseases": {
+    "itching": [
+      "Chicken pox",
+      "Chronic cholestasis",
+      "Drug Reaction",
+      "Fungal infection",
+      "Hepatitis B",
+      "Jaundice"
+    ],
+    "skin_rash": [
+      "Acne",
+      "Chicken pox",
+      "Dengue",
+      "Drug Reaction",
+      "Fungal infection",
+      "Impetigo",
+      "Psoriasis"
+    ],
+    "nodal_skin_eruptions": [
+      "Fungal infection"
+    ],
+    "dischromic _patches": [
+      "Fungal infection"
+    ],
+    "continuous_sneezing": [
+      "Allergy",
+      "Common Cold"
+    ],
+    "shivering": [
+      "Allergy"
+    ],
+    "chills": [
+      "Allergy",
+      "Common Cold",
+      "Dengue",
+      "Malaria",
+      "Pneumonia",
+      "Tuberculosis",
+      "Typhoid"
+    ],
+    "watering_from_eyes": [
+      "Allergy"
+    ],
+    "stomach_pain": [
+      "Drug Reaction",
+      "GERD"
+    ],
+    "acidity": [
+      "GERD",
+      "Migraine"
+    ],
+    "ulcers_on_tongue": [
+      "GERD"
+    ],
+    "vomiting": [
+      "(vertigo) Paroymsal  Positional Vertigo",
+      "Alcoholic hepatitis",
+      "Chronic cholestasis",
+      "Dengue",
+      "GERD",
+      "Gastroenteritis",
+      "Heart attack",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Hypoglycemia",
+      "Jaundice",
+      "Malaria",
+      "Paralysis (brain hemorrhage)",
+      "Peptic ulcer diseae",
+      "Tuberculosis",
+      "Typhoid",
+      "hepatitis A"
+    ],
+    "cough": [
+      "Bronchial Asthma",
+      "Common Cold",
+      "GERD",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "chest_pain": [
+      "Common Cold",
+      "GERD",
+      "Heart attack",
+      "Hypertension",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "yellowish_skin": [
+      "Alcoholic hepatitis",
+      "Chronic cholestasis",
+      "Hepatitis B",
+      "Hepatitis C",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Jaundice",
+      "hepatitis A"
+    ],
+    "nausea": [
+      "(vertigo) Paroymsal  Positional Vertigo",
+      "Chronic cholestasis",
+      "Dengue",
+      "Hepatitis C",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Hypoglycemia",
+      "Malaria",
+      "Typhoid",
+      "hepatitis A"
+    ],
+    "loss_of_appetite": [
+      "Chicken pox",
+      "Chronic cholestasis",
+      "Dengue",
+      "Hepatitis B",
+      "Hepatitis C",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Peptic ulcer diseae",
+      "Tuberculosis",
+      "hepatitis A"
+    ],
+    "abdominal_pain": [
+      "Alcoholic hepatitis",
+      "Chronic cholestasis",
+      "Hepatitis B",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Jaundice",
+      "Peptic ulcer diseae",
+      "Typhoid",
+      "hepatitis A"
+    ],
+    "yellowing_of_eyes": [
+      "Chronic cholestasis",
+      "Hepatitis B",
+      "Hepatitis C",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Tuberculosis",
+      "hepatitis A"
+    ],
+    "burning_micturition": [
+      "Drug Reaction",
+      "Urinary tract infection"
+    ],
+    "spotting_ urination": [
+      "Drug Reaction"
+    ],
+    "passage_of_gases": [
+      "Peptic ulcer diseae"
+    ],
+    "internal_itching": [
+      "Peptic ulcer diseae"
+    ],
+    "indigestion": [
+      "Migraine",
+      "Peptic ulcer diseae"
+    ],
+    "muscle_wasting": [
+      "AIDS"
+    ],
+    "patches_in_throat": [
+      "AIDS"
+    ],
+    "high_fever": [
+      "AIDS",
+      "Bronchial Asthma",
+      "Chicken pox",
+      "Common Cold",
+      "Dengue",
+      "Hepatitis E",
+      "Impetigo",
+      "Jaundice",
+      "Malaria",
+      "Pneumonia",
+      "Tuberculosis",
+      "Typhoid"
+    ],
+    "extra_marital_contacts": [
+      "AIDS"
+    ],
+    "fatigue": [
+      "Bronchial Asthma",
+      "Chicken pox",
+      "Common Cold",
+      "Dengue",
+      "Diabetes",
+      "Hepatitis B",
+      "Hepatitis C",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Hyperthyroidism",
+      "Hypoglycemia",
+      "Hypothyroidism",
+      "Jaundice",
+      "Pneumonia",
+      "Tuberculosis",
+      "Typhoid",
+      "Varicose veins"
+    ],
+    "weight_loss": [
+      "Diabetes",
+      "Hyperthyroidism",
+      "Jaundice",
+      "Tuberculosis"
+    ],
+    "restlessness": [
+      "Diabetes",
+      "Hyperthyroidism"
+    ],
+    "lethargy": [
+      "Chicken pox",
+      "Diabetes",
+      "Hepatitis B",
+      "Hypothyroidism"
+    ],
+    "irregular_sugar_level": [
+      "Diabetes"
+    ],
+    "blurred_and_distorted_vision": [
+      "Diabetes",
+      "Hypoglycemia",
+      "Migraine"
+    ],
+    "obesity": [
+      "Diabetes",
+      "Varicose veins"
+    ],
+    "excessive_hunger": [
+      "Diabetes",
+      "Hyperthyroidism",
+      "Hypoglycemia",
+      "Migraine"
+    ],
+    "increased_appetite": [
+      "Diabetes"
+    ],
+    "polyuria": [
+      "Diabetes"
+    ],
+    "sunken_eyes": [
+      "Gastroenteritis"
+    ],
+    "dehydration": [
+      "Gastroenteritis"
+    ],
+    "diarrhoea": [
+      "Gastroenteritis",
+      "Hyperthyroidism",
+      "Malaria",
+      "Typhoid",
+      "hepatitis A"
+    ],
+    "breathlessness": [
+      "Bronchial Asthma",
+      "Heart attack",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "family_history": [
+      "Bronchial Asthma",
+      "Hepatitis C"
+    ],
+    "mucoid_sputum": [
+      "Bronchial Asthma"
+    ],
+    "headache": [
+      "(vertigo) Paroymsal  Positional Vertigo",
+      "Chicken pox",
+      "Common Cold",
+      "Dengue",
+      "Hypertension",
+      "Hypoglycemia",
+      "Malaria",
+      "Migraine",
+      "Paralysis (brain hemorrhage)",
+      "Typhoid"
+    ],
+    "dizziness": [
+      "Cervical spondylosis",
+      "Hypertension",
+      "Hypothyroidism"
+    ],
+    "loss_of_balance": [
+      "(vertigo) Paroymsal  Positional Vertigo",
+      "Cervical spondylosis",
+      "Hypertension"
+    ],
+    "lack_of_concentration": [
+      "Hypertension"
+    ],
+    "stiff_neck": [
+      "Arthritis",
+      "Migraine"
+    ],
+    "depression": [
+      "Hypothyroidism",
+      "Migraine"
+    ],
+    "irritability": [
+      "Hyperthyroidism",
+      "Hypoglycemia",
+      "Hypothyroidism",
+      "Migraine"
+    ],
+    "visual_disturbances": [
+      "Migraine"
+    ],
+    "back_pain": [
+      "Cervical spondylosis",
+      "Dengue"
+    ],
+    "weakness_in_limbs": [
+      "Cervical spondylosis"
+    ],
+    "neck_pain": [
+      "Cervical spondylosis",
+      "Osteoarthristis"
+    ],
+    "weakness_of_one_body_side": [
+      "Paralysis (brain hemorrhage)"
+    ],
+    "altered_sensorium": [
+      "Paralysis (brain hemorrhage)"
+    ],
+    "dark_urine": [
+      "Hepatitis B",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Jaundice",
+      "hepatitis A"
+    ],
+    "sweating": [
+      "Heart attack",
+      "Hyperthyroidism",
+      "Hypoglycemia",
+      "Malaria",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "muscle_pain": [
+      "Common Cold",
+      "Dengue",
+      "Malaria",
+      "hepatitis A"
+    ],
+    "mild_fever": [
+      "Chicken pox",
+      "Tuberculosis",
+      "hepatitis A"
+    ],
+    "swelled_lymph_nodes": [
+      "Chicken pox",
+      "Common Cold",
+      "Tuberculosis"
+    ],
+    "malaise": [
+      "Chicken pox",
+      "Common Cold",
+      "Dengue",
+      "Hepatitis B",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "red_spots_over_body": [
+      "Chicken pox",
+      "Dengue"
+    ],
+    "joint_pain": [
+      "Dengue",
+      "Hepatitis D",
+      "Hepatitis E",
+      "Osteoarthristis",
+      "Psoriasis",
+      "hepatitis A"
+    ],
+    "pain_behind_the_eyes": [
+      "Dengue"
+    ],
+    "constipation": [
+      "Dimorphic hemmorhoids(piles)",
+      "Typhoid"
+    ],
+    "toxic_look_(typhos)": [
+      "Typhoid"
+    ],
+    "belly_pain": [
+      "Typhoid"
+    ],
+    "yellow_urine": [
+      "Hepatitis B"
+    ],
+    "receiving_blood_transfusion": [
+      "Hepatitis B"
+    ],
+    "receiving_unsterile_injections": [
+      "Hepatitis B"
+    ],
+    "coma": [
+      "Hepatitis E"
+    ],
+    "stomach_bleeding": [
+      "Hepatitis E"
+    ],
+    "acute_liver_failure": [
+      "Hepatitis E"
+    ],
+    "swelling_of_stomach": [
+      "Alcoholic hepatitis"
+    ],
+    "distention_of_abdomen": [
+      "Alcoholic hepatitis"
+    ],
+    "history_of_alcohol_consumption": [
+      "Alcoholic hepatitis"
+    ],
+    "fluid_overload": [
+      "Alcoholic hepatitis"
+    ],
+    "phlegm": [
+      "Common Cold",
+      "Pneumonia",
+      "Tuberculosis"
+    ],
+    "blood_in_sputum": [
+      "Tuberculosis"
+    ],
+    "throat_irritation": [
+      "Common Cold"
+    ],
+    "redness_of_eyes": [
+      "Common Cold"
+    ],
+    "sinus_pressure": [
+      "Common Cold"
+    ],
+    "runny_nose": [
+      "Common Cold"
+    ],
+    "congestion": [
+      "Common Cold"
+    ],
+    "loss_of_smell": [
+      "Common Cold"
+    ],
+    "fast_heart_rate": [
+      "Hyperthyroidism",
+      "Pneumonia"
+    ],
+    "rusty_sputum": [
+      "Pneumonia"
+    ],
+    "pain_during_bowel_movements": [
+      "Dimorphic hemmorhoids(piles)"
+    ],
+    "pain_in_anal_region": [
+      "Dimorphic hemmorhoids(piles)"
+    ],
+    "bloody_stool": [
+      "Dimorphic hemmorhoids(piles)"
+    ],
+    "irritation_in_anus": [
+      "Dimorphic hemmorhoids(piles)"
+    ],
+    "cramps": [
+      "Varicose veins"
+    ],
+    "bruising": [
+      "Varicose veins"
+    ],
+    "swollen_legs": [
+      "Varicose veins"
+    ],
+    "swollen_blood_vessels": [
+      "Varicose veins"
+    ],
+    "prominent_veins_on_calf": [
+      "Varicose veins"
+    ],
+    "weight_gain": [
+      "Hypothyroidism"
+    ],
+    "cold_hands_and_feets": [
+      "Hypothyroidism"
+    ],
+    "mood_swings": [
+      "Hyperthyroidism",
+      "Hypothyroidism"
+    ],
+    "puffy_face_and_eyes": [
+      "Hypothyroidism"
+    ],
+    "enlarged_thyroid": [
+      "Hypothyroidism"
+    ],
+    "brittle_nails": [
+      "Hypothyroidism"
+    ],
+    "swollen_extremeties": [
+      "Hypothyroidism"
+    ],
+    "abnormal_menstruation": [
+      "Hyperthyroidism",
+      "Hypothyroidism"
+    ],
+    "muscle_weakness": [
+      "Arthritis",
+      "Hyperthyroidism"
+    ],
+    "anxiety": [
+      "Hypoglycemia"
+    ],
+    "slurred_speech": [
+      "Hypoglycemia"
+    ],
+    "palpitations": [
+      "Hypoglycemia"
+    ],
+    "drying_and_tingling_lips": [
+      "Hypoglycemia"
+    ],
+    "knee_pain": [
+      "Osteoarthristis"
+    ],
+    "hip_joint_pain": [
+      "Osteoarthristis"
+    ],
+    "swelling_joints": [
+      "Arthritis",
+      "Osteoarthristis"
+    ],
+    "painful_walking": [
+      "Arthritis",
+      "Osteoarthristis"
+    ],
+    "movement_stiffness": [
+      "Arthritis"
+    ],
+    "spinning_movements": [
+      "(vertigo) Paroymsal  Positional Vertigo"
+    ],
+    "unsteadiness": [
+      "(vertigo) Paroymsal  Positional Vertigo"
+    ],
+    "pus_filled_pimples": [
+      "Acne"
+    ],
+    "blackheads": [
+      "Acne"
+    ],
+    "scurring": [
+      "Acne"
+    ],
+    "bladder_discomfort": [
+      "Urinary tract infection"
+    ],
+    "foul_smell_of urine": [
+      "Urinary tract infection"
+    ],
+    "continuous_feel_of_urine": [
+      "Urinary tract infection"
+    ],
+    "skin_peeling": [
+      "Psoriasis"
+    ],
+    "silver_like_dusting": [
+      "Psoriasis"
+    ],
+    "small_dents_in_nails": [
+      "Psoriasis"
+    ],
+    "inflammatory_nails": [
+      "Psoriasis"
+    ],
+    "blister": [
+      "Impetigo"
+    ],
+    "red_sore_around_nose": [
+      "Impetigo"
+    ],
+    "yellow_crust_ooze": [
+      "Impetigo"
+    ]
+  },
+  "disease_to_symptoms": {
+    "Fungal infection": [
+      "dischromic _patches",
+      "itching",
+      "nodal_skin_eruptions",
+      "skin_rash"
+    ],
+    "Allergy": [
+      "chills",
+      "continuous_sneezing",
+      "shivering",
+      "watering_from_eyes"
+    ],
+    "GERD": [
+      "acidity",
+      "chest_pain",
+      "cough",
+      "stomach_pain",
+      "ulcers_on_tongue",
+      "vomiting"
+    ],
+    "Chronic cholestasis": [
+      "abdominal_pain",
+      "itching",
+      "loss_of_appetite",
+      "nausea",
+      "vomiting",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Drug Reaction": [
+      "burning_micturition",
+      "itching",
+      "skin_rash",
+      "spotting_ urination",
+      "stomach_pain"
+    ],
+    "Peptic ulcer diseae": [
+      "abdominal_pain",
+      "indigestion",
+      "internal_itching",
+      "loss_of_appetite",
+      "passage_of_gases",
+      "vomiting"
+    ],
+    "AIDS": [
+      "extra_marital_contacts",
+      "high_fever",
+      "muscle_wasting",
+      "patches_in_throat"
+    ],
+    "Diabetes": [
+      "blurred_and_distorted_vision",
+      "excessive_hunger",
+      "fatigue",
+      "increased_appetite",
+      "irregular_sugar_level",
+      "lethargy",
+      "obesity",
+      "polyuria",
+      "restlessness",
+      "weight_loss"
+    ],
+    "Gastroenteritis": [
+      "dehydration",
+      "diarrhoea",
+      "sunken_eyes",
+      "vomiting"
+    ],
+    "Bronchial Asthma": [
+      "breathlessness",
+      "cough",
+      "family_history",
+      "fatigue",
+      "high_fever",
+      "mucoid_sputum"
+    ],
+    "Hypertension": [
+      "chest_pain",
+      "dizziness",
+      "headache",
+      "lack_of_concentration",
+      "loss_of_balance"
+    ],
+    "Migraine": [
+      "acidity",
+      "blurred_and_distorted_vision",
+      "depression",
+      "excessive_hunger",
+      "headache",
+      "indigestion",
+      "irritability",
+      "stiff_neck",
+      "visual_disturbances"
+    ],
+    "Cervical spondylosis": [
+      "back_pain",
+      "dizziness",
+      "loss_of_balance",
+      "neck_pain",
+      "weakness_in_limbs"
+    ],
+    "Paralysis (brain hemorrhage)": [
+      "altered_sensorium",
+      "headache",
+      "vomiting",
+      "weakness_of_one_body_side"
+    ],
+    "Jaundice": [
+      "abdominal_pain",
+      "dark_urine",
+      "fatigue",
+      "high_fever",
+      "itching",
+      "vomiting",
+      "weight_loss",
+      "yellowish_skin"
+    ],
+    "Malaria": [
+      "chills",
+      "diarrhoea",
+      "headache",
+      "high_fever",
+      "muscle_pain",
+      "nausea",
+      "sweating",
+      "vomiting"
+    ],
+    "Chicken pox": [
+      "fatigue",
+      "headache",
+      "high_fever",
+      "itching",
+      "lethargy",
+      "loss_of_appetite",
+      "malaise",
+      "mild_fever",
+      "red_spots_over_body",
+      "skin_rash",
+      "swelled_lymph_nodes"
+    ],
+    "Dengue": [
+      "back_pain",
+      "chills",
+      "fatigue",
+      "headache",
+      "high_fever",
+      "joint_pain",
+      "loss_of_appetite",
+      "malaise",
+      "muscle_pain",
+      "nausea",
+      "pain_behind_the_eyes",
+      "red_spots_over_body",
+      "skin_rash",
+      "vomiting"
+    ],
+    "Typhoid": [
+      "abdominal_pain",
+      "belly_pain",
+      "chills",
+      "constipation",
+      "diarrhoea",
+      "fatigue",
+      "headache",
+      "high_fever",
+      "nausea",
+      "toxic_look_(typhos)",
+      "vomiting"
+    ],
+    "hepatitis A": [
+      "abdominal_pain",
+      "dark_urine",
+      "diarrhoea",
+      "joint_pain",
+      "loss_of_appetite",
+      "mild_fever",
+      "muscle_pain",
+      "nausea",
+      "vomiting",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Hepatitis B": [
+      "abdominal_pain",
+      "dark_urine",
+      "fatigue",
+      "itching",
+      "lethargy",
+      "loss_of_appetite",
+      "malaise",
+      "receiving_blood_transfusion",
+      "receiving_unsterile_injections",
+      "yellow_urine",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Hepatitis C": [
+      "family_history",
+      "fatigue",
+      "loss_of_appetite",
+      "nausea",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Hepatitis D": [
+      "abdominal_pain",
+      "dark_urine",
+      "fatigue",
+      "joint_pain",
+      "loss_of_appetite",
+      "nausea",
+      "vomiting",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Hepatitis E": [
+      "abdominal_pain",
+      "acute_liver_failure",
+      "coma",
+      "dark_urine",
+      "fatigue",
+      "high_fever",
+      "joint_pain",
+      "loss_of_appetite",
+      "nausea",
+      "stomach_bleeding",
+      "vomiting",
+      "yellowing_of_eyes",
+      "yellowish_skin"
+    ],
+    "Alcoholic hepatitis": [
+      "abdominal_pain",
+      "distention_of_abdomen",
+      "fluid_overload",
+      "history_of_alcohol_consumption",
+      "swelling_of_stomach",
+      "vomiting",
+      "yellowish_skin"
+    ],
+    "Tuberculosis": [
+      "blood_in_sputum",
+      "breathlessness",
+      "chest_pain",
+      "chills",
+      "cough",
+      "fatigue",
+      "high_fever",
+      "loss_of_appetite",
+      "malaise",
+      "mild_fever",
+      "phlegm",
+      "sweating",
+      "swelled_lymph_nodes",
+      "vomiting",
+      "weight_loss",
+      "yellowing_of_eyes"
+    ],
+    "Common Cold": [
+      "chest_pain",
+      "chills",
+      "congestion",
+      "continuous_sneezing",
+      "cough",
+      "fatigue",
+      "headache",
+      "high_fever",
+      "loss_of_smell",
+      "malaise",
+      "muscle_pain",
+      "phlegm",
+      "redness_of_eyes",
+      "runny_nose",
+      "sinus_pressure",
+      "swelled_lymph_nodes",
+      "throat_irritation"
+    ],
+    "Pneumonia": [
+      "breathlessness",
+      "chest_pain",
+      "chills",
+      "cough",
+      "fast_heart_rate",
+      "fatigue",
+      "high_fever",
+      "malaise",
+      "phlegm",
+      "rusty_sputum",
+      "sweating"
+    ],
+    "Dimorphic hemmorhoids(piles)": [
+      "bloody_stool",
+      "constipation",
+      "irritation_in_anus",
+      "pain_during_bowel_movements",
+      "pain_in_anal_region"
+    ],
+    "Heart attack": [
+      "breathlessness",
+      "chest_pain",
+      "sweating",
+      "vomiting"
+    ],
+    "Varicose veins": [
+      "bruising",
+      "cramps",
+      "fatigue",
+      "obesity",
+      "prominent_veins_on_calf",
+      "swollen_blood_vessels",
+      "swollen_legs"
+    ],
+    "Hypothyroidism": [
+      "abnormal_menstruation",
+      "brittle_nails",
+      "cold_hands_and_feets",
+      "depression",
+      "dizziness",
+      "enlarged_thyroid",
+      "fatigue",
+      "irritability",
+      "lethargy",
+      "mood_swings",
+      "puffy_face_and_eyes",
+      "swollen_extremeties",
+      "weight_gain"
+    ],
+    "Hyperthyroidism": [
+      "abnormal_menstruation",
+      "diarrhoea",
+      "excessive_hunger",
+      "fast_heart_rate",
+      "fatigue",
+      "irritability",
+      "mood_swings",
+      "muscle_weakness",
+      "restlessness",
+      "sweating",
+      "weight_loss"
+    ],
+    "Hypoglycemia": [
+      "anxiety",
+      "blurred_and_distorted_vision",
+      "drying_and_tingling_lips",
+      "excessive_hunger",
+      "fatigue",
+      "headache",
+      "irritability",
+      "nausea",
+      "palpitations",
+      "slurred_speech",
+      "sweating",
+      "vomiting"
+    ],
+    "Osteoarthristis": [
+      "hip_joint_pain",
+      "joint_pain",
+      "knee_pain",
+      "neck_pain",
+      "painful_walking",
+      "swelling_joints"
+    ],
+    "Arthritis": [
+      "movement_stiffness",
+      "muscle_weakness",
+      "painful_walking",
+      "stiff_neck",
+      "swelling_joints"
+    ],
+    "(vertigo) Paroymsal  Positional Vertigo": [
+      "headache",
+      "loss_of_balance",
+      "nausea",
+      "spinning_movements",
+      "unsteadiness",
+      "vomiting"
+    ],
+    "Acne": [
+      "blackheads",
+      "pus_filled_pimples",
+      "scurring",
+      "skin_rash"
+    ],
+    "Urinary tract infection": [
+      "bladder_discomfort",
+      "burning_micturition",
+      "continuous_feel_of_urine",
+      "foul_smell_of urine"
+    ],
+    "Psoriasis": [
+      "inflammatory_nails",
+      "joint_pain",
+      "silver_like_dusting",
+      "skin_peeling",
+      "skin_rash",
+      "small_dents_in_nails"
+    ],
+    "Impetigo": [
+      "blister",
+      "high_fever",
+      "red_sore_around_nose",
+      "skin_rash",
+      "yellow_crust_ooze"
+    ]
+  },
+  "keyword_index": {
+    "abdominal": [
+      "abdominal_pain"
+    ],
+    "pain": [
+      "abdominal_pain",
+      "back_pain",
+      "belly_pain",
+      "chest_pain",
+      "hip_joint_pain",
+      "joint_pain",
+      "knee_pain",
+      "muscle_pain",
+      "neck_pain",
+      "pain_behind_the_eyes",
+      "pain_during_bowel_movements",
+      "pain_in_anal_region",
+      "stomach_pain"
+    ],
+    "abnormal": [
+      "abnormal_menstruation"
+    ],
+    "menstruation": [
+      "abnormal_menstruation"
+    ],
+    "acidity": [
+      "acidity"
+    ],
+    "acute": [
+      "acute_liver_failure"
+    ],
+    "liver": [
+      "acute_liver_failure"
+    ],
+    "failure": [
+      "acute_liver_failure"
+    ],
+    "altered": [
+      "altered_sensorium"
+    ],
+    "sensorium": [
+      "altered_sensorium"
+    ],
+    "anxiety": [
+      "anxiety"
+    ],
+    "back": [
+      "back_pain"
+    ],
+    "belly": [
+      "belly_pain"
+    ],
+    "blackheads": [
+      "blackheads"
+    ],
+    "bladder": [
+      "bladder_discomfort"
+    ],
+    "discomfort": [
+      "bladder_discomfort"
+    ],
+    "blister": [
+      "blister"
+    ],
+    "blood": [
+      "blood_in_sputum",
+      "receiving_blood_transfusion",
+      "swollen_blood_vessels"
+    ],
+    "sputum": [
+      "blood_in_sputum",
+      "mucoid_sputum",
+      "rusty_sputum"
+    ],
+    "bloody": [
+      "bloody_stool"
+    ],
+    "stool": [
+      "bloody_stool"
+    ],
+    "blurred": [
+      "blurred_and_distorted_vision"
+    ],
+    "and": [
+      "blurred_and_distorted_vision",
+      "cold_hands_and_feets",
+      "drying_and_tingling_lips",
+      "puffy_face_and_eyes"
+    ],
+    "distorted": [
+      "blurred_and_distorted_vision"
+    ],
+    "vision": [
+      "blurred_and_distorted_vision"
+    ],
+    "breathlessness": [
+      "breathlessness"
+    ],
+    "brittle": [
+      "brittle_nails"
+    ],
+    "nails": [
+      "brittle_nails",
+      "inflammatory_nails",
+      "small_dents_in_nails"
+    ],
+    "bruising": [
+      "bruising"
+    ],
+    "burning": [
+      "burning_micturition"
+    ],
+    "micturition": [
+      "burning_micturition"
+    ],
+    "chest": [
+      "chest_pain"
+    ],
+    "chills": [
+      "chills"
+    ],
+    "cold": [
+      "cold_hands_and_feets"
+    ],
+    "hands": [
+      "cold_hands_and_feets"
+    ],
+    "feets": [
+      "cold_hands_and_feets"
+    ],
+    "coma": [
+      "coma"
+    ],
+    "congestion": [
+      "congestion"
+    ],
+    "constipation": [
+      "constipation"
+    ],
+    "continuous": [
+      "continuous_feel_of_urine",
+      "continuous_sneezing"
+    ],
+    "feel": [
+      "continuous_feel_of_urine"
+    ],
+    "urine": [
+      "continuous_feel_of_urine",
+      "dark_urine",
+      "foul_smell_of urine",
+      "yellow_urine"
+    ],
+    "sneezing": [
+      "continuous_sneezing"
+    ],
+    "cough": [
+      "cough"
+    ],
+    "cramps": [
+      "cramps"
+    ],
+    "dark": [
+      "dark_urine"
+    ],
+    "dehydration": [
+      "dehydration"
+    ],
+    "depression": [
+      "depression"
+    ],
+    "diarrhoea": [
+      "diarrhoea"
+    ],
+    "dischromic": [
+      "dischromic _patches"
+    ],
+    "patches": [
+      "dischromic _patches",
+      "patches_in_throat"
+    ],
+    "distention": [
+      "distention_of_abdomen"
+    ],
+    "abdomen": [
+      "distention_of_abdomen"
+    ],
+    "dizziness": [
+      "dizziness"
+    ],
+    "drying": [
+      "drying_and_tingling_lips"
+    ],
+    "tingling": [
+      "drying_and_tingling_lips"
+    ],
+    "lips": [
+      "drying_and_tingling_lips"
+    ],
+    "enlarged": [
+      "enlarged_thyroid"
+    ],
+    "thyroid": [
+      "enlarged_thyroid"
+    ],
+    "excessive": [
+      "excessive_hunger"
+    ],
+    "hunger": [
+      "excessive_hunger"
+    ],
+    "extra": [
+      "extra_marital_contacts"
+    ],
+    "marital": [
+      "extra_marital_contacts"
+    ],
+    "contacts": [
+      "extra_marital_contacts"
+    ],
+    "family": [
+      "family_history"
+    ],
+    "history": [
+      "family_history",
+      "history_of_alcohol_consumption"
+    ],
+    "fast": [
+      "fast_heart_rate"
+    ],
+    "heart": [
+      "fast_heart_rate"
+    ],
+    "rate": [
+      "fast_heart_rate"
+    ],
+    "fatigue": [
+      "fatigue"
+    ],
+    "fluid": [
+      "fluid_overload"
+    ],
+    "overload": [
+      "fluid_overload"
+    ],
+    "foul": [
+      "foul_smell_of urine"
+    ],
+    "smell": [
+      "foul_smell_of urine",
+      "loss_of_smell"
+    ],
+    "headache": [
+      "headache"
+    ],
+    "high": [
+      "high_fever"
+    ],
+    "fever": [
+      "high_fever",
+      "mild_fever"
+    ],
+    "hip": [
+      "hip_joint_pain"
+    ],
+    "joint": [
+      "hip_joint_pain",
+      "joint_pain"
+    ],
+    "alcohol": [
+      "history_of_alcohol_consumption"
+    ],
+    "consumption": [
+      "history_of_alcohol_consumption"
+    ],
+    "increased": [
+      "increased_appetite"
+    ],
+    "appetite": [
+      "increased_appetite",
+      "loss_of_appetite"
+    ],
+    "indigestion": [
+      "indigestion"
+    ],
+    "inflammatory": [
+      "inflammatory_nails"
+    ],
+    "internal": [
+      "internal_itching"
+    ],
+    "itching": [
+      "internal_itching",
+      "itching"
+    ],
+    "irregular": [
+      "irregular_sugar_level"
+    ],
+    "sugar": [
+      "irregular_sugar_level"
+    ],
+    "level": [
+      "irregular_sugar_level"
+    ],
+    "irritability": [
+      "irritability"
+    ],
+    "irritation": [
+      "irritation_in_anus",
+      "throat_irritation"
+    ],
+    "anus": [
+      "irritation_in_anus"
+    ],
+    "knee": [
+      "knee_pain"
+    ],
+    "lack": [
+      "lack_of_concentration"
+    ],
+    "concentration": [
+      "lack_of_concentration"
+    ],
+    "lethargy": [
+      "lethargy"
+    ],
+    "loss": [
+      "loss_of_appetite",
+      "loss_of_balance",
+      "loss_of_smell",
+      "weight_loss"
+    ],
+    "balance": [
+      "loss_of_balance"
+    ],
+    "malaise": [
+      "malaise"
+    ],
+    "mild": [
+      "mild_fever"
+    ],
+    "mood": [
+      "mood_swings"
+    ],
+    "swings": [
+      "mood_swings"
+    ],
+    "movement": [
+      "movement_stiffness"
+    ],
+    "stiffness": [
+      "movement_stiffness"
+    ],
+    "mucoid": [
+      "mucoid_sputum"
+    ],
+    "muscle": [
+      "muscle_pain",
+      "muscle_wasting",
+      "muscle_weakness"
+    ],
+    "wasting": [
+      "muscle_wasting"
+    ],
+    "weakness": [
+      "muscle_weakness",
+      "weakness_in_limbs",
+      "weakness_of_one_body_side"
+    ],
+    "nausea": [
+      "nausea"
+    ],
+    "neck": [
+      "neck_pain",
+      "stiff_neck"
+    ],
+    "nodal": [
+      "nodal_skin_eruptions"
+    ],
+    "skin": [
+      "nodal_skin_eruptions",
+      "skin_peeling",
+      "skin_rash",
+      "yellowish_skin"
+    ],
+    "eruptions": [
+      "nodal_skin_eruptions"
+    ],
+    "obesity": [
+      "obesity"
+    ],
+    "behind": [
+      "pain_behind_the_eyes"
+    ],
+    "the": [
+      "pain_behind_the_eyes"
+    ],
+    "eyes": [
+      "pain_behind_the_eyes",
+      "puffy_face_and_eyes",
+      "redness_of_eyes",
+      "sunken_eyes",
+      "watering_from_eyes",
+      "yellowing_of_eyes"
+    ],
+    "during": [
+      "pain_during_bowel_movements"
+    ],
+    "bowel": [
+      "pain_during_bowel_movements"
+    ],
+    "movements": [
+      "pain_during_bowel_movements",
+      "spinning_movements"
+    ],
+    "anal": [
+      "pain_in_anal_region"
+    ],
+    "region": [
+      "pain_in_anal_region"
+    ],
+    "painful": [
+      "painful_walking"
+    ],
+    "walking": [
+      "painful_walking"
+    ],
+    "palpitations": [
+      "palpitations"
+    ],
+    "passage": [
+      "passage_of_gases"
+    ],
+    "gases": [
+      "passage_of_gases"
+    ],
+    "throat": [
+      "patches_in_throat",
+      "throat_irritation"
+    ],
+    "phlegm": [
+      "phlegm"
+    ],
+    "polyuria": [
+      "polyuria"
+    ],
+    "prominent": [
+      "prominent_veins_on_calf"
+    ],
+    "veins": [
+      "prominent_veins_on_calf"
+    ],
+    "calf": [
+      "prominent_veins_on_calf"
+    ],
+    "puffy": [
+      "puffy_face_and_eyes"
+    ],
+    "face": [
+      "puffy_face_and_eyes"
+    ],
+    "pus": [
+      "pus_filled_pimples"
+    ],
+    "filled": [
+      "pus_filled_pimples"
+    ],
+    "pimples": [
+      "pus_filled_pimples"
+    ],
+    "receiving": [
+      "receiving_blood_transfusion",
+      "receiving_unsterile_injections"
+    ],
+    "transfusion": [
+      "receiving_blood_transfusion"
+    ],
+    "unsterile": [
+      "receiving_unsterile_injections"
+    ],
+    "injections": [
+      "receiving_unsterile_injections"
+    ],
+    "red": [
+      "red_sore_around_nose",
+      "red_spots_over_body"
+    ],
+    "sore": [
+      "red_sore_around_nose"
+    ],
+    "around": [
+      "red_sore_around_nose"
+    ],
+    "nose": [
+      "red_sore_around_nose",
+      "runny_nose"
+    ],
+    "spots": [
+      "red_spots_over_body"
+    ],
+    "over": [
+      "red_spots_over_body"
+    ],
+    "body": [
+      "red_spots_over_body",
+      "weakness_of_one_body_side"
+    ],
+    "redness": [
+      "redness_of_eyes"
+    ],
+    "restlessness": [
+      "restlessness"
+    ],
+    "runny": [
+      "runny_nose"
+    ],
+    "rusty": [
+      "rusty_sputum"
+    ],
+    "scurring": [
+      "scurring"
+    ],
+    "shivering": [
+      "shivering"
+    ],
+    "silver": [
+      "silver_like_dusting"
+    ],
+    "like": [
+      "silver_like_dusting"
+    ],
+    "dusting": [
+      "silver_like_dusting"
+    ],
+    "sinus": [
+      "sinus_pressure"
+    ],
+    "pressure": [
+      "sinus_pressure"
+    ],
+    "peeling": [
+      "skin_peeling"
+    ],
+    "rash": [
+      "skin_rash"
+    ],
+    "slurred": [
+      "slurred_speech"
+    ],
+    "speech": [
+      "slurred_speech"
+    ],
+    "small": [
+      "small_dents_in_nails"
+    ],
+    "dents": [
+      "small_dents_in_nails"
+    ],
+    "spinning": [
+      "spinning_movements"
+    ],
+    "spotting": [
+      "spotting_ urination"
+    ],
+    "urination": [
+      "spotting_ urination"
+    ],
+    "stiff": [
+      "stiff_neck"
+    ],
+    "stomach": [
+      "stomach_bleeding",
+      "stomach_pain",
+      "swelling_of_stomach"
+    ],
+    "bleeding": [
+      "stomach_bleeding"
+    ],
+    "sunken": [
+      "sunken_eyes"
+    ],
+    "sweating": [
+      "sweating"
+    ],
+    "swelled": [
+      "swelled_lymph_nodes"
+    ],
+    "lymph": [
+      "swelled_lymph_nodes"
+    ],
+    "nodes": [
+      "swelled_lymph_nodes"
+    ],
+    "swelling": [
+      "swelling_joints",
+      "swelling_of_stomach"
+    ],
+    "joints": [
+      "swelling_joints"
+    ],
+    "swollen": [
+      "swollen_blood_vessels",
+      "swollen_extremeties",
+      "swollen_legs"
+    ],
+    "vessels": [
+      "swollen_blood_vessels"
+    ],
+    "extremeties": [
+      "swollen_extremeties"
+    ],
+    "legs": [
+      "swollen_legs"
+    ],
+    "toxic": [
+      "toxic_look_(typhos)"
+    ],
+    "look": [
+      "toxic_look_(typhos)"
+    ],
+    "(typhos)": [
+      "toxic_look_(typhos)"
+    ],
+    "ulcers": [
+      "ulcers_on_tongue"
+    ],
+    "tongue": [
+      "ulcers_on_tongue"
+    ],
+    "unsteadiness": [
+      "unsteadiness"
+    ],
+    "visual": [
+      "visual_disturbances"
+    ],
+    "disturbances": [
+      "visual_disturbances"
+    ],
+    "vomiting": [
+      "vomiting"
+    ],
+    "watering": [
+      "watering_from_eyes"
+    ],
+    "from": [
+      "watering_from_eyes"
+    ],
+    "limbs": [
+      "weakness_in_limbs"
+    ],
+    "one": [
+      "weakness_of_one_body_side"
+    ],
+    "side": [
+      "weakness_of_one_body_side"
+    ],
+    "weight": [
+      "weight_gain",
+      "weight_loss"
+    ],
+    "gain": [
+      "weight_gain"
+    ],
+    "yellow": [
+      "yellow_crust_ooze",
+      "yellow_urine"
+    ],
+    "crust": [
+      "yellow_crust_ooze"
+    ],
+    "ooze": [
+      "yellow_crust_ooze"
+    ],
+    "yellowing": [
+      "yellowing_of_eyes"
+    ],
+    "yellowish": [
+      "yellowish_skin"
+    ]
+  }
+}
