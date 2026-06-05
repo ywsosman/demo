@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -19,12 +20,9 @@ const Dashboard = () => {
     }
   }, [user, navigate]);
 
-  // Loading state while redirecting
-  return (
-    <div className="min-h-screen flex items-center justify-center transition-colors duration-300">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 dark:border-primary-400"></div>
-    </div>
-  );
+  usePageLoading(true);
+
+  return null;
 };
 
 export default Dashboard;

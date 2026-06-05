@@ -73,6 +73,8 @@ class AIModel {
         predictions,
         confidence: pythonResult.confidence,
         explanation,
+        shapExplanation: pythonResult.explanation || null,
+        limeExplanation: pythonResult.lime_explanation || null,
         wordImportance: pythonResult.word_importance,
         predictedDisease: pythonResult.predicted_disease,
         matchedSymptoms: pythonResult.matched_symptoms,

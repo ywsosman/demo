@@ -10,6 +10,7 @@ const authRoutes = require('../routes/auth');
 const diagnosisRoutes = require('../routes/diagnosis');
 const userRoutes = require('../routes/users');
 const adminRoutes = require('../routes/admin');
+const notificationRoutes = require('../routes/notifications');
 
 // Import database initialization
 const db = require('../database/db');
@@ -65,6 +66,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/diagnosis', diagnosisRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -1,19 +1,37 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack';
 import Orb from '../components/Orb';
 import OrbAmbience from '../components/OrbAmbience';
+import './Landing.css';
 import {
   HeartIcon,
   ShieldCheckIcon,
   ChartBarIcon,
   UserGroupIcon,
   ClockIcon,
-  CpuChipIcon
+  CpuChipIcon,
+  CheckBadgeIcon,
+  LockClosedIcon,
+  LightBulbIcon,
+  InformationCircleIcon,
+  ClipboardDocumentListIcon,
+  BeakerIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+};
+
+const stagger = {
+  animate: { transition: { staggerChildren: 0.08 } },
+};
 
 const Landing = () => {
   const { user } = useAuth();
@@ -21,231 +39,320 @@ const Landing = () => {
   const features = [
     {
       name: 'AI-Powered Diagnosis',
-      description: 'Advanced machine learning algorithms analyze symptoms to provide accurate medical insights.',
+      description: 'Machine learning analyses your symptoms and surfaces likely conditions with confidence scores.',
       icon: CpuChipIcon,
     },
     {
       name: 'Secure & Private',
-      description: 'Your medical data is encrypted and protected with the highest security standards.',
+      description: 'Medical data is encrypted end-to-end and handled under strict privacy standards.',
       icon: ShieldCheckIcon,
     },
     {
       name: 'Real-time Analysis',
-      description: 'Get instant analysis of symptoms with confidence scores and recommendations.',
+      description: 'Receive instant symptom insights, severity guidance, and actionable next steps.',
       icon: ClockIcon,
     },
     {
       name: 'Professional Review',
-      description: 'Licensed doctors review AI predictions and provide professional medical guidance.',
+      description: 'Licensed doctors review AI predictions and add professional medical guidance.',
       icon: UserGroupIcon,
     },
     {
       name: 'Comprehensive Reports',
-      description: 'Detailed diagnosis reports with explanations and next steps for treatment.',
+      description: 'Detailed reports with explainability charts, precautions, and treatment pathways.',
       icon: ChartBarIcon,
     },
     {
       name: 'Patient Care Focus',
-      description: 'Designed to improve patient outcomes and support healthcare professionals.',
+      description: 'Built to support better outcomes for patients and streamline clinician workflows.',
       icon: HeartIcon,
     },
   ];
 
+  const trustItems = [
+    { icon: CpuChipIcon, label: 'AI-powered diagnosis' },
+    { icon: LightBulbIcon, label: 'Explainable predictions' },
+    { icon: LockClosedIcon, label: 'Secure health data' },
+    { icon: CheckBadgeIcon, label: 'Doctor review workflow' },
+  ];
+
   const stats = [
-    { id: 1, name: 'Accuracy Rate', value: '94%', numericValue: 94, suffix: '%' },
-    { id: 2, name: 'Patients Helped', value: '10,000+', numericValue: 10000, suffix: '+' },
-    { id: 3, name: 'Medical Conditions', value: '200+', numericValue: 200, suffix: '+' },
-    { id: 4, name: 'Partner Hospitals', value: '50+', numericValue: 50, suffix: '+' },
+    { id: 1, name: 'Model accuracy', numericValue: 95, suffix: '%', featured: true },
+    { id: 2, name: 'Conditions supported', numericValue: 41, suffix: '' },
+    { id: 3, name: 'Dataset records', numericValue: 4920, suffix: '', compact: false },
+    { id: 4, name: 'Symptoms indexed', numericValue: 131, suffix: '' },
+  ];
+
+  const steps = [
+    {
+      step: '01',
+      title: 'Describe your symptoms',
+      description: 'Select from the symptom list or write details in plain language.',
+      icon: ClipboardDocumentListIcon,
+    },
+    {
+      step: '02',
+      title: 'AI analyses your case',
+      description: 'Our fine-tuned BERT model predicts conditions with confidence and SHAP explainability.',
+      icon: BeakerIcon,
+    },
+    {
+      step: '03',
+      title: 'Review & follow up',
+      description: 'View reports in your dashboard while a doctor reviews the AI output.',
+      icon: ArrowPathIcon,
+    },
   ];
 
   return (
-    <div className="relative transition-colors duration-300">
-      {/* Seamless Gradient Overlay - Spans entire page for smooth color transition */}
+    <div className="relative transition-colors duration-300 font-sans overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-50/20 via-30% to-cyan-100/40 to-70% dark:from-transparent dark:via-emerald-900/10 dark:via-30% dark:to-emerald-950/30 dark:to-70%"></div>
-        <div className="absolute inset-0 bg-gradient-radial from-transparent from-20% via-transparent via-50% to-cyan-100/30 dark:to-gray-900/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#f0fdf4] via-white to-[#ecfdf5] dark:from-transparent dark:via-green-900/10 dark:to-green-950/30" />
       </div>
 
-      {/* Hero section */}
-      <div className="relative px-4 sm:px-6 pt-16 sm:pt-20 lg:px-8 overflow-hidden">
-        {/* Ambient Background */}
+      {/* Hero — split layout on desktop (Framer-style) */}
+      <section className="relative px-4 sm:px-6 pt-12 sm:pt-16 lg:px-8 overflow-hidden">
         <OrbAmbience />
-        
-        {/* Orb */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-full max-w-[90vw] sm:max-w-3xl lg:max-w-4xl h-[300px] xs:h-[350px] sm:h-[550px] md:h-[600px] lg:h-[700px] opacity-40 pointer-events-auto">
-            <Orb 
-              hoverIntensity={0.75}
-              rotateOnHover={true}
-              forceHoverState={false}
-            />
-          </div>
-        </div>
-        
-        <div className="relative mx-auto max-w-2xl py-20 sm:py-32 md:py-48 lg:py-56">
-          <ScrollReveal direction="down" delay={100} duration={800}>
-            <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 dark:text-white ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
-                Revolutionizing healthcare with AI.{' '}
-                <a href="#features" className="font-semibold text-medical-600 dark:text-medical-400">
-                  <span className="absolute inset-0" aria-hidden="true" />
-                  Learn more <span aria-hidden="true">&rarr;</span>
+
+        <div className="landing-section landing-hero-grid relative z-10 py-12 sm:py-20 lg:py-24">
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={stagger}
+            className="text-center lg:text-left"
+          >
+            <motion.div
+              variants={fadeUp}
+              className="landing-hero-badge-wrap hidden sm:flex sm:justify-center lg:justify-start mb-6"
+            >
+              <div className="landing-hero-badge rounded-full px-4 py-1.5 text-sm leading-6">
+                AI-powered medical diagnosis for modern healthcare.{' '}
+                <a href="#how-it-works" className="font-semibold">
+                  See how it works <span aria-hidden="true">&rarr;</span>
                 </a>
               </div>
-            </div>
-          </ScrollReveal>
-          
-          <div className="text-center px-2">
-            <ScrollReveal direction="up" delay={200} duration={900}>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
-                AI-Powered Medical Diagnosis System
-              </h1>
-            </ScrollReveal>
-            
-            <ScrollReveal direction="up" delay={400} duration={900}>
-              <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-900 dark:text-white px-2">
-                Get instant, accurate medical insights powered by advanced AI technology. 
-                Trusted by healthcare professionals and patients worldwide for better health outcomes.
-              </p>
-            </ScrollReveal>
-            
-            <ScrollReveal direction="up" delay={600} duration={900}>
-              <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 px-4">
-                {user ? (
-                  <Link
-                    to="/dashboard"
-                    className="w-full sm:w-auto rounded-md bg-medical-600 px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 text-center"
-                  >
-                    Go to Dashboard
+            </motion.div>
+
+            <motion.h1
+              variants={fadeUp}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight text-green-950 dark:text-white leading-[1.1]"
+            >
+              Smarter symptom checks,{' '}
+              <span className="text-[#22a84a] dark:text-green-400">backed by AI</span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-5 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300 max-w-xl mx-auto lg:mx-0"
+            >
+              Get instant, explainable insights from your symptoms. Our fine-tuned model
+              surfaces likely conditions with confidence scores, and clinicians can review every case.
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              className="landing-hero-actions mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3"
+            >
+              {user ? (
+                <Link to="/dashboard" className="landing-btn-primary w-full sm:w-auto">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link to="/register" className="landing-btn-primary w-full sm:w-auto">
+                    Get Started
                   </Link>
-                ) : (
-                  <>
-                    <Link
-                      to="/register"
-                      className="w-full sm:w-auto rounded-md bg-medical-600 px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-medical-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 text-center"
-                    >
-                      Get Started
-                    </Link>
-                    <Link
-                      to="/login"
-                      className="w-full sm:w-auto text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 text-center py-2.5"
-                    >
-                      Sign in <span aria-hidden="true">→</span>
-                    </Link>
-                  </>
-                )}
+                  <Link to="/login" className="landing-btn-secondary w-full sm:w-auto">
+                    Sign in <span aria-hidden="true">&rarr;</span>
+                  </Link>
+                </>
+              )}
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="landing-trust-pills">
+              {trustItems.map((item) => (
+                <span key={item.label} className="landing-trust-pill">
+                  <item.icon aria-hidden />
+                  {item.label}
+                </span>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          <div className="landing-hero-visual">
+            <div className="absolute inset-0 flex items-center justify-center opacity-50 dark:opacity-60">
+              <div className="w-full h-full max-h-[480px] pointer-events-auto">
+                <Orb hoverIntensity={0.75} rotateOnHover={true} forceHoverState={false} />
               </div>
-            </ScrollReveal>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Stats section */}
-      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <dl className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 text-center lg:grid-cols-4">
+        {/* Mobile orb behind hero text */}
+        <div className="lg:hidden absolute inset-0 flex items-center justify-center pointer-events-none opacity-25">
+          <div className="w-full max-w-md h-[280px]">
+            <Orb hoverIntensity={0.5} rotateOnHover={false} forceHoverState={false} />
+          </div>
+        </div>
+      </section>
+
+      {/* Bento metrics */}
+      <section id="metrics" className="relative py-16 sm:py-24">
+        <div className="landing-section">
+          <ScrollReveal direction="up" delay={80} duration={700}>
+            <div className="text-center mb-10">
+              <p className="landing-section-label">Platform metrics</p>
+              <h2 className="landing-section-title landing-section-desc--center mx-auto">
+                Built on proven ML
+              </h2>
+              <p className="landing-section-desc landing-section-desc--center mt-3">
+                Trained on thousands of symptom records with explainable AI you can trust.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="landing-bento-metrics">
             {stats.map((stat, index) => (
-              <ScrollReveal 
-                key={stat.id} 
-                direction="up" 
-                delay={index * 100}
-                duration={800}
+              <ScrollReveal
+                key={stat.id}
+                direction="up"
+                delay={index * 60}
+                duration={600}
+                className={stat.featured ? 'landing-bento-stat-wrap--featured h-full' : 'h-full'}
               >
-                <div className="mx-auto flex max-w-xs flex-col gap-y-2 sm:gap-y-4 p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-white/20 dark:border-gray-700/50 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                  <dt className="text-xs sm:text-sm md:text-base leading-5 sm:leading-7 text-gray-800 dark:text-gray-100 font-medium">{stat.name}</dt>
-                  <dd className="order-first text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm">
-                    <AnimatedCounter 
+                <div
+                  className={`landing-bento-stat h-full ${stat.featured ? 'landing-bento-stat--featured' : ''}`}
+                >
+                  <div className="landing-bento-stat-value">
+                    <AnimatedCounter
                       end={stat.numericValue}
                       suffix={stat.suffix}
+                      compact={stat.compact !== false}
                       duration={2000}
-                      className="inline-block"
                     />
-                  </dd>
+                  </div>
+                  <p className="landing-bento-stat-label">{stat.name}</p>
                 </div>
               </ScrollReveal>
             ))}
-          </dl>
-        </div>
-      </div>
-
-      {/* Features section */}
-      <div id="features" className="relative py-12 sm:py-16 md:py-24 lg:py-32 transition-colors duration-300 overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center px-2">
-            <ScrollReveal direction="up" delay={100} duration={800}>
-              <h2 className="text-sm sm:text-base font-semibold leading-6 sm:leading-7 text-medical-600">Advanced Healthcare</h2>
-            </ScrollReveal>
-            
-            <ScrollReveal direction="up" delay={200} duration={900}>
-              <p className="mt-2 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Everything you need for medical diagnosis
-              </p>
-            </ScrollReveal>
-            
-            <ScrollReveal direction="up" delay={300} duration={900}>
-              <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-900 dark:text-white">
-                Our comprehensive platform combines cutting-edge AI technology with medical expertise 
-                to provide accurate, fast, and reliable health insights.
-              </p>
-            </ScrollReveal>
           </div>
-          
-          <div className="mx-auto mt-12 sm:mt-16 lg:mt-24 scroll-stack-container">
-            <ScrollStack
-              itemDistance={50}
-              itemScale={0.03}
-              itemStackDistance={18}
-              stackPosition="18%"
-              scaleEndPosition="12%"
-              baseScale={0.92}
-            >
+
+          <ScrollReveal direction="up" delay={300} duration={700}>
+            <p className="landing-disclaimer" role="note">
+              <InformationCircleIcon aria-hidden />
+              <span>
+                <strong>Academic demonstration.</strong> Not validated for clinical use, regulatory
+                approval, or real-world patient care.
+              </span>
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="relative py-16 sm:py-24 border-t border-slate-200/80 dark:border-slate-700/50">
+        <div className="landing-section">
+          <ScrollReveal direction="up" delay={80} duration={700}>
+            <div className="text-center mb-10">
+              <p className="landing-section-label">How it works</p>
+              <h2 className="landing-section-title landing-section-desc--center mx-auto">
+                Three steps to clearer insights
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="landing-steps">
+            {steps.map((item, index) => (
+              <ScrollReveal key={item.step} direction="up" delay={index * 80} duration={600}>
+                <article className="landing-step-card h-full">
+                  <span className="landing-step-number">{item.step}</span>
+                  <h3 className="landing-step-title">{item.title}</h3>
+                  <p className="landing-step-desc">{item.description}</p>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features — bento grid (mobile/tablet) + scroll stack (desktop) */}
+      <section id="features" className="relative py-16 sm:py-24">
+        <div className="landing-section">
+          <ScrollReveal direction="up" delay={100} duration={700}>
+            <div className="text-center mb-10 lg:mb-14">
+              <p className="landing-section-label">Platform capabilities</p>
+              <h2 className="landing-section-title landing-section-desc--center mx-auto">
+                Everything you need for informed care
+              </h2>
+              <p className="landing-section-desc landing-section-desc--center mt-3">
+                Cutting-edge AI paired with clinical oversight — accurate, fast, and built for
+                real-world healthcare workflows.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Bento feature grid — inspired by Framer layout marketplace */}
+          <div className="landing-bento-features mb-4">
+            {features.map((feature, index) => (
+              <ScrollReveal key={feature.name} direction="up" delay={index * 50} duration={500}>
+                <article className="landing-bento-feature h-full">
+                  <div className="landing-bento-feature-icon">
+                    <feature.icon aria-hidden />
+                  </div>
+                  <h3 className="landing-bento-feature-title">{feature.name}</h3>
+                  <p className="landing-bento-feature-desc">{feature.description}</p>
+                </article>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* Immersive scroll stack on large screens */}
+          <div className="landing-scroll-stack-wrap">
+            <ScrollStack>
               {features.map((feature) => (
                 <ScrollStackItem key={feature.name}>
-                  <div className="card-icon-wrapper">
-                    <feature.icon className="card-icon" aria-hidden="true" />
+                  <div className="stack-card-icon-wrapper">
+                    <feature.icon className="stack-card-icon" aria-hidden="true" />
                   </div>
-                  <h3 className="card-title">{feature.name}</h3>
-                  <p className="card-description">{feature.description}</p>
+                  <h3 className="stack-card-title">{feature.name}</h3>
+                  <p className="stack-card-description">{feature.description}</p>
                 </ScrollStackItem>
               ))}
             </ScrollStack>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* CTA section */}
-      <div className="relative py-12 sm:py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <ScrollReveal direction="up" delay={100} duration={800}>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white drop-shadow-sm px-4">
-              Ready to experience the future of healthcare?
-            </h2>
-          </ScrollReveal>
-          
-          <ScrollReveal direction="up" delay={300} duration={900}>
-            <p className="mx-auto mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-7 sm:leading-8 text-gray-800 dark:text-gray-100 drop-shadow-sm px-4">
-              Join thousands of healthcare professionals and patients who trust our AI-powered 
-              medical diagnosis system for better health outcomes.
-            </p>
-          </ScrollReveal>
-          
-          <ScrollReveal direction="up" delay={500} duration={900}>
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 px-4">
-              {!user && (
-                <Link
-                  to="/register"
-                  className="w-full sm:w-auto rounded-md bg-medical-600 px-4 sm:px-3.5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-medical-500 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-medical-600 transition-all duration-200 text-center"
-                >
-                  Get started today
-                </Link>
-              )}
-              <a href="#features" className="w-full sm:w-auto text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-medical-600 dark:hover:text-medical-400 transition-colors duration-200 drop-shadow-sm text-center py-2.5">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </ScrollReveal>
+      {/* CTA */}
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="landing-section max-w-2xl">
+          <div className="landing-cta-panel">
+            <ScrollReveal direction="up" delay={100} duration={700}>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-green-950 dark:text-white">
+                Ready to experience smarter healthcare?
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={200} duration={700}>
+              <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                Create an account to check symptoms, view AI explanations, and follow
+                cases through the patient and doctor dashboards.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={300} duration={700}>
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+                {!user && (
+                  <Link to="/register" className="landing-btn-primary w-full sm:w-auto">
+                    Get started today
+                  </Link>
+                )}
+                <a href="#features" className="landing-btn-secondary w-full sm:w-auto">
+                  Explore features <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

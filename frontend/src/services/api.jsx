@@ -50,13 +50,25 @@ export const authAPI = {
 
 export const diagnosisAPI = {
   submit: (diagnosisData) => api.post('/diagnosis/submit', diagnosisData),
+  resubmit: (sessionId, data) => api.post(`/diagnosis/${sessionId}/resubmit`, data),
   getSymptoms: () => api.get('/diagnosis/symptoms'),
   getHistory: () => api.get('/diagnosis/history'),
   getPending: () => api.get('/diagnosis/pending'),
   getAll: () => api.get('/diagnosis/all'),
   getSession: (sessionId) => api.get(`/diagnosis/${sessionId}`),
+  getRevisions: (sessionId) => api.get(`/diagnosis/${sessionId}/revisions`),
+  acquireLock: (sessionId) => api.post(`/diagnosis/${sessionId}/lock`),
+  releaseLock: (sessionId) => api.post(`/diagnosis/${sessionId}/unlock`),
   reviewSession: (sessionId, reviewData) => api.put(`/diagnosis/${sessionId}/review`, reviewData),
+  downloadPrescription: (sessionId) =>
+    api.get(`/diagnosis/${sessionId}/prescription/pdf`, { responseType: 'blob' }),
   getStats: () => api.get('/diagnosis/stats/overview'),
+};
+
+export const notificationsAPI = {
+  list: (unreadOnly = false) =>
+    api.get(`/notifications${unreadOnly ? '?unread=true' : ''}`),
+  markRead: (id) => api.patch(`/notifications/${id}/read`),
 };
 
 export const userAPI = {

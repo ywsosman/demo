@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import toast from 'react-hot-toast';
 import {
   UserIcon,
@@ -81,16 +82,10 @@ const DoctorPatients = () => {
     });
   };
 
+  usePageLoading(loading);
+
   if (loading) {
-    return (
-      <div className="min-h-screen py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -1,0 +1,634 @@
+FILE: updated draft paper.docx
+================================================================================
+MediDiagnose: An Explainable AI-Powered Clinical Decision Support System Using Biomedical NLP and Human-in-the-Loop Validation
+Youssef Waleed Sayed
+Faculty of Computer Science
+MSA University
+Cairo, Egypt
+youssef.waleed3@msa.edu.eg
+Assoc. Prof. Nermin Negeid
+Faculty of Computer Science
+MSA University
+Cairo, Egypt
+nnegeid@msa.edu.eg
+Ali Mohamed Hassan
+Faculty of Computer Science
+MSA University
+Cairo, Egypt
+aly.mohamed19@msa.edu.eg
+Abstract— built MediDiagnose to tackle a specific problem: clinicians can’t act on a prediction they don’t understand. The system takes free-text symptom narratives and structured patient context, runs them through a fine-tuned BERT-family model, and returns ranked differential diagnoses with confidence scores. For each prediction, SHAP attribution identifies which words in the patient’s description drove the output—surfaced directly in the physician’s review interface, not buried in logs. No diagnosis reaches a patient until a doctor has reviewed and endorsed it; a state machine enforces this at every transition. The implementation spans a React/Vite frontend, Node.js/Express API, MongoDB persistence layer, and an isolated Python inference subprocess. On a benchmark symptom dataset, the NLP pipeline reaches 81.4% Top-1 and 93.7% Top-3 accuracy. In a controlled physician study, SHAP explanations raised mean agreement ratings from 2.9 to 4.1 on a 5-point scale. MediDiagnose shows that biomedical NLP can be wired into a real clinical workflow without sacrificing accountability or interpretability.
+Introduction
+Clinical diagnosis under high patient load is where documentation breaks down. Workflows stretch, assessments get inconsistent, and the reasoning behind preliminary findings rarely gets captured in a form anyone can audit later [1]. EHR systems moved records online but didn’t solve the harder problem: pulling diagnostic signal out of free-text notes, symptom narratives, and clinical reports is still largely manual [2].loads, diagnostic workflows are prone to latency, inconsistent documentation, and limited transparency into the generation of preliminary assessments [1]. Electronic Health Record (EHR) systems have digitized many clinical processes, yet extracting diagnostic signals from free-text physician notes, patient symptom narratives, and clinical reports remains an open challenge [2].
+Rule-based CDSS tools handle what they were programmed for, nothing more. They break on the linguistic variation real patients introduce. Transformer-based NLP changed the ceiling here—BioBERT [4], pre-trained on PubMed and PMC, and ClinicalBERT [5], trained on MIMIC-III notes [6], both showed that domain-specific pre-training moves the needle substantially on classification, named entity recognition, and relation extraction tasks [3]. [3]. Domain-adapted models such as BioBERT [4] and ClinicalBERT [5] have further demonstrated that pre- training on biomedical corpora substantially improves performance on downstream clinical NLP tasks.
+The remaining problem is trust. A clinician who can’t see why a model produced a prediction can’t act on it responsibly [7]. That explainability gap, combined with poor workflow integration and weak interoperability with existing infrastructure, is why most AI diagnostic tools don’t make it past a pilot. explainability gap, combined with weak workflow integration and limited interoperability with clinical infrastructure, restricts the practical deployment of AI diagnostic tools.
+MediDiagnose takes a different approach: AI handles the classification, physicians handle the decision. The system processes symptom narratives, returns Top-3 ranked predictions with per-class confidence scores, and generates SHAP word-importance explanations as a first-class output—not an afterthought. A physician lock-and-review gate means no prediction is delivered to a patient without a doctor’s sign-off. This paper presents the system architecture, NLP pipeline, explainability subsystem, and workflow design of MediDiagnose, situating its contributions within the broader landscape of explainable clinical AI. The remainder of the paper is structured as follows. Section II reviews related work. Section III describes the system architecture. Section IV details the NLP and XAI subsystem. Section V presents the clinical workflow design. Section VI reports experimental evaluation. Section VII concludes with limitations and future directions. as a hybrid AI-clinician workflow rather than a fully autonomous decision engine. The system processes unstructured symptom narratives, generates Top-3 ranked disease predictions with confidence scores, and surfaces
+SHAP-based explanations of word importance as first-class outputs. A doctor-in-the-loop validation gate ensures that no AI prediction reaches a patient without physician review and endorsement. This paper presents the system architecture, NLP pipeline, explainability subsystem, and workflow design of MediDiagnose, situating its contributions within the broader landscape of explainable clinical AI.
+The remainder of the paper is structured as follows. Section II reviews related work. Section III describes the system architecture. Section IV details the NLP and XAI subsystem. Section V presents the clinical workflow design. Section VI reports experimental evaluation. Section VII concludes with limitations and future directions.
+Related work
+Biomedical NLP for Clinical Text
+BERT [3] and the Transformer architecture [10] reset expectations for what NLP models could do on structured tasks. BioBERT [4] extended that to the biomedical domain by pre-training on PubMed abstracts and PMC full texts, posting consistent gains on named entity recognition and question answering. ClinicalBERT [5] went further into the clinic, training on MIMIC-III notes [6] to capture how doctors actually write—abbreviations, drug shorthand, and procedural terminology included.
+Symptom-to-disease classification has gone through CNN and recurrent architectures, but transformer fine-tuning now leads on the publicly available benchmarks. MediDiagnose fine-tunes a BERT-family backbone on a curated symptom-disease dataset using the same classification-head paradigm those models established.
+Explainability in Clinical AI
+SHAP [7] grounds feature attribution in cooperative game theory, making it one of the more defensible explainability methods for clinical use. It has been applied widely to tabular clinical models [8]. LIME [9] offers a model-agnostic alternative through local approximations and has been used on text classifiers in clinical settings.
+What the research keeps showing is that explanation quality directly affects whether clinicians accept AI predictions [11]. Surfacing interpretable evidence alongside a diagnosis changes the dynamic from “trust this output” to “here’s what it’s based on.” MediDiagnose applies SHAP at the token level, mapping word contributions in free-text symptom input to the predicted disease—an extension of the tabular SHAP approach into unstructured clinical text.
+Human-in-the-Loop Clinical Systems
+HITL frameworks are increasingly treated as a prerequisite for safe clinical AI deployment, not an optional layer [11]. Physician validation gates, audit trails, and RBAC are all reflected in FDA SaMD guidance. Some prior CDSS platforms have implemented review queues and lock-based controls [6], but integrating those mechanisms with NLP explainability outputs in a single web-native stack is less common.
+based concurrency controls [6], but few have integrated these with modern NLP explainability outputs in a unified web- native stack. Figure 1 shows all entities and their respective privileges based on their roles in the system sequence diagram, illustrating how the system manages and responds to user requests.
+Figure 1 traces how a single symptom submission moves through the system from the patient's browser to the database and back. The flow starts with a POST /analyzeSymptom call from the Patient UI. Before anything clinical happens, the API checks the JWT with the Auth service. No valid token, no progress. Once authenticated, the DiagnosisService takes over. It writes an initial record to MongoDB using a composite key built from userId, a UUID, and a timestamp, which makes every diagnosis entry globally unique and traceable without extra lookup logic. From there, the service calls Advance to check the patient's session credit, then spawns the Python subprocess to run the BERT model and get back a confidence-rated prediction.
+Two outcomes branch from that point. If the session has remaining credit, the system funds it, transitions the status to RUNNING/DOCTOR_REVIEWED, logs a CARD entry to MongoDB, and fires a success notification. If the credit limit is hit, the session is marked TIMEOUT/FAILED, the failure is logged, and the patient receives a 500/504 error. Throughout both paths, the AuditService captures a create event asynchronously, every operation that touches clinical data leaves a record, regardless of outcome.
+Fig.1. The Sequence Diagram Showing User-System Interaction.
+SYSTEM ARCHITECTURE
+MediDiagnose runs on a four-tier architecture: a React/Vite presentation layer, a Node.js/Express API layer, a MongoDB Atlas persistence layer, and an isolated Python AI inference layer. Each tier has a clearly defined responsibility and the boundaries between them are enforced at the API and subprocess level.
+Frontend Layer
+The frontend is React 18 with Vite handling the build toolchain, which gives fast hot module replacement in development and optimized bundles in production. Tailwind CSS handles styling. Three distinct role-specific dashboards cover Patient, Doctor, and Administrator—each with its own view set, action scope, and data access, enforced at both the UI and API levels.
+Backend API Layer
+The Node.js/Express backend exposes a RESTful API with JWT-based stateless authentication and bcrypt password hashing. RBAC is enforced at route middleware level. The backend handles diagnosis session state transitions, manages doctor lock acquisition and expiry, issues multi-channel notifications, and writes structured audit log entries for every sensitive operation.
+Role-based access control (RBAC) is enforced at the route middleware level. The backend orchestrates diagnosis
+session state transitions, manages doctor lock acquisition and expiry, issues multi-channel notifications, and records structured audit log events for every sensitive operation.
+[Patient/Doctor/Admin Browser]↓ HTTPS[React + Vite Frontend]↓ REST API[Node.js / Express API Layer]↓ subprocess call [Python:BERT+ SHAP Inference]↓ Mongoose ODM[MongoDB Atlas][Patient/Doctor/Admin Browser]↓ HTTPS[React + Vite Frontend]↓ REST API[Node.js / Express API Layer]↓ subprocess call [Python:BERT+ SHAP Inference]↓ Mongoose ODM[MongoDB Atlas]
+[Patient/Doctor/Admin Browser]
+↓ HTTPS
+[React + Vite Frontend]
+↓ REST API
+[Node.js / Express API Layer]
+↓ subprocess call [Python:BERT+ SHAP Inference]
+↓ Mongoose ODM
+[MongoDB Atlas]
+[Patient/Doctor/Admin Browser]
+↓ HTTPS
+[React + Vite Frontend]
+↓ REST API
+[Node.js / Express API Layer]
+↓ subprocess call [Python:BERT+ SHAP Inference]
+↓ Mongoose ODM
+[MongoDB Atlas]
+Fig. 2. High-level system architecture of MediDiagnose.
+Data Layer
+MongoDB Atlas with Mongoose ODM handles persistence. Core entities are: DiagnosisSession, DiagnosisRevision, DoctorReview, Prescription, Notification, and AuditLog. Each patient resubmission appends a new DiagnosisRevision rather than overwriting the previous one—the full history stays intact and immutable. The schema was migrated from SQLite during development; MongoDB’s document model handles nested revision arrays natively, which removed a category of join complexity.
+from SQLite to MongoDB during development, improving horizontal scalability and schema flexibility.Figure 3 shows the data model that keeps the whole system honest. The DiagnosisSession sits at the center — it holds the current lifecycle state, ties to the patient who submitted it, and links to whichever doctor is assigned. That state field is not cosmetic; it maps directly to the finite-state machine in Section V-A, so the database and the workflow logic stay in sync.
+Figure 3 shows how these entities connect. DiagnosisSession sits at the center, holding the current lifecycle state and linking to both the submitting patient and the assigned doctor. That state field maps directly to the finite-state machine in Section V-A, keeping database state and workflow logic in sync. Each session owns a chain of DiagnosisRevision records—every revision stores the complete AI output at that moment: predicted disease, confidence scores, and SHAP token attributions. If a doctor reviews revision 3, revisions 1 and 2 are still there, unchanged, with their original model outputs. DoctorReview attaches one-to-one to the revision it endorses, anchoring the physician’s decision to the exact AI output they reviewed. A finalized review can produce a Prescription, which feeds PDF generation. Notification and AuditLog branch from session-level events, covering alerts and the compliance trail respectively.
+AI Inference Layer
+The AI inference layer runs as an isolated Python subprocess. The Node.js backend serializes symptom text and patient context to JSON, spawns the Python script, and parses the returned structured JSON. This keeps ML dependencies—PyTorch, HuggingFace Transformers, SHAP—entirely separate from the Node.js environment, so version management and dependency updates on either side don’t interfere with the other.
+subprocess isolation pattern allows independent version management of ML dependencies and clean separation of concerns.
+.
+Fig.3. ER diagram of the proposed healthcare system, showing key entities and their relationships with cardinalities.
+NLP AND EXPLAINABILITY SUBSYSTEM
+Model Selection and Fine-Tuning
+MediDiagnose fine-tunes a BERT-based encoder for multiclass disease classification. Following the established paradigm of [4], [5], a pre-trained biomedical checkpoint is adapted to a curated symptom–disease dataset. The classification head is a linear layer over the [CLS] token representation, trained with cross-entropy loss and AdamW optimizer with a linear warmup schedule.
+The model accepts the concatenated symptom narrative and relevant structured patient context (age, chronic conditions, reported duration) as a single tokenized input sequence. The Top-3 predicted disease classes and their softmax confidence scores are returned in each inference call.
+SHAP-Based Explainability
+Token-level explanations are generated using SHAP’s Explainer applied to the classification model. For each input, SHAP computes the marginal contribution of each token to
+the predicted class score relative to a baseline expectation [7]. The resulting attribution values are aggregated at the word level to produce a word_importance list that ranks symptom terms by their contribution to the top prediction. The inference output envelope is structured as follows:
+predicted_disease: top-1 class label.
+confidence: softmax probability for top-1.
+top_predictions: Top-3 classes with confidence scores.
+explanation: raw SHAP values per token.
+word_importance: ranked word–attribution pairs. This structured output is persisted with each Diagnosis Revision and surfaced to the physician review interface with color-intensity visual encoding, allowing doctors to see which terms drove a prediction immediately.
+Inference Pipeline
+The complete inference pipeline proceeds as: symptom text tokenization → BERT forward pass → Top-3 softmax extraction → SHAP attribution computation → word-level aggregation → JSON serialization. Model initialization on
+first call incurs a cold-start latency; subsequent calls benefit from in-process model caching, substantially reducing steady- state inference time.
+CLINICAL WORKFLOW DESIGN
+Diagnosis Lifecycle State Machine
+MediDiagnose implements a strict finite-state machine governing each diagnosis session. Defined states are:
+SUBMITTED — patient has submitted the symptom form.
+AI_PROCESSED — inference completed; predictions and explanations stored.
+PENDING_DOCTOR_REVIEW — session is queued for physician assignment.
+IN_REVIEW — a doctor holds the lock and is actively reviewing.
+NEEDS_MORE_INFO — doctor has requested additional patient input.
+REVIEWED — doctor has finalized diagnosis and prescription.
+SOFT_DELETED — session administratively archived.
+State transitions are validated server-side; illegal transitions are rejected with appropriate error codes, preventing workflow bypass. Figure 4 shows the use case diagram, which depicts all actors and their available actions within the system boundary.
+Lock-Based Concurrency Control
+To prevent race conditions in multi-doctor environments, MediDiagnose implements a pessimistic locking mechanism. When a doctor begins review, a hard lock is acquired against the session record with a configurable expiry window (24 hours in the baseline configuration). Only the lock owner may submit a final review decision. Lock auto-expiry and administrator override operations provide recovery mechanisms for edge cases.
+Role-Based Access and Security
+Security controls include bcrypt password hashing (cost factor 12), JWT access tokens with short expiry, route-level RBAC middleware, AI subprocess timeout enforcement, and structured audit logging of all access and modification events (See Table 1).
+Table 1. User roles vs. system capabilities
+Capability
+Patient
+Doctor
+Admin
+Submit Diagnosis
+
+ViewAI Predictions
+
+
+
+Acquire Review Lock
+
+Finalize Diagnosis
+
+
+Override / Unlock
+
+Manage Users
+
+View Audit Logs
+
+Fig.4. Use case diagram illustrating system actors and their interactions within the system boundary.
+EXPERIMENTAL EVALUATION
+Dataset and Training Setup
+The NLP model was trained on a curated symptom–disease dataset comprising patient-authored symptom descriptions mapped to ICD-10-aligned disease categories. The dataset was split 80/10/10 for training, validation, and test sets. Training was conducted on a single GPU using the AdamW optimizer (learning rate 2×10−5, batch size 16, 10 epochs), with early stopping based on validation loss.
+Classification Performance
+Table 2 reports test-set performance. Top-1 accuracy is 81.4%; Top-3 accuracy reaches 93.7%, meaning the correct diagnosis appears among the three ranked predictions in nearly all cases. For differential diagnosis support, Top-3 is the more clinically relevant number—a doctor scanning three candidates handles the final call.
+Table 2. NLP Classification Performance
+Metric
+Value
+Top-1 Accuracy
+81.4%
+Top-3 Accuracy
+93.7%
+Macro F1-Score
+0.796
+Weighted F1-Score
+0.812
+Mean Confidence (correct)
+0.873
+Mean Confidence (Incorrect)
+0.531
+The confidence gap is worth noting separately. When the model is correct, mean confidence is 0.873. When it’s wrong, mean confidence drops to 0.531. That 34-point gap means confidence scores carry real information—a physician reviewing a 0.55-confidence prediction should treat it differently than one at 0.88. The system uses this signal to visually flag lower-confidence cases in the physician review interface.
+Explainability Quality
+To evaluate whether SHAP explanations affected physician decision-making, ten physicians reviewed 50 randomly selected cases under two conditions: with and without word-importance visualizations. Each rated their agreement with the AI prediction on a 5-point Likert scale. With SHAP explanations, mean agreement was 4.1. Without them, 2.9. The difference was statistically significant (p < 0.05, paired t-test). Physicians reported that seeing which symptom terms drove a prediction made it easier to spot cases where the model was picking up on the right signal versus coincidental phrasing. This aligns with prior findings on explanation quality and clinician trust [8], [11].
+System Performance
+End-to-end inference latency averages 3.2 seconds on a warm model instance and 12.8 seconds on cold start due to model initialization. Non-AI API endpoints run under 100ms. The cold-start gap motivates future work on persistent model serving—TorchServe or ONNX Runtime—to eliminate that overhead in production.
+Comparison to other platforms
+Direct Feature Comparison
+Ada Health is the industry's closest peer to MediDiagnose in the virtual assistant and/or symptom checker category. Table
+3comparesMediDiagnoseagainstthe benchmark, highlighting where it matches, extends, or diverges.
+Unique contributions
+MediDiagnose makes the following contributions that are not present or uncommon in the reviewed industry landscape:
+SHAP word-importance explanations surfaced directly in clinical UI, which is rare among symptom- checker platforms and absent from Ada Health.
+Mandatory physician lock-and-review state machine that enforces human-in-the-loop governance before any diagnosis is delivered to the patient.
+Append-only revision history with per-revision AI output storage enables full auditability and traceability of diagnostic reasoning.
+Integrated Top 3 differential diagnosis output with per-class confidence scores, which supports clinical calibration and targeted physician scrutiny.
+End-to-end diagnosis lifecycle from patient submission through doctor review to prescription PDF generation in a single unified platform.
+Table 3. Comparison of MediDiagnose with the Benchmark, Highlighting Areas of Alignment, Extension, and Divergence.
+Feature
+Medi Diagnose
+Ada Health (closest peer)
+Core technology
+NLP + BERT fine- tuning
+ML symptom classifier
+Input modality
+Free-text + structured context
+Free-text symptom entry
+Output
+Top-3 diagnoses + confidence scores
+Symptom assessment + possible causes
+Explainability
+SHAP word- importance (per token)
+None reported
+Physician review gate
+Hard lock + mandatory validation
+No physician involvement
+Audit trail
+Full per-action audit log
+Not applicable
+Revision history
+Append-only
+immutable revisions
+Not applicable
+Prescription generation
+PDF generation + doctor sign-off
+Not applicable
+Role-based
+access
+Patient / Doctor /
+Admin RBAC
+Patient-facing
+only
+Clinical accountability
+Doctor-in-loop governance
+Self-service, no governance
+Deployment model
+Full-stack web platform
+Mobile app / web app
+Conclusion
+MediDiagnose shows one way to put biomedical NLP into a clinical workflow without stripping out the accountability layer. The core contributions are: a BERT-based multiclass disease classifier that runs on free-text symptom narratives; SHAP word-importance explanations shown directly in the physician review UI; a state machine workflow with pessimistic locking and append-only audit history; and a full-stack implementation that bridges the Python ML ecosystem with a Node.js/React production platform.
+The current limitations are real. The evaluation is prototype-scope, the physician sample is small at ten reviewers, and the system carries no formal regulatory certification. Next steps include persistent model serving to fix cold-start latency, multi-model ensemble approaches for better calibration, broader disease coverage, and HL7/FHIR alignment for EHR integration. The architecture is designed to accommodate those changes without a full rebuild.
+Taken together, the system demonstrates that combining clinical NLP, explainable AI, and physician governance in a single platform is technically feasible and produces measurable gains in physician trust and diagnostic transparency.
+References
+P. Rajpurkar, E. Chen, O. Banerjee, and E. J. Topol, “AI in health and medicine,” Nature Medicine, vol. 28, no. 1, pp. 31–38, Jan. 2022.
+A. L. Goldberger et al., “PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals,” Circulation, vol. 101, no. 23, pp. e215–e220, Jun. 2000.
+J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, “BERT: Pretraining of deep bidirectional transformers for language understanding,” in Proc. 2019 Conf. North American Chapter of the ACL (NAACL-HLT), Minneapolis, MN, pp. 4171–4186, 2019.
+J. Lee et al., “BioBERT: A pre-trained biomedical language representation model for biomedical text mining,” Bioinformatics, vol. 36, no. 4, pp. 1234–1240, Feb. 2020.
+E. Alsentzer et al., “Publicly available clinical BERT embeddings,” in
+Proc. 2nd Clinical NLP Workshop, Minneapolis, MN, pp. 72–78, 2019.
+A. E. W. Johnson et al., “MIMIC-III, a freely accessible critical care database,” Scientific Data, vol. 3, Art. no. 160035, May 2016.
+S. M. Lundberg and S.-I. Lee, “A unified approach to interpreting model predictions,” in Proc. 31st Conf. Neural Information Processing Systems (NeurIPS), Long Beach, CA, pp. 4765–4774, 2017.
+S. M. Lundberg et al., “From local explanations to global understanding with explainable AI for trees,” Nature Machine Intelligence, vol. 2, no. 1, pp. 56–67, Jan. 2020.
+M. T. Ribeiro, S. Singh, and C. Guestrin, “"Why should I trust you?": Explaining the predictions of any classifier,” in Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery and Data Mining, San Francisco, CA, pp. 1135–1144, 2016.
+A. Vaswani et al., “Attention is all you need,” in Proc. 31st Conf. Neural Information Processing Systems (NeurIPS), Long Beach, CA,
+pp. 5998– 6008, 2017.
+E. J. Topol, “High-performance medicine: The convergence of human and artificial intelligence,” Nature Medicine, vol. 25, no. 1, pp. 44–56, Jan. 2019.
+Y. Wang et al., “Clinical information extraction applications: A literature review,” Journal of Biomedical Informatics, vol. 77, pp. 34– 49, Jan. 2018.
+
+FILE: thesis draft.docx
+================================================================================
+AI-Powered Medical Diagnosis System using  NLP and XAI
+by
+Youssef Waleed Sayed, Ali Mohamed Hassanein
+A dissertation submitted in partial fulfillment of the requirements for the degree of
+Bachelor of computer science (SE programme)
+in the
+Faculty of Computer Science of the October University for Modern Sciences and Arts (MSA), EGYPT
+Graduation Projects advisor:
+Associate Professor Nermin Negeid
+ii
+Abstract
+Significantly, Artificial Intelligence (AI) has revolutionized the health domain by facilitating smart clinical decision support and predictive diagnostic tools. Healthcare institutions are producing enormous amounts of data, including patient symptoms, prescriptions, and doctor's notes, in various formats, such as structured and unstructured data. The extraction of diagnostic information from this diverse textual data poses a complex challenge in the health domain.
+This thesis proposes an AI-Powered Medical Diagnosis System, a web-based system for analyzing textual data and generating illness prediction using advanced biomedical language models. The system incorporates advanced Natural Language Processing (NLP) techniques, including BioBERT and ClinicalBERT, to interpret the provided symptoms and textual data. In addition, to eliminate the opaqueness of AI prediction, the system incorporates Explainable Artificial Intelligence (XAI) techniques, including SHAP and LIME, to shed more light on the features affecting the diagnostic output.
+Furthermore, the system incorporates Electronic Health Record (EHR) standards, including HL7 and FHIR, to ensure seamless integration with the hospital's information system. The proposed system incorporates the following components: front-end interfaces, back-end interfaces, AI engines, and medical databases, within a cloud-ready infrastructure. The experimental results show the effectiveness of the system in terms of high predictive accuracy and interpretability, as well as increased efficiency in the workflow process. The system will play an important role in the health domain by reducing diagnostic delays, enhancing the trust of physicians, and improving the level of comprehension of patients.
+iii
+Acknowledgments
+We would like to express our sincere gratitude to Dr. Nermin Negeid for her invaluable guidance, support, and feedback in the course of completing this project.
+The expertise of Dr. Nermin Negeid in the field of Natural Language Processing and Machine Learning has been fundamental in the direction of this thesis. Dr. Nermin has been instrumental in providing the theoretical and practical insights necessary for the design, implementation, and evaluation of the proposed AI-based medical diagnosis system. Her mentorship has been invaluable in enriching our understanding of the theoretical concepts of biomedical natural language processing models, predictive analytics, and the application of Explainable AI.
+We are grateful for the time, patience, and dedication of Dr. Nermin in supervising the completion of this thesis. Her support has been invaluable in addressing the challenges of the research and the achievement of the objectives of this project.
+Contents
+Abstractii
+Acknowledgmentsiii
+List of Tables3
+List of Figures4
+1 Introduction5
+1.1 Introduction guide lines5
+2 Background6
+2.1 General Guidelines6
+2.2 Example7
+3 Specification - (SRS)8
+3.1 General Guide Lines8
+3.2 SRS Guidelines8
+4 Design10
+4.1 Design Guidelines10
+5 Implementation12
+5.1 General Guidelines12
+6 Results and Evaluation14
+6.1 General Rules14
+7 Conclusions and Future work15
+7.1 General Rules15
+7.2 Future Work15
+7.3 General Rules15
+A Collected materials from16
+CONTENTS2
+Bibliography17
+List of Tables
+List of Figures
+Chapter 1
+Introduction
+Introduction
+Artificial Intelligence (AI) and Natural Language Processing (NLP) are transforming the healthcare industry by enabling the prediction of diseases through automated means. In the healthcare domain, a large volume of data is created by healthcare organizations, including information about patient symptoms, prescriptions, doctor comments, and discharge reports. A significant amount of this data is in an unstructured or textual format, making the analysis of the data more challenging with the help of conventional computational techniques.
+Significant improvements in the development of language models, including BioBERT and ClinicalBERT, have improved the ability of machines to comprehend the descriptions of symptoms and relate them to the possible diseases through contextual learning.
+Currently, a large number of disease diagnosis platforms rely on manual evaluation or the use of rule-based systems for evaluating symptoms. These systems are not only restricted in terms of accuracy but also fail to provide transparency about the decisions taken by the system. In addition, most of the existing AI-based disease diagnosis platforms are considered to be ‘black box’ technologies, where the decisions taken by the system are not clearly explained to the user.
+The current state of the healthcare industry faces a number of issues, including the use of fragmented electronic health records, delayed diagnoses, and the coordination of workflow. There exists a requirement for a system that can not only analyze the data but also generate precise predictions and provide transparency about the decisions taken by the system.
+System Overview Architecture DiagramCaption: “Proposed AI Medical Diagnosis System Workflow”
+Problem Statement
+Despite the progress made in the field of healthcare informatics, diagnostic processes are faced with significant challenges. A significant portion of decision systems used in clinical decision-making is unable to process unstructured textual information, including physician notes and patient symptoms, which are useful for making diagnostic decisions.
+In addition, diagnostic AI systems lack sufficient interpretability, making it difficult for physicians to validate predictions. This has created a major barrier for trust and integration of AI diagnostic systems into hospitals. Another major concern facing diagnostic AI systems is the lack of a unified view of patient data, which is stored in different EHR systems.
+All these challenges facing diagnostic AI systems mean that there is a need to develop a diagnostic AI system that can process textual information while providing transparent predictions.
+Objectives
+The main objective of this thesis is to develop an AI-assisted medical diagnosis system, where the system can analyze the descriptions of the symptoms and predict diseases using deep learning techniques.
+The objectives of this thesis can be listed as follows:
+- Develop a natural language processing system using a fine-tuned BERT model
+- Provide disease prediction with a corresponding confidence level
+- Include SHAP visualization for explainability
+- Design a patient interface, a clinician interface, and a data storage mechanism for the diagnosis history
+- Include a workflow for clinician review
+- Provide a secure authentication mechanism
+1.4 Motivation
+Motivation for Clinicians
+There is potential for AI-based diagnostic systems to improve the efficiency of healthcare services by minimizing diagnostic delays and aiding physicians with predictions. The application of Explainable AI (XAI) can promote trust by providing a clear understanding of the underlying prediction process. The application of unstructured text can reveal useful medical knowledge, which is often underutilized.
+Motivation for Researchers
+This project provides a chance to engage with biomedical natural language processing, the application of machine learning technology in a clinical context, and healthcare system engineering. It provides a bridge between theoretical AI research and real-world medical application, and a new area for explainable clinical AI systems.
+Chapter 2
+Background
+2.1 Background
+The healthcare sector is incorporating Artificial Intelligence (AI) technologies, and it is noticed that there is increased use of Machine Learning and Deep Learning models, which have shown promising results in disease prediction and analysis.
+Data is collected in the form of structured and unstructured data, where structured data includes laboratory results, and unstructured data includes physician narratives. Statistical models face challenges in understanding unstructured data, and hence, Natural Language Processing is required.
+2.1.1 Machine Learning
+Machine learning allows systems to learn from data in an automated manner. Supervised learning algorithms are widely used in the healthcare domain for disease classification, patient risk prediction, treatment recommendation, and other AI-related tasks.
+2.1.2 Neural Networks and Deep Learning
+Neural networks are inspired by the structure of the brain and are used for pattern detection in data sets. Deep learning algorithms with multiple hidden layers are capable of feature extraction from clinical data sets, thus improving predictive accuracy and classification results.
+2.1.3. Transformer-Based NLP Models
+Transformer architectures incorporate attention mechanisms to process contextual relationships in text data. The biomedical versions, such as BioBERT and ClinicalBERT, are pre-trained on biomedical texts and clinical notes, enabling the interpretation of symptom descriptions.
+Transformer Architecture DiagramCaption: “BERT Model Structure for Clinical Text Processing”
+2.1.4. Explainable Artificial Intelligence
+Explainable techniques such as SHAP and LIME, which form part of XAI, aid in model transparency. SHAP and LIME techniques help to identify the features that impact predictions to the greatest extent, thus making the output of AI interpretable to clinical practitioners.
+SHAP Explanation Visualization
+Caption: “Symptom Importance Visualization Using SHAP”
+2.2 Previous Work
+Research 1 - ClinicalBERT
+ClinicalBERT is a model that utilizes the transformer architecture and is trained on clinical narratives to enhance disease classification and entity recognition. It can understand the context of information in physician documentation, allowing it to interpret clinical texts.
+Data used in the model includes the MIMIC-III clinical dataset, which contains clinical information and patient histories from hospitals.
+Research 2 – BioBERT
+BioBERT is an extension of BERT, pre-trained on biomedical literature from PubMed. BioBERT enhances entity recognition and disease relation extraction. BioBERT does not incorporate clinical workflow systems or patient dashboard tools.
+Chapter 3
+Specification - (SRS)
+3.1General Guide Lines
+This chapter describes the Software Requirements Specification (SRS) for the proposed system, namely "MediDiagnose - AI Powered Medical Diagnosis System." SRS is a description of the functionalities that the proposed system is required to have, considering functional, operational, and architectural aspects.
+The proposed system, being an application-oriented intelligent system for the healthcare domain, follows the Application-Oriented Approach Selection methodology for SRS. This is an essential requirement for an intelligent system, as it is an application-oriented system.
+The SRS is developed by considering multiple viewpoints, as this is essential for ensuring that all aspects of the system have been considered. These viewpoints include business workflow, interaction layers, artificial intelligence processing, system state, data architecture, etc. These viewpoints help all the stakeholders, namely developers, artificial intelligence experts, understand the system.
+The proposed system is a cloud-based clinical decision support system that can be utilized for disease prediction, with a physician-in-the-loop for validating the predictions.
+3.2 SRS Viewpoints and System Perspectives
+3.2.1 Business Model View
+The clinical workflow enabled by MediDiagnose follows these steps:
+- Patient provides symptoms and medical context.
+- An artificial intelligence algorithm calculates disease predictions.
+- Explanatory results are generated for the predictions.
+- The case is ready for the physician review workflow.
+- The results are either confirmed or overridden by the physician.
+- A prescription is generated.
+- Records are archived for auditing.
+The above workflow increases the speed of diagnosis while ensuring medical responsibility is met.
+3.2.2 User Interface View
+The system provides role-based graphical interfaces for users, which include:
+Patient Interface
+- Submitting diagnostic cases
+- Viewing predictions made by AI and accompanying explanations
+- Viewing changes to cases
+- Downloading prescribed medications
+- Viewing system-generated notifications
+Doctor Interface
+- Viewing pending diagnostic sessions
+- Acquiring locks on cases
+- Viewing predictions made by AI
+- Submitting final diagnostic conclusions
+- Requesting additional information
+Admin Interface
+- User account management
+- Overriding predefined workflows
+- Unlocking cases
+- Viewing audit logs
+3.2.3 Dynamic System Behavior
+The workflow state machine for diagnosis sessions is well defined and can be listed as SUBMITTED, AI PROCESSED, PENDING DOCTOR REVIEW, IN REVIEW, NEEDS MORE INFO, REVIEWED, and SOFT DELETED. Any invalid transitions are rejected to maintain the integrity of the workflow.
+Case locking provides a form of concurrency control to ensure that a case can be reviewed by one and only one doctor at a time. The case lock expires automatically after a period of 24 hours.
+3.2.4 Data Flow View
+The medical data processing pipeline is as follows:
+- Information is provided by the patient, including symptoms and medical context.
+- Validation is done by the backend, followed by data preprocessing.
+- Node.js calls a Python-based AI subprocess.
+- Predictive data is generated by a BERT model.
+- Explainability is calculated by SHAP.
+- Data is stored as an immutable revision.
+- The review is done by a clinician, which is then appended.
+- A prescription is generated, then archived.
+The above process is to maintain traceability and reproducibility for all AI decisions.
+3.2.5 Data Structure View
+Key Data Entities Include:
+- User Accounts
+- Patient Profiles
+- Diagnosis Sessions
+- Diagnosis Revisions
+- Doctor Reviews
+- Notifications
+- Audit Logs
+- Prescription PDFs
+For each diagnosis submission, there is a new immutable revision created, which holds AI prediction and explanations, later verified by the backend.
+3.2.6 Algorithm and AI Processing View
+The model utilizes a natural language processing (NLP) technique to approach disease prediction, with the aid of a fine-tuned BERT model.
+The processing stages of the AI model:
+- Tokenization of the symptom text
+- Encoding of the medical context
+- Inference using the transformer model
+- Prediction of the top three diseases
+- Calculation of confidence score
+- SHAP-based explainability mapping
+- Word importance visualization
+The inference is restricted to occur within 20-40 seconds under normal circumstances.
+3.2.7 Static System Architecture
+The architecture is modular and a full-stack one. This means that there are separate components for the frontend, backend, database, and AI.
+Frontend
+- React with Vite
+- Tailwind UI
+- Role-based dashboards
+Backend
+- Node.js with Express
+- RESTful APIs
+- Authentication middleware
+Database
+- MongoDB Atlas
+AI Engine
+- Python subprocess orchestration
+- BERT model
+- SHAP explainability
+3.3 Functional Specification Overview
+The functional specification provides a description of system capabilities and operational requirements.
+The core functional modules include:
+- Authentication and Access Control
+- Secure registration
+- JWT authentication
+- Authorization
+- Diagnosis Processing
+- Submission of symptoms
+- AI-based prediction of diseases
+- Confidence scoring
+- Explanatory visualization
+- Case Lifecycle Management
+- Revision/version management
+- Doctor review
+- Locking
+- Status state machine
+- Prescription Management
+- Submission of final diagnosis
+- Generation of prescription
+- PDF export
+- Administrative Control
+- User management
+- Workflow overrides
+- Soft deletion
+- Audit and monitoring
+- Notification Services
+- In-app notifications
+- Emails
+- SMS
+All functional actions are logged, which is necessary for compliance.
+3.4 Non-Functional Specification Overview
+Performance Requirements
+- Inference time for AI should not be more than 40 seconds.
+- Loading time for the dashboard should not be more than 2 seconds.
+- Response time for the API should not be more than 500 ms.
+- System should be able to handle 500 concurrent users.
+Security Requirements
+- Passwords should be hashed using bcrypt.
+- Session tokens should be generated as JWTs.
+- Role-Based Access Control should be implemented.
+- All communication should be done using HTTPS.
+Reliability
+- Availability should be around 99%.
+- Automated lock recovery should be implemented.
+- Failure logs should be comprehensive.
+Scalability
+- Backend components should be horizontally scalable.
+- Cloud deployment should be planned.
+Data Integrity
+- Revisions should be immutable.
+- Audit logs should be append-only.
+3.5 Domain Model Overview
+The domain of the system contains the following main entities:
+- User (Abstract)
+- Patient
+- Doctor
+- Admin
+- DiagnosisSession
+- DiagnosisRevision
+- DoctorReview
+- Notification
+- AuditLog
+- PrescriptionPDF
+Inheritance Hierarchy
+The entities of Patient, Doctor, and Admin are inherited from the basic User entity.
+3.6 Operational Scenarios
+Scenario 1 – Patient Submission
+The patient logs in and enters their symptoms, which are then processed by the artificial intelligence module. Predictions are generated, and the predictions are stored.
+Scenario 2 – Doctor Review
+The doctor locks the case and reviews the output generated by the artificial intelligence module. Based on this, the doctor submits the diagnosis and the corresponding prescription.
+Scenario 3 – Revision Request
+In case the doctor requires more information, the doctor can ask for it. The patient then resubmits the information, and the artificial intelligence module re-processes the information.
+Chapter 4
+Design
+4.1System Architecture and Topology
+The structural architecture of the MediDiagnose platform is engineered around a clean, four-tiered decoupled topology designed to completely isolate presentation, business logic, permanent data storage, and heavy deep learning inference. The system is structurally segregated to fulfill non-functional requirements regarding security, role isolation, and system responsiveness, preventing the resource-intensive natural language processing layer from locking the user-facing web services.
+Presentation Tier: Realized as a responsive, components-based Single Page Application (SPA) utilizing React 18, Vite, and Tailwind CSS. This tier encapsulates role-specific dashboards for Patients, Doctors, and Administrators, strictly validating interface views via declarative route guards.
+Application Tier: Built upon Node.js and the Express framework, serving as the central RESTful API gateway. This layer dictates business logic execution, handles token-based session verification, coordinates user states, and manages underlying application state transitions.
+Data Persistence Tier: Supported by a document-oriented database paradigm leveraging MongoDB Atlas via the Mongoose Object-Document Mapper (ODM). This tier maintains flexible collections optimized for highly variable clinical text shapes without the computational overhead of relational table joins.
+AI Inference and Explainability Tier: Maintained as an isolated subprocess workspace using Python 3.12, PyTorch, and the SHAP framework. This subsystem operates inside its own memory partition, communicating with the core application tier exclusively via standardized, serialized data pipes.
+4.2 Detailed Component Decomposition and Interaction Workflows
+The architectural components interact through clean integration interfaces to maintain strict data tracking and a secure workflow chain. The system components are structurally decomposed into five main operational modules:
+1. Identity, Session, and Authentication Service
+This component manages secure system access via JSON Web Tokens (JWT). When a user supplies identification credentials through the Presentation Tier, the Application Tier interceptor decrypts and verifies the data against the stored identity documents using secure cryptographic hashing algorithms. Upon validation, the server generates an asymmetric, time-delimited access token containing encrypted role claims (Patient, Doctor, or Administrator) embedded in the token payload. This token is attached to subsequent client-side HTTP requests, where automated backend middleware evaluates role privileges prior to granting endpoint access.
+2. Case Management and State Automation Service
+This module governs the operational lifecycle of a clinical case file. It enforces strict sequential state transitions via an underlying state machine pattern. Case objects mutate chronologically across dedicated status conditions:
+SUBMITTED -> AI_PROCESSED -> PENDING_DOCTOR_REVIEW -> IN_REVIEW -> REVIEWED
+The State Automation Service guarantees that case transitions are unidirectional. For example, a Patient cannot modify symptom narratives once a case enters the AI_PROCESSED stage, and a Doctor cannot issue a finalized prescription until the record status explicitly marks the lock acquisition as successful.
+3. Concurrency and Pessimistic Locking Manager
+To prevent multi-user write collisions—such as two physicians simultaneously reviewing a single patient case and writing conflicting diagnostic summaries—this manager coordinates exclusive write access. When a clinician selects a pending case file from the review queue, the Locking Manager issues an atomic transactional mutation to the database record. It records the active Doctor's unique identifier into a lockedBy field and establishes an exclusive reservation bound to a lockUntil timestamp parameter set exactly 24 hours in the future.
+While this timestamp is unexpired, any parallel write request issued by a different user session is caught by the locking middleware and rejected with an HTTP 409 Concurrency Conflict error code. If the lock expires without a completed review, the manager frees the case back to the public pool.
+4. Child-Process Orchestration Pipeline
+Because loading and executing a 433MB BERT model architecture introduces severe thread-blocking latency, the Application Tier delegates prediction execution to an asynchronous child process pipeline. The Node.js architecture utilizes native process creation protocols to spin up an ephemeral Python environment instance. The raw unstructured text from the patient narrative, along with key demographic variables, is stringified into a unified JSON format data packet and pushed into the child script's standard input stream (stdin).
+The script executes synchronously within its isolated memory boundaries. The Node.js engine monitors standard output data streams (stdout), gathering chunked buffers as they become available. Upon script termination, the buffer is reassembled, parsed back into structured application memory, and the child process is destroyed to free active system resources.
+5. Document Compiler and Export Engine
+Following clinical verification and diagnostic completion by an authorized physician, the case data is fed into a server-side document compilation module. This subsystem extracts patient records, the final physician assessment text, and prescription line items from the secure document collections. It structures the data fields inside a standardized HTML canvas layout, mapping signatures and regulatory headers, and compiles the layout into a compressed, read-only PDF document stream. This document stream is assigned strict cross-origin resource sharing headers and transmitted to the client presentation interface for local download.
+4.3 Data Architecture and Database Collections Schema
+The data layer utilizes an append-only, revision-controlled architecture specifically designed to preserve medical data auditability. Records are not destructively updated or replaced inline; instead, modifications append detailed child documents to an immutable evaluation array tracking historical data states.
+1. User Collection Base Model
+Tracks foundational credentials, access status, and secure profiles. It serves as an organizational base for three distinct actor roles using discriminator inheritance:
+Patient Discriminator: Appends specific medical attributes, including recorded blood types, known pharmaceutical or environmental allergies, emergency point-of-contact details, and historical links to personal diagnostic session profiles.
+Doctor Discriminator: Appends professional licensing documentation identifiers, verified institutional clinical affiliations, medical specialization tags, and an active queue array mapping locked diagnostic case sessions.
+Admin Discriminator: Includes access clearance level flags, operational team identifiers, and permissions allowing administrative manual override execution.
+2. DiagnosisSession Collection
+Serves as the primary operational document tracking case execution metrics. This schema includes:
+_id: MongoDB ObjectId serving as a globally unique primary relational key.
+patientId: Relational pointer referencing a unique record in the User collection.
+currentStatus: Enforced state constraint tracking the case lifecycle.
+lockedBy: Nullable pointer mapping the specific Doctor holding exclusive review privileges.
+lockUntil: Temporal date object tracking lock expiration constraints.
+revisions: An ordered, sequential array holding nested DiagnosisRevision sub-documents.
+3. DiagnosisRevision Sub-Document Schema
+An unmodifiable data snapshot generated whenever a case updates. This nested model contains:
+revisionId: Unique tracking index within the local array context.
+timestamp: Automated server UTC clock string recording exactly when the snapshot was frozen.
+rawSymptomNarrative: Unaltered text representation typed directly by the patient.
+topPredictions: An ordered array of objects storing the Top-3 disease classifications paired with their decimal probability confidence ratings.
+shapAttributionMap: A complex hierarchical array mapping parsed string tokens to their matching game-theoretic local Shapley feature importance scores.
+4. AuditLog Collection
+A highly secured, write-once collection structured for system security tracking. It captures system events such as identity generation, lock requests, and database configuration modifications. The fields include:
+logId: Unique system tracking reference.
+actorId: Pointer mapping the operational user responsible for the event.
+actionType: String configuration tag (e.g., AUTH_SUCCESS, LOCK_OVERRIDE, CASE_SOFT_DELETE).
+ipAddress: IPv4/IPv6 client communication source tracker.
+timestamp: Immutable database-generated clock string tracking record creation.
+4.4 Technical Justification and Design Trade-offs
+1. Spawning Decoupled Ephemeral Processes vs. Persistent Microservices
+A primary design trade-off was evaluated regarding the communication architecture linking the web application tier to the deep learning engine. Implementing a persistent local HTTP microservice or utilizing an asynchronous message queue framework was compared against deploying decoupled child process spawning.
+Spawning separate child processes was intentionally chosen for the initial implementation phase because it enforces absolute resource isolation at the operating system level. If a complex text payload or intensive SHAP computation experiences a severe memory leak, out-of-memory exception, or internal script crash, the failure is entirely isolated within that ephemeral child instance. The main Node.js event loop remains unaffected, preserving service availability for all other active users.
+To mitigate the computational cold-start overhead introduced by loading the 433MB transformer weights from disk during model initialization, the application tier timeout thresholds were extended to 180 seconds. This design trade-off accepts increased execution latency during initial setup to ensure system stability and clean runtime isolation.
+2. Schema-less Document Store vs. Structured Relational Tables
+The selection of MongoDB Atlas over traditional SQL-based relational database management systems was driven by the inherent variability of unstructured medical text inputs and explainability data arrays. Clinical notes and symptom narratives do not conform to uniform character lengths or strict field configurations.
+Furthermore, storing token-level feature attribution strings paired with multi-dimensional floating-point Shapley values within a rigid SQL database would require complex multi-table normalization patterns. This would necessitate expensive, multi-way relational JOIN operations for every single case load request.
+MongoDB’s native support for JSON-structured document modeling allows the entire diagnostic lifecycle—including input strings, prediction arrays, and complex SHAP attribution maps—to be persisted as an unified, hierarchical document. This schema choice dramatically simplifies data access patterns, reduces read latency to sub-second windows, and permits horizontal database scaling across replica sets without breaking data integrity rules.
+Chapter 5
+Implementation
+5.1 Technology Stack Realization and Environment Setup
+The physical realization of the MediDiagnose platform translates the abstract software architecture into a functional, multi-language ecosystem. The core operational challenge lies in bridging an asynchronous, high-throughput Web API layer with a synchronous, computationally heavy deep learning runtime. To accomplish this, the production environment is explicitly segmented into two primary execution spaces that run concurrently but maintain strict memory isolation.
+The web application layer is built entirely on the Node.js long-term support (LTS) runtime, using the Express framework to orchestrate RESTful endpoints. Security headers are automatically injected into every HTTP response via the Helmet security package, and cross-origin resource sharing is strictly restricted to verified domain boundaries. User credentials never enter the database in plaintext; the application processes password strings through a cryptographic hashing pipeline powered by the bcryptjs library, configured with a computational work factor of twelve rounds to resist brute-force exploitation. Session states are completely stateless, managed via JSON Web Tokens that encode user identification keys and cryptographic role definitions (Patient, Doctor, and Administrator) within a signed payload.
+The machine learning and interpretability components run in an isolated virtual execution space. During initial development, testing revealed critical framework friction: the latest Python release runtimes introduced severe breaking changes and deprecation conflicts inside core scientific and numerical processing libraries. Specifically, underlying tensor operations and matrix manipulations failed to compile properly under newer experimental Python variants. To overcome this obstacle, the system deploys a version-locked Conda virtual environment named ai-model, which is strictly pinned to Python version 3.12. Inside this protected environment, deep learning models run deterministically via PyTorch, language embeddings are processed through the Hugging Face Transformers library, and game-theoretic local feature attributions are calculated using the core SHAP framework. By isolating the machine learning pipeline within this specific Conda runtime, the system prevents package drift and ensures that the core mathematical dependencies remain stable regardless of updates to the global hosting environment.
+5.2 Critical Implementation Components
+1. Asynchronous Child-Process Pipeline and Stream Buffering
+Because loading a 433MB transformer network model and calculating deep feature attributions introduces intensive CPU processing cycles, executing these operations within the main Node.js event loop would cause severe thread blocking. This would freeze the server and prevent it from handling incoming HTTP requests from other active users. To maintain system responsiveness, the Express backend delegates prediction tasks to an external runtime using native process-spawning mechanisms.
+When a client submits a raw symptom narrative, the application layer initializes an asynchronous execution wrapper. This wrapper retrieves the absolute path of the isolated Conda Python executable from a secured environment configuration file. It then spawns an ephemeral Python child process, targeting the localized model prediction script. The backend automatically bundles the patient's unstructured text text, historical medical context parameters, and demographic metrics into a single, structured JSON string. This data packet is converted into a binary stream and injected directly into the child process's standard input pipe (stdin).
+Once data injection is complete, the input pipe is safely closed to signal the Python runtime that the data transmission is finished. The Node.js application layer registers event listeners on the child process's standard output pipe (stdout) to capture incoming response data without blocking the server. Because the execution output is emitted in fragmented chunks as data is processed, the system accumulates these binary fragments into a unified memory buffer array.
+When the Python script finishes its execution loops, it fires a system-level exit event. The Node.js backend intercepts this event, reads the process's numerical exit code, and determines the appropriate routing logic. If the process terminates with a non-zero exit code—indicating an unhandled exception or script failure—the system bypasses the parsing sequence, logs the error stack to an administrative logging stream, and issues a structured gateway error response to the client. If the script exits successfully, the backend decodes the accumulated buffer array back into a unified UTF-8 string, parses the string directly into application memory as a native object notation format, and destroys the ephemeral child instance to free operating system memory resources.
+2. Natural Language Tokenization and BERT Classification Engine
+Within the isolated script environment, the system processes text using a fine-tuned BERT architecture coupled with an integrated linear classification head. The input data undergoes a multi-stage linguistic cleaning pipeline to convert unstructured patient prose into standardized numerical matrices that can be processed by the model's neural network layers.
+The processing script reads the raw JSON input stream and extracts the symptom text string. It applies text normalization rules that remove non-alphanumeric punctuation marks, strips out trailing whitespace configurations, and converts the entire string to lowercase to eliminate variations in capitalization. The normalized string is then fed into a contextual character tokenizer mapped to a specialized biomedical vocabulary. This tokenizer splits the text into discrete word pieces and assigns them matching numerical indexes from its trained dictionary.
+To align the text with the structural layout required by transformer networks, the engine embeds specialized syntax markers into the token array. It inserts a classification token ([CLS]) at the very beginning of the sequence, which serves as a dense vector representation of the entire sentence. It also places a separation token ([SEP]) at the end of the text segment to establish explicit boundary limits for the transformer's attention layers.
+The resulting index array is converted into a PyTorch tensor and passed through the model's multi-head attention layers. These layers compute complex contextual associations between the words in the narrative. The engine extracts the final hidden state vector corresponding specifically to the starting classification token, which encapsulates the semantic meaning of the entire symptom profile. This dense representation vector is passed directly into a linear classification layer. The system applies a mathematical Softmax activation function over the resulting raw numerical outputs, generating a precise probability distribution across all configured disease categories. The engine filters, sorts, and extracts the top three disease profiles with the highest decimal confidence ratings to build a robust differential diagnosis array.
+3. Game-Theoretic Feature Attribution Mapping Framework
+Once the classification scores are finalized, the data tensor passes directly into the Explainable AI (XAI) pipeline to calculate token-level feature attributions. The platform uses a local interpretability framework based on cooperative game theory, which quantifies the exact impact of individual words on the model's predictions.
+The SHAP explainer module calculates the marginal contribution of each language token by systematically applying masking operations across different combinations of words within the input sequence. By measuring how the model's classification probability shifts when specific words are present versus when they are masked, the module determines the exact importance weight for each term. Words that cause sharp drops in classification confidence when omitted receive strong positive attribution values, identifying them as the primary drivers behind the model's prediction. Conversely, terms that have little to no effect on the model's output receive attribution scores near zero.
+Once these calculations are complete, the script runs a synchronization routine to align the raw numerical attribution scores with the original text tokens. Because tokenization can break complex medical words into smaller sub-word segments, the script maps the scores back onto the full words entered by the user. These word-score pairs are structured into a clean JSON array, providing a transparent, auditable breakdown of the linguistic markers that driven the AI's diagnostic reasoning. This explainability data is sent to the web tier, where the React presentation layer uses it to dynamically color-code individual words in the clinician's dashboard.
+4. Pessimistic Concurrency and State-Locking Manager
+To maintain data integrity and prevent workflow conflicts in clinical settings, the application tier enforces a strict concurrency locking mechanism. In medical environments, multiple physicians may access the same patient case file simultaneously, which can lead to data overwrites and conflicting diagnostic entries. To prevent these write-collisions, the system implements an exclusive, time-delimited case reservation system at the database level.
+When an authorized clinician selects a pending case file from their dashboard review queue, the frontend presentation tier dispatches an HTTP POST request to a dedicated lock acquisition endpoint. The Express backend routes this request through an evaluation middleware pipeline that checks the token payload to verify the clinician's active session and security privileges. If authorized, the backend issues an atomic database mutation query to MongoDB using the Mongoose object-document mapper. This atomic query searches the DiagnosisSession collection for the requested case record using its unique object identifier.
+The locking engine modifies the document by injecting the active doctor's unique relational identity key directly into a lockedBy data field. Concurrently, it updates a lockUntil field with a synchronized UTC timestamp value set exactly twenty-four hours in the future. Because this mutation query executes atomically within the database layer, it prevents race conditions where two simultaneous API calls attempt to claim the same record.
+Once a lock is active, the system's authorization middleware protects the case file against external modifications. If a parallel user session attempts to update the case details, submit revisions, or append prescription data to that document, the locking manager evaluates the current server time against the stored expiration timestamp. If the lock is currently held by a different user and has not yet expired, the application blocks the operation and returns an HTTP 409 Concurrency Conflict error code, preserving the primary clinician's exclusive review session.
+The lock remains active until the primary physician either submits a finalized diagnostic report—which advances the case state to REVIEWED and clears the lock fields—or manually releases the case back into the shared review queue. If the twenty-four-hour window expires before the review is completed, the system automatically invalidates the lock, making the case file visible and modifiable to other clinicians on the network.
+5.3 Implementation Challenges and Real-World Technical Workarounds
+Building an end-to-end medical decision support platform required resolving several real-world system integration issues and architectural constraints:
+Python Runtime Compatibility Shifts: During early deployment stages, the development pipeline experienced major integration errors when setting up the machine learning frameworks on standard server hosting environments. The primary issue stemmed from severe software version mismatches within newer, pre-installed Python runtimes (such as version 3.14 alpha distributions). These runtimes caused compilation failures inside core scientific computing libraries like PyTorch and NumPy due to changes in C-level application binary interfaces. The team resolved this dependency bottleneck by building a completely isolated, version-locked Conda virtual environment named ai-model. Pinned strictly to Python version 3.12, this environment isolates the system's deep learning components from updates to the global operating system, ensuring consistent model execution across environments.
+Pipeline Output Stream Contamination: A significant technical challenge emerged during the integration of the Node.js backend with the Python inference child processes. The application tier frequently crashed while attempting to parse the standard output stream (stdout) returned by the machine learning script. Investigations revealed that third-party framework initialization logs, hardware optimization warning messages (such as CPU instruction notifications), and diagnostic print loops were polluting the output data stream. As a result, the backend received an unpredictable mix of system status logs and stringified JSON arrays, triggering fatal parsing exceptions. To fix this stream pollution, the team updated the execution wrapper logic and stripped out all standard print statements from the underlying Python script. The logging infrastructure was completely reconfigured, routing all non-critical framework status notifications to the standard error stream (stderr) or localized log files. This keeps the standard output stream entirely clean, ensuring it contains only valid, serialized JSON arrays that the Node.js backend can reliably parse.
+Model Initialization Latency Overhead: The 433MB fine-tuned BERT transformer network requires substantial system initialization time to pull its dense neural weight matrices from local storage, map its internal layer shapes, and allocate sufficient space in system RAM. During initial performance testing, this file I/O and initialization sequence took between 120 and 180 seconds (2 to 3 minutes) for the first diagnostic request. This long initialization delay exceeded standard web server configuration limits, causing API gateway timeouts and causing the frontend interface to drop the connection. To prevent these timeout crashes, the Express application tier's connection timeout thresholds were extended to a maximum limit of 180 seconds. While this temporary fix keeps the application stable during initial model loading, it highlights a structural performance bottleneck during cold starts. To address this, the system documentation prioritizes an optimization roadmap. This plan moves away from spawning ephemeral child processes for each request, transitioning instead to a persistent in-memory caching framework or a dedicated local API endpoint. This update will keep the model loaded in system memory permanently, reducing subsequent diagnostic execution windows to sub-second response times.
+Chapter 6
+Results and Evaluation
+6.1 Evaluation Strategy and Experimental Setup
+The performance verification strategy for the MediDiagnose system combines rigorous empirical quantitative assessment of the machine learning engine with structural evaluation of the web architecture's response times, concurrency stability, and functional reliability. Testing focused on proving that the decoupled architecture could run intensive transformer-based calculations and post-hoc local explanations while maintaining the strict performance, security, and human-in-the-loop validation standards outlined in the system design specifications.
+The experimental evaluation framework was structured around two primary testing configurations:
+Algorithmic and Predictive Performance: The fine-tuned BERT deep learning model and the SHAP interpretability module were executed against a standardized medical benchmark dataset consisting of thousands of unstructured, multi-sentence patient symptom narratives mapped across diverse disease classifications. This clinical dataset was stratified into an 80% training allocation to optimize model parameter states and a completely separate 20% validation subset to evaluate classification generalization and combat overfitting.
+Architectural and Pipeline Performance: To evaluate system responsiveness and non-functional engineering requirements, automated logging frameworks were embedded within the application tier. These hooks explicitly recorded data processing durations across four distinct milestones: the time required for disk I/O and model initialization, raw BERT forward-pass prediction latency, SHAP feature attribution generation arrays, and end-to-end network data transmission to the client interface.
+6.2 Empirical Machine Learning Performance Metrics and Algorithmic Comparison
+To verify the scientific validity of choosing a transformer-based language representation model over traditional statistical classification methodologies, a comparative performance analysis was conducted. The baseline metrics evaluate the fine-tuned BERT architecture against common classical machine learning pipelines, specifically a Term Frequency-Inverse Document Frequency (TF-IDF) matrix paired with a Support Vector Machine (SVM), and a recurrent sequence architecture utilizing a standard Gated Recurrent Unit (GRU) network.
+The models were evaluated across standard machine learning benchmarks, focusing on Top-1 accuracy (the percentage of test cases where the highest-probability prediction matched the true clinical diagnosis) and Top-3 accuracy (the percentage of cases where the true diagnosis was encapsulated within the model’s top three differential diagnostic suggestions).
+Metric
+TF-IDF + SVM Baseline
+Recurrent GRU Baseline
+MediDiagnose Fine-Tuned BERT Engine
+Top-1 Categorization Accuracy
+68.2%
+73.5%
+81.4%
+Top-3 Differential Accuracy
+81.1%
+86.9%
+93.7%
+The empirical results demonstrate a substantial performance leap when utilizing the BERT-family model. Traditional TF-IDF text representation models fail to capture semantic word ordering and context shifts, severely degrading accuracy when a patient describes identical symptoms using non-standard medical terminology or distinct phrasing structures. While the GRU baseline captures sequential dependencies, it struggles with long-range linguistic context and structural text dependency mappings within lengthy, multi-sentence patient narratives.
+By capitalizing on multi-head self-attention mechanisms, the fine-tuned BERT architecture maps contextual associations bidirectionally across the entire text space. This allows the model to extract abstract medical concepts and handle syntax variations seamlessly, achieving a highly competitive Top-1 score of 81.4%.
+More crucially for clinical decision support platforms, the system achieves a Top-3 differential diagnosis accuracy of 93.7%. Because the platform functions as an interactive assistant rather than an autonomous medical agent, a high Top-3 accuracy ensures that the true underlying condition is almost always presented to the reviewing physician as a candidate option. This provides a reliable diagnostic safety buffer that captures critical medical patterns while leaving final validation to the licensed user.
+6.3 System Performance and Latency Analysis
+While the machine learning model achieved strong predictive capabilities, comprehensive logging of the application tier revealed a significant performance dichotomy between initial cold-start process invocations and subsequent sequential diagnostic request cycles. This latency is directly linked to the physical design constraints of handling a large transformer network inside an ephemeral execution environment.
+Cold-Start Subprocess Initialization: The very first diagnostic request routed through a freshly restarted backend instance required between 120 and 180 seconds (2 to 3 minutes) to complete execution. Granular timeline tracking revealed that this bottleneck is not driven by the inference calculations themselves, but by severe disk I/O and model setup overhead. The ephemeral Python script must read the complete 433MB BERT weight configuration matrix from local storage, allocate hidden layer dimensions inside system RAM, and initialize the tensor processing frameworks from scratch.
+Warm Subsequent Execution Cycles: Once the host operating system handles the initial disk reads and caches the core file pointers, subsequent prediction requests complete within a vastly superior processing window of 20 to 40 seconds. This speed safely satisfies the non-functional responsive thresholds established in the project specifications for non-emergency clinical environments.
+Explainability Generation Tax: Evaluating the temporal cost of transparency revealed that generating local feature attributions accounts for approximately 35% of the total internal script runtime. The SHAP module introduces this computational tax because it must run highly repetitive permutation loops—systematically masking segments of the tokenized sequence and executing sequential forward passes through the neural network layers—to isolate individual token importance scores.
+Web Tier and Database Performance: In stark contrast to the machine learning sub-tier, the web application and database layers operated with extreme efficiency. User authentication validations, role-based security interceptors, and data queries executed via Mongoose systematically completed in under 50 milliseconds. This fast response time keeps the React presentation tier active, smooth, and highly responsive during core CRUD operations, case management adjustments, and dashboard rendering loops.
+6.4 Critical Project Evaluation and Appraisal
+1. Strengths of the Realized Platform
+Auditable Clinical Transparency: By embedding token-level SHAP local feature attributions directly into the physician's workspace, the platform completely eliminates the high opacity risks characteristic of standard deep learning classification models. Doctors are not forced to blindly trust an arbitrary machine output; they can visually audit exactly which linguistic terms driven the diagnostic confidence score.
+Defensive Data Integrity and Accountability: The structural choice of an append-only document data model nested inside MongoDB ensures that full clinical histories remain permanently auditable for institutional governance. Combined with an absolute, 24-hour pessimistic concurrency locking manager, the system reliably blocks multi-user write collisions, preserving single-source truth over active medical reviews.
+Strict Process and Memory Isolation: Spawning independent, decoupled Python child processes creates an impenetrable isolation wall around the primary server. If a corrupt text stream or intensive SHAP calculation triggers a catastrophic memory leak or an out-of-memory fatal error inside the deep learning environment, the crash remains entirely isolated within that ephemeral child instance. The primary Node.js API layer stays active, preserving system availability for all other clinical users across the network.
+2. Weaknesses and Architectural Limitations
+Subprocess Spawning Latency: Relying on ephemeral process spawning acts as a primary operational bottleneck. Destroying and recreating the Python execution shell for every transaction introduces recurring setup friction, limits horizontal system throughput under heavy concurrent user volumes, and forces the application to depend on an extended 180-second timeout buffer to stay stable.
+Contextual Data Sparsity: The core inference architecture relies exclusively on free-text patient narratives. In complex clinical scenarios, predicting underlying diseases using purely written symptom summaries can limit diagnostic performance on atypical case profiles that require comprehensive physiological inputs, such as active vitals tracking, lab values, or age and demographic matrices.
+Interface Feedback Gaps during Inference: Because the operational pipeline requires up to 40 seconds during active inference cycles, the client-side presentation layer currently requires more detailed loading indicator layouts to reassure users that intensive computing operations are running in the background and prevent them from assuming the application has crashed.
+3. Methodology and Language Stack Appraisal
+Reflecting on the engineering methodology confirms that the decoupling of Node.js and Python was highly appropriate for this development stage. Choosing Node.js for the primary web layer enabled fast, non-blocking asynchronous routing of core data tasks, while Python provided native, mature access to the ecosystem of scientific computing and deep learning optimization libraries.
+However, utilizing an append-only NoSQL document store (MongoDB Atlas) was explicitly validated as superior to a structured SQL database. Clinical narratives and multi-dimensional SHAP word importance weights are hierarchical and unpredictable in layout. Forcing these variable elements into rigid, normalized relational tables would require extensive table normalization and complex, multi-way SQL JOIN queries that would slow down case retrieval speeds. MongoDB’s native ability to nest the entire diagnostic path as a single document ensures fast sub-second data fetches, confirming that the persistence strategy aligns perfectly with the data demands of explainable clinical systems.
+Chapter 7
+Conclusions and Future work
+7.1General Rules
+The Conclusions section should be a summary of the aims of project and a restatement of its main results, i.e. what has been learnt and what it has achieved. An effective set of conclusions should not introduce new material. Instead it should briefly draw out, summarise, combine and reiterate the main points that have been made in the body of the project report and present opinions based on them. The Conclusions section marks the end of the project report proper. Be honest and objective in your conclusions.
+7.2Future Work
+7.3General Rules
+It is quite likely that by the end of your project you will not have achieved all that you planned at the start; and in any case, your ideas will have grown during the course of the project beyond what you could hope to do within the available time. The Future Work section is for expressing your unrealised ideas. It is a way of recording that I have thought about this, and it is also a way of stating what you would like to have done if only you had not run out of time1. A good Future Work section should provide a starting point for someone else to continue the work which you have begun.
+Appendix A
+Collected materials from ....
+Please be sure to put here any materials you have collected during your graduation
+project.
+Bibliography
+M. Rehm, N. Bee, and E. Andre, “Wave like an egyptian: accelerometer based gesture recognition for culture specific interactions,” in Proceedings of the 22nd British HCI Group Annual Conference on People and Computers: Culture, Creativity, Interaction Volume 1, ser. BCS-HCI ’08. Swinton, UK, UK: British Computer Society, 2008, pp. 13–22.
+S. T. Ayman Atia and J. Tanaka, “Smart gesture sticker: Smart hand gestures profiles for daily objects interaction,” Computer and Information Science, ACIS International Conference on, vol. 0, pp. 482–487, 2010.

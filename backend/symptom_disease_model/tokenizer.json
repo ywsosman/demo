@@ -1,6 +1,11 @@
 {
   "version": "1.0",
-  "truncation": null,
+  "truncation": {
+    "direction": "Right",
+    "max_length": 128,
+    "strategy": "LongestFirst",
+    "stride": 0
+  },
   "padding": null,
   "added_tokens": [
     {
@@ -54,7 +59,7 @@
     "clean_text": true,
     "handle_chinese_chars": true,
     "strip_accents": null,
-    "lowercase": true
+    "lowercase": false
   },
   "pre_tokenizer": {
     "type": "BertPreTokenizer"

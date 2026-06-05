@@ -285,6 +285,7 @@ class DiseasePredictor:
                     for p in top_predictions
                 ],
                 'explanation': shap_result['data'],
+                'lime_explanation': lime_result,
                 'word_importance': unified,
                 'precautions': precautions,
                 'device': 'cuda' if self.device_id == 0 else 'cpu',

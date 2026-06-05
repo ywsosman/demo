@@ -5,6 +5,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/layout/Navbar';
 import AuroraBackground from './components/AuroraBackground';
+import SmoothScroll from './components/SmoothScroll';
+import { LoadingOverlayProvider, usePageLoading } from './contexts/LoadingOverlayContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -22,13 +24,10 @@ import ManageUsers from './pages/ManageUsers';
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { user, loading } = useAuth();
+  usePageLoading(loading);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return null;
   }
 
   if (!user) {
@@ -45,13 +44,10 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 // Public Route Component (redirect to dashboard if authenticated)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  usePageLoading(loading);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return null;
   }
 
   if (user) {
@@ -66,6 +62,8 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
+          <LoadingOverlayProvider>
+          <SmoothScroll>
           <div className="min-h-screen relative transition-colors duration-300">
             {/* Aurora Background */}
             <AuroraBackground />
@@ -214,7 +212,9 @@ function App() {
               />
             </div>
           </div>
-      </Router>
+          </SmoothScroll>
+          </LoadingOverlayProvider>
+        </Router>
     </ThemeProvider>
     </AuthProvider>
   );

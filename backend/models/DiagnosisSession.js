@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { STATES } = require('../utils/diagnosisStateMachine');
 
 const diagnosisSessionSchema = new mongoose.Schema({
   patientId: {
@@ -37,6 +38,10 @@ const diagnosisSessionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     default: null
   },
+  limeExplanation: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
   wordImportance: {
     type: Array,
     default: []
@@ -45,6 +50,9 @@ const diagnosisSessionSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  icd10Code: { type: String, default: '' },
+  icd10Display: { type: String, default: '' },
+  currentRevisionNumber: { type: Number, default: 1 },
   doctorNotes: {
     type: String,
     default: ''
@@ -56,16 +64,40 @@ const diagnosisSessionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'reviewed', 'closed'],
-    default: 'pending'
+    enum: [
+      'SUBMITTED',
+      'AI_PROCESSED',
+      'PENDING_DOCTOR_REVIEW',
+      'IN_REVIEW',
+      'NEEDS_MORE_INFO',
+      'REVIEWED',
+      'SOFT_DELETED',
+      // legacy (migrated on read in routes)
+      'pending',
+      'reviewed',
+      'closed'
+    ],
+    default: STATES.SUBMITTED
+  },
+  lockedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  lockedUntil: {
+    type: Date,
+    default: null
+  },
+  deliveredToPatient: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
 });
 
-// Index for faster queries
 diagnosisSessionSchema.index({ patientId: 1, createdAt: -1 });
 diagnosisSessionSchema.index({ status: 1 });
+diagnosisSessionSchema.index({ lockedBy: 1, lockedUntil: 1 });
 
 module.exports = mongoose.model('DiagnosisSession', diagnosisSessionSchema);
-
