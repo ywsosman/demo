@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
@@ -13,6 +14,14 @@ import {
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import {
+  normalizeStatus,
+  statusLabel,
+  statusColorClass,
+  SESSION_STATUS,
+  isReviewed,
+  isAwaitingDoctor
+} from '../utils/diagnosisStatus';
 
 const DoctorDashboard = () => {
   const { user } = useAuth();
@@ -29,8 +38,13 @@ const DoctorDashboard = () => {
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'reviewed'
   const [reviewData, setReviewData] = useState({
     doctorNotes: '',
-    status: 'reviewed'
+    finalDiagnosis: '',
+    medications: '',
+    instructions: '',
+    agreedWithAi: true,
+    action: 'finalize'
   });
+  const [locking, setLocking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -52,7 +66,7 @@ const DoctorDashboard = () => {
       
       // Filter for reviewed and closed sessions
       const allSessions = allSessionsResponse.data.sessions || [];
-      const reviewed = allSessions.filter(s => s.status === 'reviewed' || s.status === 'closed');
+      const reviewed = allSessions.filter(s => isReviewed(s.status));
       setReviewedSessions(reviewed);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -64,29 +78,105 @@ const DoctorDashboard = () => {
 
   const handleReviewSession = async (sessionId) => {
     try {
-      await diagnosisAPI.reviewSession(sessionId, reviewData);
-      toast.success(`Session ${reviewData.status === 'reviewed' ? 'reviewed' : 'closed'} successfully!`);
-      // Refresh data
+      await diagnosisAPI.reviewSession(sessionId, {
+        doctorNotes: reviewData.doctorNotes,
+        finalDiagnosis: reviewData.finalDiagnosis,
+        medications: reviewData.medications,
+        instructions: reviewData.instructions,
+        agreedWithAi: reviewData.agreedWithAi,
+        action: reviewData.action,
+        outcome: reviewData.action === 'needs_more_info' ? 'needs_more_info' : 'confirmed'
+      });
+      toast.success(
+        reviewData.action === 'needs_more_info'
+          ? 'Requested additional information from patient'
+          : 'Diagnosis finalized — patient notified'
+      );
       await fetchDashboardData();
       setSelectedSession(null);
-      setReviewData({ doctorNotes: '', status: 'reviewed' });
+      setReviewData({
+        doctorNotes: '',
+        finalDiagnosis: '',
+        medications: '',
+        instructions: '',
+        agreedWithAi: true,
+        action: 'finalize'
+      });
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to submit review. Please try again.';
       toast.error(errorMessage);
     }
   };
 
-  const openReviewModal = (session) => {
-    setSelectedSession(session);
+  const openReviewModal = async (session) => {
+    setLocking(true);
+    try {
+      const lockRes = await diagnosisAPI.acquireLock(session.id || session._id);
+      const locked = lockRes.data.session;
+      setSelectedSession(locked);
+      const top = locked.aiPrediction?.[0]?.condition || locked.predictedDisease || '';
+      setReviewData({
+        doctorNotes: locked.doctorNotes || '',
+        finalDiagnosis: top,
+        medications: '',
+        instructions: '',
+        agreedWithAi: true,
+        action: 'finalize'
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Could not acquire review lock');
+    } finally {
+      setLocking(false);
+    }
+  };
+
+  const closeReviewModal = async () => {
+    if (selectedSession) {
+      try {
+        await diagnosisAPI.releaseLock(selectedSession.id || selectedSession._id);
+      } catch {
+        /* ignore */
+      }
+    }
+    setSelectedSession(null);
     setReviewData({
-      doctorNotes: session.doctorNotes || '',
-      status: 'reviewed' // Always default to 'reviewed' when opening the modal
+      doctorNotes: '',
+      finalDiagnosis: '',
+      medications: '',
+      instructions: '',
+      agreedWithAi: true,
+      action: 'finalize'
     });
   };
 
-  const closeReviewModal = () => {
-    setSelectedSession(null);
-    setReviewData({ doctorNotes: '', status: 'reviewed' });
+  const renderWordImportance = (items) => {
+    if (!items?.length) return null;
+    const maxImp = Math.max(...items.map((w) => Math.abs(w.importance || 0)), 0.001);
+    return (
+      <div className="mt-3">
+        <h4 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          SHAP / LIME word importance
+        </h4>
+        <div className="flex flex-wrap gap-2">
+          {items.slice(0, 12).map((w, i) => {
+            const intensity = Math.min(1, Math.abs(w.importance) / maxImp);
+            return (
+              <span
+                key={i}
+                className="px-2 py-1 rounded text-xs font-medium"
+                style={{
+                  backgroundColor: `rgba(34, 168, 74, ${0.15 + intensity * 0.55})`,
+                  color: intensity > 0.5 ? '#fff' : 'inherit'
+                }}
+                title={`importance: ${w.importance?.toFixed(3)}`}
+              >
+                {w.word}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   const getConfidenceColor = (confidence) => {
@@ -101,12 +191,10 @@ const DoctorDashboard = () => {
     return 'text-red-600 bg-red-50';
   };
 
+  usePageLoading(loading);
+
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center transition-colors duration-300">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 dark:border-primary-400"></div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -321,10 +409,11 @@ const DoctorDashboard = () => {
                     <div className="w-full sm:w-auto sm:ml-4 flex sm:flex-col space-x-2 sm:space-x-0 sm:space-y-2">
                       <button
                         onClick={() => openReviewModal(session)}
-                        className="btn-primary flex items-center justify-center transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm sm:text-base"
+                        disabled={locking}
+                        className="btn-primary flex items-center justify-center transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm sm:text-base disabled:opacity-50"
                       >
                         <ChatBubbleLeftRightIcon className="w-4 h-4 mr-2" />
-                        Review
+                        {locking ? 'Acquiring lock…' : 'Acquire lock & review'}
                       </button>
                     </div>
                   </div>
@@ -363,12 +452,8 @@ const DoctorDashboard = () => {
                               <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 Session #{session.id || session._id}
                               </span>
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                session.status === 'reviewed' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-gray-100 text-gray-800 dark:text-gray-200'
-                              }`}>
-                                {session.status === 'reviewed' ? 'Reviewed' : 'Closed'}
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColorClass(session.status)}`}>
+                                {statusLabel(session.status)}
                               </span>
                             </div>
                           </div>
@@ -457,7 +542,7 @@ const DoctorDashboard = () => {
 
                   {selectedSession.aiPrediction && selectedSession.aiPrediction.length > 0 && (
                     <div>
-                      <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2">AI Predictions:</h4>
+                      <h4 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2">AI Predictions (Top 3):</h4>
                       <div className="space-y-2">
                         {selectedSession.aiPrediction.map((prediction, index) => (
                           <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-2 sm:p-3 bg-gray-50 dark:bg-gray-700">
@@ -471,14 +556,27 @@ const DoctorDashboard = () => {
                           </div>
                         ))}
                       </div>
+                      {renderWordImportance(selectedSession.wordImportance)}
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-3 sm:space-y-4">
                   <div>
+                    <label htmlFor="finalDiagnosis" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Final diagnosis
+                    </label>
+                    <input
+                      id="finalDiagnosis"
+                      type="text"
+                      value={reviewData.finalDiagnosis}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, finalDiagnosis: e.target.value }))}
+                      className="form-input text-sm sm:text-base"
+                    />
+                  </div>
+                  <div>
                     <label htmlFor="doctorNotes" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                      Your Professional Assessment
+                      Clinical notes
                     </label>
                     <textarea
                       id="doctorNotes"
@@ -486,24 +584,56 @@ const DoctorDashboard = () => {
                       value={reviewData.doctorNotes}
                       onChange={(e) => setReviewData(prev => ({ ...prev, doctorNotes: e.target.value }))}
                       className="form-input text-sm sm:text-base"
-                      placeholder="Provide your professional assessment, diagnosis, recommendations, and any additional notes..."
+                      placeholder="Assessment, recommendations, and sign-off notes..."
                     />
                   </div>
-
                   <div>
-                    <label htmlFor="status" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
-                      Session Status
+                    <label htmlFor="medications" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Prescription / medications
+                    </label>
+                    <textarea
+                      id="medications"
+                      rows={2}
+                      value={reviewData.medications}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, medications: e.target.value }))}
+                      className="form-input text-sm sm:text-base"
+                      placeholder="Medications and dosage..."
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="instructions" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Patient instructions
+                    </label>
+                    <textarea
+                      id="instructions"
+                      rows={2}
+                      value={reviewData.instructions}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, instructions: e.target.value }))}
+                      className="form-input text-sm sm:text-base"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="action" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Review action
                     </label>
                     <select
-                      id="status"
-                      value={reviewData.status}
-                      onChange={(e) => setReviewData(prev => ({ ...prev, status: e.target.value }))}
+                      id="action"
+                      value={reviewData.action}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, action: e.target.value }))}
                       className="form-input text-sm sm:text-base"
                     >
-                      <option value="reviewed">Reviewed</option>
-                      <option value="closed">Closed</option>
+                      <option value="finalize">Finalize & deliver to patient (PDF)</option>
+                      <option value="needs_more_info">Request more information</option>
                     </select>
                   </div>
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={reviewData.agreedWithAi}
+                      onChange={(e) => setReviewData(prev => ({ ...prev, agreedWithAi: e.target.checked }))}
+                    />
+                    I agree with the AI top prediction
+                  </label>
                 </div>
 
                 <div className="mt-4 sm:mt-6 flex flex-col-reverse sm:flex-row justify-end space-y-2 space-y-reverse sm:space-y-0 sm:space-x-3">

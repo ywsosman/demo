@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { diagnosisAPI } from '../services/api';
 import ScrollReveal from '../components/ScrollReveal';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import {
   HeartIcon,
   ClipboardDocumentListIcon,
@@ -13,6 +14,7 @@ import {
   PlusIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import { normalizeStatus, statusLabel, statusColorClass, SESSION_STATUS, isReviewed } from '../utils/diagnosisStatus';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
@@ -38,8 +40,11 @@ const PatientDashboard = () => {
       // Calculate stats
       setStats({
         total: sessions.length,
-        pending: sessions.filter(s => s.status === 'pending').length,
-        reviewed: sessions.filter(s => s.status === 'reviewed').length
+        pending: sessions.filter(s => {
+          const st = normalizeStatus(s.status);
+          return [SESSION_STATUS.PENDING_DOCTOR_REVIEW, SESSION_STATUS.IN_REVIEW, SESSION_STATUS.NEEDS_MORE_INFO, SESSION_STATUS.AI_PROCESSED].includes(st);
+        }).length,
+        reviewed: sessions.filter(s => isReviewed(s.status)).length
       });
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -49,33 +54,16 @@ const PatientDashboard = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'pending':
-        return <ClockIcon className="h-5 w-5 text-yellow-500" />;
-      case 'reviewed':
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
-      default:
-        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
-    }
+    const s = normalizeStatus(status);
+    if (isReviewed(s)) return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+    if (s === SESSION_STATUS.NEEDS_MORE_INFO) return <ExclamationTriangleIcon className="h-5 w-5 text-orange-500" />;
+    return <ClockIcon className="h-5 w-5 text-yellow-500" />;
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'reviewed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:text-gray-200';
-    }
-  };
+  usePageLoading(loading);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center transition-colors duration-300">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 dark:border-primary-400"></div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -284,8 +272,8 @@ const PatientDashboard = () => {
                         <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-1 sm:space-x-2">
                             {getStatusIcon(session.status)}
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(session.status)}`}>
-                              {session.status}
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColorClass(session.status)}`}>
+                              {statusLabel(session.status)}
                             </span>
                           </div>
                         </td>

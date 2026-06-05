@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../services/api';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -43,12 +44,10 @@ const AdminDashboard = () => {
     return date.toLocaleString();
   };
 
+  usePageLoading(loading);
+
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -61,7 +61,7 @@ class Database {
       }
 
       // Create demo users
-      const hashedPassword = await bcrypt.hash('demo123', 10);
+      const hashedPassword = await bcrypt.hash('demo123', 12);
 
       // Demo admin
       const admin = await User.create({

@@ -43,5 +43,17 @@ backend/database.sqlite-journal
 tmp/
 temp/
 
+# ML model artifacts (large binary files)
+backend/symptom_disease_model/checkpoints/
+backend/symptom_disease_model/model.safetensors
+backend/symptom_disease_model/pytorch_model.bin
+backend/symptom_disease_model/training_args.bin
+*.pt
+*.pth
+
+# Python virtual environments
+backend/venv/
+.venv/
+
 # Vercel
 .vercel

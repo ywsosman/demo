@@ -9,6 +9,7 @@
 torch>=2.9.0
 transformers>=4.45.0
 shap>=0.46.0
+lime>=0.2.0.1
 
 # Additional dependencies
 numpy>=1.26.0

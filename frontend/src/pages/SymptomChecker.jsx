@@ -1,77 +1,154 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { diagnosisAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import SymptomDropdown from '../components/SymptomDropdown';
+import '../components/SymptomChecker.css';
 import {
   HeartIcon,
   InformationCircleIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ClockIcon
+  ClockIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+};
+
+const stagger = {
+  animate: { transition: { staggerChildren: 0.07 } },
+};
+
+// ---------------------------------------------------------------------------
+// Unified AI Explainability visualization
+// ---------------------------------------------------------------------------
+
+const SymptomImportanceChart = ({ wordImportance }) => {
+  if (!wordImportance || wordImportance.length === 0) return null;
+
+  const maxVal = Math.max(...wordImportance.map((w) => Math.abs(w.importance)));
+
+  return (
+    <div className="symptom-glass-card p-6">
+      <h2 className="text-xl font-semibold text-green-950 dark:text-green-50 mb-2">
+        AI Explainability: Key Symptom Analysis
+      </h2>
+      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        The AI model analysed your symptoms and ranked each term by its influence on the prediction.
+        Words in <span className="text-red-600 font-medium">red</span> strongly support the diagnosis,
+        while words in <span className="text-blue-600 font-medium">blue</span> had a lesser or opposing effect.
+      </p>
+
+      <div className="space-y-2.5">
+        {wordImportance.map((item, idx) => {
+          const absVal = Math.abs(item.importance);
+          const intensity = maxVal > 0 ? Math.min((absVal / maxVal) * 100, 100) : 0;
+          const isPositive = item.importance > 0;
+          const barWidth = Math.max(intensity, 8);
+
+          return (
+            <div key={idx} className="flex items-center gap-3">
+              <span className="w-32 sm:w-40 text-sm font-medium text-gray-900 dark:text-white text-right truncate">
+                {item.word}
+              </span>
+              <div className="flex-1 flex items-center gap-2">
+                <div className="flex-1 h-7 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2 ${
+                      isPositive
+                        ? 'bg-gradient-to-r from-red-300 to-red-500 dark:from-red-700 dark:to-red-500'
+                        : 'bg-gradient-to-r from-blue-200 to-blue-400 dark:from-blue-800 dark:to-blue-500'
+                    }`}
+                    style={{ width: `${barWidth}%` }}
+                  >
+                    {intensity > 25 && (
+                      <span className="text-xs font-medium text-white whitespace-nowrap">
+                        {(absVal * 100).toFixed(0)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {intensity <= 25 && (
+                  <span className="text-xs text-gray-500 w-10">{(absVal * 100).toFixed(0)}%</span>
+                )}
+                {isPositive && idx < 3 && (
+                  <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded whitespace-nowrap">
+                    Key
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <p className="text-xs text-blue-800 dark:text-blue-300">
+          <strong>How to read this:</strong> The importance score reflects how much each symptom
+          term influenced the AI&apos;s prediction. The analysis combines multiple explainability
+          techniques to provide a robust and reliable assessment.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
 
 const SymptomChecker = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     symptoms: '',
+    selectedSymptoms: [],
     severity: 5,
     duration: '',
-    additionalInfo: ''
+    additionalInfo: '',
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [errors, setErrors] = useState({});
+  const [symptomOptions, setSymptomOptions] = useState([]);
+
+  // Fetch symptom vocabulary on mount
+  useEffect(() => {
+    diagnosisAPI
+      .getSymptoms()
+      .then((res) => setSymptomOptions(res.data.symptoms || []))
+      .catch(() => {
+        /* vocabulary unavailable — free-text still works */
+      });
+  }, []);
 
   const severityLabels = {
-    1: 'Very Mild',
-    2: 'Mild',
-    3: 'Mild-Moderate',
-    4: 'Moderate',
-    5: 'Moderate',
-    6: 'Moderate-Severe',
-    7: 'Severe',
-    8: 'Very Severe',
-    9: 'Extremely Severe',
-    10: 'Emergency'
+    1: 'Very Mild', 2: 'Mild', 3: 'Mild-Moderate', 4: 'Moderate',
+    5: 'Moderate', 6: 'Moderate-Severe', 7: 'Severe', 8: 'Very Severe',
+    9: 'Extremely Severe', 10: 'Emergency',
   };
 
-  const severityColors = {
-    1: 'text-green-600',
-    2: 'text-green-600',
-    3: 'text-green-500',
-    4: 'text-yellow-500',
-    5: 'text-yellow-500',
-    6: 'text-yellow-600',
-    7: 'text-orange-500',
-    8: 'text-red-500',
-    9: 'text-red-600',
-    10: 'text-red-700'
-  };
+  const severitySliderPct = `${((formData.severity - 1) / 9) * 100}%`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
     const newErrors = {};
+    const hasDropdown = formData.selectedSymptoms.length > 0;
+    const hasText = formData.symptoms.trim().length >= 5;
 
-    if (!formData.symptoms.trim()) {
-      newErrors.symptoms = 'Please describe your symptoms';
-    } else if (formData.symptoms.trim().length < 10) {
-      newErrors.symptoms = 'Please provide more details about your symptoms';
+    if (!hasDropdown && !hasText) {
+      newErrors.symptoms =
+        'Please select symptoms from the dropdown or describe them in the text area (at least 5 characters)';
     }
-
     if (!formData.duration.trim()) {
       newErrors.duration = 'Please specify how long you have had these symptoms';
     }
@@ -82,16 +159,20 @@ const SymptomChecker = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
-      const response = await diagnosisAPI.submit(formData);
+      const payload = {
+        symptoms: formData.symptoms,
+        selectedSymptoms: formData.selectedSymptoms.map((s) => s.id),
+        severity: Number(formData.severity),
+        duration: formData.duration,
+        additionalInfo: formData.additionalInfo,
+      };
+      const response = await diagnosisAPI.submit(payload);
       setResult(response.data);
-      toast.success('Diagnosis analysis completed!');
+      toast.success('Submitted — awaiting physician review before results are released.');
     } catch (error) {
       console.error('Diagnosis submission error:', error);
       toast.error(error.response?.data?.message || 'Failed to submit diagnosis');
@@ -103,9 +184,10 @@ const SymptomChecker = () => {
   const handleStartNew = () => {
     setFormData({
       symptoms: '',
+      selectedSymptoms: [],
       severity: 5,
       duration: '',
-      additionalInfo: ''
+      additionalInfo: '',
     });
     setResult(null);
     setErrors({});
@@ -117,20 +199,62 @@ const SymptomChecker = () => {
     return 'text-red-600 bg-red-50';
   };
 
+  // -----------------------------------------------------------------------
+  // Results view
+  // -----------------------------------------------------------------------
+
   if (result) {
+    const awaitingReview = !result.deliveredToPatient;
+    const ai = result.aiPrediction;
+
+    if (awaitingReview) {
+      return (
+        <div className="min-h-screen py-8 transition-colors duration-300">
+          <div className="max-w-2xl mx-auto px-4 card p-8 text-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Submission received</h1>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Your symptoms have been processed by our AI pipeline and queued for a licensed physician.
+              Predictions and SHAP explanations will appear in your history after doctor sign-off.
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Session ID: {result.sessionId}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button type="button" onClick={handleStartNew} className="btn-secondary">New check</button>
+              <button type="button" onClick={() => navigate('/patient/history')} className="btn-primary">
+                View history
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
-      <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-4 sm:mb-6 md:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Diagnosis Results</h1>
-            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+      <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300 font-sans">
+        <motion.div
+          className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8"
+          initial="initial"
+          animate="animate"
+          variants={stagger}
+        >
+          <motion.div className="mb-4 sm:mb-6 md:mb-8" variants={fadeUp}>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-700 dark:text-green-300 border border-green-500/25 mb-3">
+              <SparklesIcon className="h-3.5 w-3.5" />
+              Analysis complete
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-green-950 dark:text-green-50 tracking-tight">
+              Diagnosis Results
+            </h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-slate-600 dark:text-green-100/70">
               AI-powered analysis of your symptoms
             </p>
-          </div>
+          </motion.div>
 
-          {/* Warning Banner */}
-          <div className="mb-4 sm:mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 sm:p-4">
+          <motion.div
+            variants={fadeUp}
+            className="mb-4 sm:mb-6 bg-yellow-50/90 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 sm:p-4 backdrop-blur-sm"
+          >
             <div className="flex">
               <ExclamationTriangleIcon className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
               <div className="ml-2 sm:ml-3">
@@ -138,38 +262,61 @@ const SymptomChecker = () => {
                   Important Medical Disclaimer
                 </h3>
                 <p className="mt-1 text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
-                  This AI analysis is for informational purposes only and should not replace professional medical advice. 
-                  Please consult with a healthcare professional for proper diagnosis and treatment.
+                  This AI analysis is for informational purposes only and should not replace
+                  professional medical advice. Please consult with a healthcare professional.
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Results */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* AI Predictions */}
-            <div className="card p-4 sm:p-6">
+          <motion.div className="space-y-4 sm:space-y-6" variants={stagger}>
+            {ai?.matchedSymptoms && ai.matchedSymptoms.length > 0 && (
+              <motion.div variants={fadeUp} className="symptom-glass-card p-4 sm:p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  Recognised Symptoms
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {ai.matchedSymptoms.map((s, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex px-2.5 py-1 text-xs bg-medical-100 text-medical-800 dark:bg-medical-900/40 dark:text-medical-200 rounded-full"
+                    >
+                      {typeof s === 'string' ? s : s.label}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            <motion.div variants={fadeUp} className="symptom-glass-card p-4 sm:p-6">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
                 AI Analysis Results
               </h2>
-              
-              {result.aiPrediction && result.aiPrediction.predictions.length > 0 ? (
+
+              {ai && ai.predictions.length > 0 ? (
                 <div className="space-y-3 sm:space-y-4">
-                  {result.aiPrediction.predictions.map((prediction, index) => (
-                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-gray-700">
+                  {ai.predictions.map((prediction, index) => (
+                    <div
+                      key={index}
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-gray-700"
+                    >
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
                         <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">
                           {prediction.condition}
                         </h3>
-                        <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getConfidenceColor(prediction.confidence)} dark:bg-opacity-20 self-start sm:self-auto whitespace-nowrap`}>
+                        <span
+                          className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${getConfidenceColor(
+                            prediction.confidence
+                          )} dark:bg-opacity-20 self-start sm:self-auto whitespace-nowrap`}
+                        >
                           {Math.round(prediction.confidence * 100)}% confidence
                         </span>
                       </div>
-                      
+
                       <p className="text-gray-600 dark:text-gray-300 mb-3">
                         {prediction.description}
                       </p>
-                      
+
                       {prediction.matchedSymptoms && prediction.matchedSymptoms.length > 0 && (
                         <div className="mb-3">
                           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -177,14 +324,17 @@ const SymptomChecker = () => {
                           </h4>
                           <div className="flex flex-wrap gap-2">
                             {prediction.matchedSymptoms.map((symptom, idx) => (
-                              <span key={idx} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                              <span
+                                key={idx}
+                                className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
+                              >
                                 {symptom}
                               </span>
                             ))}
                           </div>
                         </div>
                       )}
-                      
+
                       {prediction.recommendations && prediction.recommendations.length > 0 && (
                         <div>
                           <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -214,82 +364,42 @@ const SymptomChecker = () => {
                   </p>
                 </div>
               )}
-            </div>
+            </motion.div>
 
-            {/* AI Explanation */}
-            {result.aiPrediction && result.aiPrediction.explanation && (
-              <div className="card p-6">
+            {ai?.explanation && (
+              <motion.div variants={fadeUp} className="symptom-glass-card p-6">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                   Analysis Explanation
                 </h2>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {result.aiPrediction.explanation}
+                  {ai.explanation}
                 </p>
-              </div>
+              </motion.div>
             )}
 
-            {/* SHAP Word Importance Visualization */}
-            {result.aiPrediction && result.aiPrediction.wordImportance && result.aiPrediction.wordImportance.length > 0 && (
-              <div className="card p-6">
+            {ai?.wordImportance?.length > 0 && (
+              <motion.div variants={fadeUp}>
+                <SymptomImportanceChart wordImportance={ai.wordImportance} />
+              </motion.div>
+            )}
+
+            {ai?.precautions && ai.precautions.length > 0 && (
+              <motion.div variants={fadeUp} className="symptom-glass-card p-6">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  AI Explainability: Key Symptom Words
+                  Precautions
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                  The following words from your symptom description had the most influence on the AI&apos;s prediction. 
-                  Words highlighted in <span className="text-red-600 font-medium">red/pink</span> contributed positively to the diagnosis.
-                </p>
-                
-                <div className="space-y-3">
-                  {result.aiPrediction.wordImportance.map((item, idx) => {
-                    // Calculate color intensity based on importance value
-                    const absImportance = Math.abs(item.importance);
-                    const maxImportance = Math.max(...result.aiPrediction.wordImportance.map(w => Math.abs(w.importance)));
-                    const intensity = Math.min((absImportance / maxImportance) * 100, 100);
-                    
-                    // Positive importance = red/pink, Negative = blue (less relevant)
-                    const bgColor = item.importance > 0 
-                      ? `rgba(239, 68, 68, ${intensity / 100 * 0.3 + 0.1})`  // Red with varying opacity
-                      : `rgba(59, 130, 246, ${intensity / 100 * 0.2})`;  // Blue with low opacity
-                    
-                    const textColor = item.importance > 0 ? 'text-red-900' : 'text-blue-900';
-                    const borderColor = item.importance > 0 ? 'border-red-200' : 'border-blue-200';
-                    
-                    return (
-                      <div 
-                        key={idx}
-                        className={`flex items-center justify-between p-3 rounded-lg border ${borderColor}`}
-                        style={{ backgroundColor: bgColor }}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className={`text-lg font-medium ${textColor}`}>
-                            &ldquo;{item.word}&rdquo;
-                          </span>
-                          {item.importance > 0 && (
-                            <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full">
-                              Key symptom
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
-                          Impact: {(item.importance * 100).toFixed(2)}%
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                  <p className="text-xs text-blue-800">
-                    <strong>How to read this:</strong> The AI model analyzed each word in your symptom description. 
-                    Words with higher positive impact scores were more influential in predicting the disease. 
-                    This visualization uses SHAP (SHapley Additive exPlanations) to make the AI&apos;s decision-making process transparent.
-                  </p>
-                </div>
-              </div>
+                <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                  {ai.precautions.map((p, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <InformationCircleIcon className="h-4 w-4 text-medical-500 mt-0.5 mr-2 flex-shrink-0" />
+                      <span className="capitalize">{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
             )}
 
-            {/* Next Steps */}
-            <div className="card p-6">
+            <motion.div variants={fadeUp} className="symptom-glass-card p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Next Steps
               </h2>
@@ -301,12 +411,10 @@ const SymptomChecker = () => {
                       Doctor Review Pending
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Your case has been submitted for professional medical review. 
-                      You will be notified when a doctor reviews your case.
+                      Your case has been submitted for professional medical review.
                     </p>
                   </div>
                 </div>
-                
                 <div className="flex items-start">
                   <InformationCircleIcon className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
@@ -314,77 +422,102 @@ const SymptomChecker = () => {
                       Track Your Session
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      Session ID: #{result.sessionId}. You can view this session in your history.
+                      Session ID: #{result.sessionId}. You can view this in your history.
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Action Buttons */}
-          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <button
-              onClick={() => navigate('/patient/history')}
-              className="btn-primary flex-1 text-sm sm:text-base"
-            >
+          <motion.div
+            variants={fadeUp}
+            className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4"
+          >
+            <button onClick={() => navigate('/patient/history')} className="symptom-submit-btn flex-1 text-sm sm:text-base">
               View All Sessions
             </button>
-            <button
-              onClick={handleStartNew}
-              className="btn-secondary flex-1 text-sm sm:text-base"
-            >
+            <button onClick={handleStartNew} className="btn-secondary flex-1 text-sm sm:text-base rounded-xl">
               New Symptom Check
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     );
   }
 
+  // -----------------------------------------------------------------------
+  // Form view
+  // -----------------------------------------------------------------------
+
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
-      <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <HeartIcon className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-medical-600 mb-3 sm:mb-4" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Symptom Checker</h1>
-          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300 px-4">
-            Describe your symptoms and get AI-powered health insights
+      <motion.div
+        className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8"
+        initial="initial"
+        animate="animate"
+        variants={stagger}
+      >
+        <motion.div className="text-center mb-6 sm:mb-8" variants={fadeUp}>
+          <motion.div
+            className="mx-auto mb-3 sm:mb-4 inline-flex p-3 rounded-2xl bg-gradient-to-br from-green-500/15 to-green-400/10 border border-green-500/25"
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          >
+            <HeartIcon className="h-10 w-10 sm:h-11 sm:w-11 text-[#22a84a] dark:text-green-400" />
+          </motion.div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-green-950 dark:text-green-50 tracking-tight">
+            Symptom Checker
+          </h1>
+          <p className="mt-2 text-sm sm:text-base symptom-text-muted px-4 max-w-md mx-auto">
+            Select your symptoms from the dropdown or describe them for AI-powered health insights
           </p>
-        </div>
+        </motion.div>
 
-        {/* Form */}
-        <div className="card p-4 sm:p-6">
+        <motion.div variants={fadeUp} className="symptom-glass-card p-4 sm:p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Symptoms Description */}
-            <div>
-              <label htmlFor="symptoms" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Describe your symptoms *
+            {/* Symptom Dropdown */}
+            {symptomOptions.length > 0 && (
+              <motion.div variants={fadeUp}>
+                <label className="block text-sm font-semibold symptom-label-accent mb-2">
+                  Select Symptoms (Recommended)
+                </label>
+                <SymptomDropdown
+                  symptoms={symptomOptions}
+                  selected={formData.selectedSymptoms}
+                  onChange={(selected) =>
+                    setFormData((prev) => ({ ...prev, selectedSymptoms: selected }))
+                  }
+                />
+                <p className="mt-2 text-xs symptom-text-muted">
+                  Using the dropdown gives more accurate predictions. You can select multiple symptoms.
+                </p>
+              </motion.div>
+            )}
+
+            <motion.div variants={fadeUp}>
+              <label htmlFor="symptoms" className="block text-sm font-semibold symptom-label-accent mb-2">
+                {symptomOptions.length > 0
+                  ? 'Additional Details (Optional if symptoms selected above)'
+                  : 'Describe your symptoms *'}
               </label>
               <textarea
                 id="symptoms"
                 name="symptoms"
-                rows={4}
+                rows={3}
                 value={formData.symptoms}
                 onChange={handleChange}
-                className={`form-input ${errors.symptoms ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
-                placeholder="Please describe your symptoms in detail. For example: 'I have a headache, feel nauseous, and have been experiencing fatigue for the past 2 days...'"
+                className={`symptom-field-input min-h-[5rem] ${errors.symptoms ? 'border-red-400 focus:border-red-500' : ''}`}
+                placeholder="Describe any additional symptoms or context..."
               />
-              {errors.symptoms && (
-                <p className="mt-1 text-sm text-red-600">{errors.symptoms}</p>
-              )}
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Be as specific as possible. Include when symptoms started, how they feel, and any patterns you notice.
-              </p>
-            </div>
+              {errors.symptoms && <p className="mt-1 text-sm text-red-600">{errors.symptoms}</p>}
+            </motion.div>
 
-            {/* Severity Scale */}
-            <div>
-              <label htmlFor="severity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Severity Level: {formData.severity}/10
+            <motion.div variants={fadeUp}>
+              <label htmlFor="severity" className="block text-sm font-semibold symptom-label-accent mb-2">
+                Severity Level: <span className="text-[#22a84a] dark:text-green-400">{formData.severity}/10</span>
               </label>
-              <div className="space-y-2">
+              <div className="space-y-3 px-0.5">
                 <input
                   type="range"
                   id="severity"
@@ -393,21 +526,25 @@ const SymptomChecker = () => {
                   max="10"
                   value={formData.severity}
                   onChange={handleChange}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  className="symptom-severity-slider"
+                  style={{ '--slider-pct': severitySliderPct }}
+                  aria-valuemin={1}
+                  aria-valuemax={10}
+                  aria-valuenow={formData.severity}
+                  aria-label="Symptom severity level"
                 />
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex justify-between text-xs symptom-severity-label gap-2">
                   <span>1 - Mild</span>
-                  <span className={`font-medium ${severityColors[formData.severity]}`}>
+                  <span className="symptom-severity-value text-center flex-1">
                     {severityLabels[formData.severity]}
                   </span>
                   <span>10 - Emergency</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Duration */}
-            <div>
-              <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <motion.div variants={fadeUp}>
+              <label htmlFor="duration" className="block text-sm font-semibold symptom-label-accent mb-2">
                 How long have you had these symptoms? *
               </label>
               <select
@@ -415,7 +552,7 @@ const SymptomChecker = () => {
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                className={`form-input ${errors.duration ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}`}
+                className={`symptom-field-input ${errors.duration ? 'border-red-400 focus:border-red-500' : ''}`}
               >
                 <option value="">Select duration</option>
                 <option value="Less than 1 hour">Less than 1 hour</option>
@@ -427,72 +564,67 @@ const SymptomChecker = () => {
                 <option value="2-4 weeks">2-4 weeks</option>
                 <option value="More than 1 month">More than 1 month</option>
               </select>
-              {errors.duration && (
-                <p className="mt-1 text-sm text-red-600">{errors.duration}</p>
-              )}
-            </div>
+              {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
+            </motion.div>
 
-            {/* Additional Information */}
-            <div>
-              <label htmlFor="additionalInfo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <motion.div variants={fadeUp}>
+              <label htmlFor="additionalInfo" className="block text-sm font-semibold symptom-label-accent mb-2">
                 Additional Information (Optional)
               </label>
               <textarea
                 id="additionalInfo"
                 name="additionalInfo"
-                rows={3}
+                rows={2}
                 value={formData.additionalInfo}
                 onChange={handleChange}
-                className="form-input"
-                placeholder="Any additional context, recent travel, medications, allergies, or other relevant information..."
+                className="symptom-field-input"
+                placeholder="Medical history, medications, allergies, recent travel..."
               />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Include any relevant medical history, current medications, or recent changes in your health.
-              </p>
-            </div>
+            </motion.div>
 
-            {/* Submit Button */}
-            <div className="pt-4">
-              <button
+            <motion.div variants={fadeUp} className="pt-2">
+              <motion.button
                 type="submit"
                 disabled={loading}
-                className={`w-full btn-medical ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                whileTap={{ scale: loading ? 1 : 0.98 }}
+                className={`symptom-submit-btn ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {loading ? (
                   <div className="flex flex-col items-center justify-center">
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Analyzing Symptoms with AI Model...
+                      Analysing Symptoms with AI Model...
                     </div>
                     <span className="text-xs mt-1 opacity-90">
                       First prediction may take 20-30 seconds (loading model)
                     </span>
                   </div>
                 ) : (
-                  'Analyze Symptoms'
+                  'Analyse Symptoms'
                 )}
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </form>
-        </div>
+        </motion.div>
 
-        {/* Disclaimer */}
-        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+        <motion.div
+          variants={fadeUp}
+          className="mt-6 bg-slate-50 dark:bg-green-950/30 border border-slate-200 dark:border-green-800/40 rounded-xl p-4"
+        >
           <div className="flex">
-            <InformationCircleIcon className="h-5 w-5 text-blue-400 mt-0.5" />
+            <InformationCircleIcon className="h-5 w-5 text-[#22a84a] dark:text-green-400 mt-0.5" />
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              <h3 className="text-sm font-medium text-green-900 dark:text-green-100">
                 Medical Disclaimer
               </h3>
-              <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-                This tool provides AI-generated health insights for informational purposes only. 
-                It does not replace professional medical advice, diagnosis, or treatment. 
-                Always consult with qualified healthcare professionals for medical concerns.
+              <p className="mt-1 text-sm symptom-text-muted">
+                This tool provides AI-generated health insights for informational purposes only.
+                It does not replace professional medical advice, diagnosis, or treatment.
               </p>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

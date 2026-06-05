@@ -155,7 +155,7 @@ router.post('/users', async (req, res) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
     const user = await User.create({
@@ -346,7 +346,7 @@ router.post('/users/:id/reset-password', async (req, res) => {
     }
 
     // Hash and update password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
     await user.save();
 

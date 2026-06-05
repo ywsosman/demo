@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { authAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import {
   UserIcon,
   EnvelopeIcon,
@@ -94,12 +95,10 @@ const PatientProfile = () => {
     }
   };
 
+  usePageLoading(loading);
+
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center transition-colors duration-300">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 dark:border-primary-400"></div>
-      </div>
-    );
+    return null;
   }
 
   return (

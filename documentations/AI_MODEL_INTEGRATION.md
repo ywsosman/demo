@@ -2,424 +2,282 @@
 
 ## Overview
 
-This document explains how your fine-tuned BERT model for disease prediction is integrated into the medical diagnosis web application using a Node.js backend with Python subprocess for ML inference.
+This application uses a fine-tuned **Bio_ClinicalBERT** model (`BertForSequenceClassification`) to predict diseases from patient-reported symptoms. Bio_ClinicalBERT combines **BioBERT** (pre-trained on PubMed abstracts + PMC full-text) with **ClinicalBERT** (further pre-trained on ~2M clinical notes from MIMIC-III), giving the model strong biomedical and clinical language understanding. The system supports two input modes: a **searchable multi-select dropdown** with 131 known symptoms and an optional **free-text description** that gets normalised before inference. Predictions are explained using both **SHAP** and **LIME** for full AI transparency.
 
-## Architecture
+## Data Sources
+
+### 1. DiseaseAndSymptoms.csv (Primary Training Data)
+
+| Property | Value |
+|----------|-------|
+| Rows | ~4,920 |
+| Diseases | 41 |
+| Unique symptoms | 131 |
+| Format | Disease + up to 17 symptom columns (snake_case names) |
+| Origin | Kaggle "Disease Symptom Prediction" dataset |
+
+This is the **only dataset used for model training**. Each row maps a combination of symptoms to one of 41 diseases. The training script applies data augmentation to create both structured and natural-language variants.
+
+### 2. Disease precaution.csv (Post-Prediction Enrichment)
+
+| Property | Value |
+|----------|-------|
+| Rows | 41 (one per disease) |
+| Columns | Disease + 4 precaution columns |
+| Role | Loaded at inference time to return actionable advice |
+
+Not used for training. After the model predicts a disease, the precautions are looked up and returned to the frontend.
+
+### 3. Disease_symptom_and_patient_profile_dataset.csv (Excluded)
+
+| Property | Value |
+|----------|-------|
+| Rows | ~350 |
+| Format | Binary Yes/No columns for 4 symptoms + demographics |
+| Status | **Not used** — incompatible schema, different disease vocabulary |
+
+This dataset uses a fundamentally different representation (binary flags for only 4 generic symptoms vs. 131 specific symptoms) and includes diseases not in the model's label set. Merging it would introduce noise.
+
+## System Architecture
 
 ```
-┌─────────────────┐
-│  React Frontend │
-│  (Symptom Form) │
-└────────┬────────┘
-         │ HTTP POST /api/diagnosis/submit
-         ▼
-┌─────────────────────────┐
-│  Node.js Backend        │
-│  (Express Server)       │
-│  - routes/diagnosis.js  │
-│  - models/aiModel.js    │
-└────────┬────────────────┘
-         │ spawn subprocess
-         ▼
-┌────────────────────────────┐
-│  Python Script             │
-│  predict_disease.py        │
-│  - Load BERT Model         │
-│  - Run Inference           │
-│  - Generate SHAP Values    │
-└────────┬───────────────────┘
-         │ JSON output
-         ▼
-┌────────────────────────────┐
-│  Model Directory           │
-│  symptom_disease_model/    │
-│  - config.json             │
-│  - model.safetensors       │
-│  - tokenizer files         │
-└────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  React Frontend (SymptomChecker.jsx)        │
+│  ┌─────────────────┐  ┌──────────────────┐  │
+│  │ Symptom Dropdown │  │ Free-text Input  │  │
+│  │ (multi-select)   │  │ (optional)       │  │
+│  └────────┬────────┘  └────────┬─────────┘  │
+│           └──────────┬─────────┘             │
+│                      ▼                       │
+│       POST /api/diagnosis/submit             │
+│       { selectedSymptoms[], symptoms, ... }  │
+└──────────────────────┬───────────────────────┘
+                       │
+┌──────────────────────▼───────────────────────┐
+│  Node.js Backend                             │
+│  ┌──────────────┐  ┌─────────────────────┐   │
+│  │ diagnosis.js  │→│ aiModel.js           │   │
+│  │ (validation)  │  │ (builds JSON payload │   │
+│  └──────────────┘  │  spawns Python)       │   │
+│                     └──────────┬──────────┘   │
+│                                │              │
+│  GET /api/diagnosis/symptoms   │              │
+│  (returns symptom_vocabulary)  │              │
+└────────────────────────────────┼──────────────┘
+                                 │ spawn subprocess
+┌────────────────────────────────▼──────────────┐
+│  Python Layer (predict_disease.py)            │
+│  ┌─────────────────────────────────────────┐  │
+│  │ SymptomPreprocessor                     │  │
+│  │ - If dropdown: join symptom IDs         │  │
+│  │ - If free-text: fuzzy match → normalise │  │
+│  └──────────────────┬──────────────────────┘  │
+│                     ▼                         │
+│  ┌──────────────────────────────────────────┐ │
+│  │ Bio_ClinicalBERT (41 labels)              │ │
+│  │ + HuggingFace text-classification pipe   │ │
+│  └──────────────────┬───────────────────────┘ │
+│            ┌────────┴────────┐                │
+│            ▼                 ▼                │
+│  ┌──────────────┐  ┌──────────────────┐       │
+│  │ SHAP         │  │ LIME             │       │
+│  │ (game-theory │  │ (perturbation-   │       │
+│  │  attribution)│  │  based local)    │       │
+│  └──────────────┘  └──────────────────┘       │
+│            └────────┬────────┘                │
+│                     ▼                         │
+│  ┌──────────────────────────────────────────┐ │
+│  │ PrecautionLoader                         │ │
+│  │ (Disease precaution.csv → advice)        │ │
+│  └──────────────────────────────────────────┘ │
+│                     │ JSON stdout             │
+└─────────────────────┼─────────────────────────┘
+                      ▼
+              Result to frontend
 ```
 
-## How It Works
+## Key Data Flow
 
-### 1. User Submits Symptoms (Frontend)
+### 1. Symptom Vocabulary
 
-Location: `frontend/src/pages/SymptomChecker.jsx`
+At startup, `diagnosis.js` loads `backend/symptom_vocabulary.json` (generated by `scripts/extract_symptoms.py`). The frontend fetches it via `GET /api/diagnosis/symptoms` to populate the multi-select dropdown.
 
-```javascript
-const response = await diagnosisAPI.submit({
-  symptoms: "headache, fever, body aches",
-  severity: 7,
-  duration: "2-3 days",
-  additionalInfo: "Started after traveling"
-});
+### 2. Diagnosis Submission
+
 ```
-
-### 2. Backend Receives Request
-
-Location: `backend/routes/diagnosis.js`
-
-```javascript
-router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res) => {
-  const { symptoms, severity, duration, additionalInfo } = req.body;
-  
-  // Call AI model
-  const aiPrediction = await aiModel.predictDiagnosis({
-    symptoms,
-    severity,
-    duration,
-    additionalInfo
-  });
-  
-  // Save to database with SHAP explanations
-  const session = await DiagnosisSession.create({
-    patientId,
-    symptoms,
-    aiPrediction: aiPrediction.predictions,
-    confidence: aiPrediction.confidence,
-    shapExplanation: aiPrediction.shapExplanation,
-    wordImportance: aiPrediction.wordImportance,
-    predictedDisease: aiPrediction.predictedDisease
-  });
-  
-  res.json({ sessionId: session._id, aiPrediction });
-});
-```
-
-### 3. Node.js Calls Python Script
-
-Location: `backend/models/aiModel.js`
-
-```javascript
-async callPythonPredictor(symptomText) {
-  return new Promise((resolve, reject) => {
-    const pythonProcess = spawn(PYTHON_COMMAND, [
-      PYTHON_SCRIPT_PATH,
-      symptomText
-    ]);
-    
-    // Collect output
-    pythonProcess.stdout.on('data', (data) => {
-      outputData += data.toString();
-    });
-    
-    // Parse JSON result
-    pythonProcess.on('close', (code) => {
-      const result = JSON.parse(outputData);
-      resolve(result);
-    });
-  });
-}
-```
-
-### 4. Python Performs Prediction
-
-Location: `backend/predict_disease.py`
-
-```python
-# Load model and tokenizer
-tokenizer = transformers.AutoTokenizer.from_pretrained(model_path)
-model = transformers.AutoModelForSequenceClassification.from_pretrained(model_path)
-
-# Create pipeline
-pipeline = transformers.pipeline(
-    "text-classification",
-    model=model,
-    tokenizer=tokenizer,
-    return_all_scores=True
-)
-
-# Get predictions
-predictions = pipeline(symptom_text)[0]
-best_prediction = max(predictions, key=lambda x: x['score'])
-
-# Generate SHAP explanations
-explainer = shap.Explainer(pipeline)
-shap_values = explainer([symptom_text])
-
-# Extract word importance
-words = shap_values.data[0]
-shap_scores = shap_values.values[0][:, predicted_class_index]
-
-# Return JSON
-print(json.dumps({
-    'success': True,
-    'predicted_disease': best_prediction['label'],
-    'confidence': best_prediction['score'],
-    'explanation': {
-        'words': words,
-        'shap_values': shap_scores
-    },
-    'word_importance': top_important_words
-}))
-```
-
-### 5. Frontend Displays Results with SHAP Visualization
-
-Location: `frontend/src/pages/SymptomChecker.jsx`
-
-The frontend receives the prediction with SHAP word importance and displays:
-
-- **Top predictions** with confidence scores
-- **Word importance visualization** - words highlighted based on their contribution
-- **SHAP explanation** - which words influenced the diagnosis
-
-```javascript
-{result.aiPrediction.wordImportance.map((item, idx) => {
-  const intensity = Math.abs(item.importance);
-  const bgColor = item.importance > 0 
-    ? `rgba(239, 68, 68, ${intensity})` // Red for important words
-    : `rgba(59, 130, 246, ${intensity})`; // Blue for less important
-  
-  return (
-    <div style={{ backgroundColor: bgColor }}>
-      <span>"{item.word}"</span>
-      <span>Impact: {(item.importance * 100).toFixed(2)}%</span>
-    </div>
-  );
-})}
-```
-
-## Data Flow
-
-### Request Data Structure
-
-```json
+Frontend → POST /api/diagnosis/submit
 {
-  "symptoms": "I have a severe headache, nausea, and sensitivity to light",
+  "selectedSymptoms": ["itching", "skin_rash", "nodal_skin_eruptions"],
+  "symptoms": "",                 // optional free text
   "severity": 7,
-  "duration": "6-24 hours",
-  "additionalInfo": "Getting worse in bright rooms"
+  "duration": "3-7 days",
+  "additionalInfo": ""
 }
 ```
 
-### Python Response Structure
+The backend (aiModel.js) serialises this as JSON and passes it to the Python script:
+
+```
+python predict_disease.py '{"selectedSymptoms":["itching","skin_rash"],"text":""}'
+```
+
+### 3. Preprocessing (SymptomPreprocessor)
+
+- **Dropdown path**: joins the selected symptom IDs with commas → `"itching, skin_rash, nodal_skin_eruptions"`. This exactly matches training data format.
+- **Free-text path**: fuzzy-matches words against the 131-symptom vocabulary using keyword overlap + edit-distance scoring, then constructs a normalised string.
+
+### 4. Inference + Explainability
+
+The normalised string is fed through the Bio_ClinicalBERT pipeline. Two explainability methods run:
+
+- **SHAP**: Shapley-value-based feature attribution. Shows each token's contribution to the predicted class.
+- **LIME**: Perturbation-based local approximation. Randomly masks tokens and observes prediction changes to estimate per-word influence.
+
+### 5. Response Structure
 
 ```json
 {
   "success": true,
-  "predicted_disease": "Migraine",
-  "confidence": 0.89,
+  "predicted_disease": "Fungal infection",
+  "confidence": 0.94,
+  "normalised_input": "itching, skin_rash, nodal_skin_eruptions",
+  "matched_symptoms": [
+    { "id": "itching", "label": "Itching" },
+    { "id": "skin_rash", "label": "Skin Rash" }
+  ],
   "top_predictions": [
-    { "disease": "Migraine", "confidence": 0.89 },
-    { "disease": "Tension Headache", "confidence": 0.07 },
-    { "disease": "Cluster Headache", "confidence": 0.03 }
+    { "disease": "Fungal infection", "confidence": 0.94 },
+    { "disease": "Drug Reaction", "confidence": 0.03 },
+    { "disease": "Psoriasis", "confidence": 0.01 }
   ],
   "explanation": {
-    "words": ["I", "have", "severe", "headache", "nausea", "sensitivity", "light"],
-    "shap_values": [0.01, 0.02, 0.45, 0.38, 0.32, 0.28, 0.25]
+    "words": ["itching", ",", "skin", "_", "rash", ...],
+    "shap_values": [0.42, 0.01, 0.38, 0.00, 0.35, ...]
   },
   "word_importance": [
-    { "word": "severe", "importance": 0.45, "impact": "positive" },
-    { "word": "headache", "importance": 0.38, "impact": "positive" },
-    { "word": "nausea", "importance": 0.32, "impact": "positive" }
+    { "word": "itching", "importance": 0.42, "impact": "positive" }
+  ],
+  "lime_explanation": {
+    "features": [
+      { "word": "itching", "weight": 0.51, "impact": "positive" }
+    ],
+    "score": 0.89
+  },
+  "precautions": [
+    "bath twice",
+    "use detol or neem in bathing water",
+    "keep infected area dry",
+    "use clean cloths"
   ]
 }
 ```
 
-### Database Storage
+## Training the Model
 
-The data is stored in MongoDB with the following schema:
+### Prerequisites
 
-```javascript
-{
-  patientId: ObjectId,
-  symptoms: String,
-  severity: Number,
-  duration: String,
-  aiPrediction: Array,  // Top predictions
-  confidence: Number,   // Overall confidence
-  shapExplanation: Object,  // Raw SHAP data
-  wordImportance: Array,    // Top important words
-  predictedDisease: String, // Main prediction
-  status: 'pending',
-  createdAt: Date
-}
+```bash
+cd backend
+pip install -r requirements.txt
 ```
 
-## Key Features
+### Step 1: Generate Symptom Vocabulary
 
-### 1. Explainable AI (XAI)
-
-The integration uses SHAP (SHapley Additive exPlanations) to provide transparency:
-
-- **Word-level explanations**: Shows which words influenced the prediction
-- **Visual feedback**: Colors indicate positive/negative contribution
-- **Confidence scores**: Clear indication of prediction certainty
-
-### 2. Error Handling
-
-Multiple layers of error handling:
-
-```javascript
-// Python script errors
-if (!pythonResult.success) {
-  return {
-    predictions: [],
-    confidence: 0,
-    explanation: 'Model prediction failed',
-    error: pythonResult.error
-  };
-}
-
-// Timeout handling
-setTimeout(() => {
-  pythonProcess.kill();
-  resolve({ success: false, error: 'Timeout' });
-}, MODEL_TIMEOUT);
-
-// Process spawn errors
-pythonProcess.on('error', (error) => {
-  resolve({ success: false, error: error.message });
-});
+```bash
+python scripts/extract_symptoms.py
 ```
 
-### 3. Performance Considerations
+This reads `DiseaseAndSymptoms.csv` and outputs `backend/symptom_vocabulary.json` with 131 symptoms, 41 diseases, and a keyword index for fuzzy matching.
 
-- **First request**: Slow (20-30s) - Model loads into memory
-- **Subsequent requests**: Faster (2-5s) - Model already loaded
-- **Timeout**: 60 seconds default
-- **GPU support**: Optional, significantly faster with CUDA
+### Step 2: Train the Model
+
+```bash
+python train_model.py --epochs 6 --batch-size 16 --lr 2e-5
+```
+
+The training script:
+1. Loads `DiseaseAndSymptoms.csv` (~4,920 rows)
+2. Applies **data augmentation** — for each row, generates 8 text variants:
+   - Structured: `"itching, skin_rash, nodal_skin_eruptions"`
+   - Natural language: `"I have itching, skin rash, nodal skin eruptions"`
+   - Patient-reported: `"patient reports itching and skin rash"`
+   - Shuffled order variant for robustness
+3. Stratified 80/20 train/val split
+4. Fine-tunes **Bio_ClinicalBERT** (`emilyalsentzer/Bio_ClinicalBERT`) with 41-class classification head
+5. Reports per-class precision/recall/F1
+6. Saves model + tokenizer to `backend/symptom_disease_model/`
+
+#### Why Bio_ClinicalBERT?
+
+| Model | Pre-training data | Benefit |
+|-------|-------------------|---------|
+| BERT base | Wikipedia + BookCorpus | General English language understanding |
+| BioBERT | + PubMed abstracts + PMC articles | Biomedical vocabulary and disease/symptom semantics |
+| Bio_ClinicalBERT | + MIMIC-III clinical notes (~2M notes) | Real clinical language patterns from doctor-patient encounters |
+
+By starting from Bio_ClinicalBERT, the model already understands medical terminology (e.g., "dyspnea", "hepatomegaly", "pruritus") before fine-tuning on our symptom-disease mapping. This produces significantly better predictions than generic BERT, especially for medical concepts.
+
+### Step 3: Verify
+
+```bash
+python predict_disease.py '{"selectedSymptoms":["itching","skin_rash"]}'
+```
+
+## SHAP vs LIME
+
+| | SHAP | LIME |
+|---|---|---|
+| Method | Shapley values (game theory) | Local perturbation |
+| Scope | Global feature attribution | Local to this prediction |
+| Speed | Moderate | Fast (100 samples) |
+| Interpretation | How much each token shifted the score | Which tokens, if removed, change the prediction |
+| Best for | Understanding model behaviour patterns | Explaining a single patient's result |
+
+Both are displayed in the frontend via a tabbed interface so clinicians can inspect the model's reasoning from two complementary angles.
+
+## File Map
+
+| File | Purpose |
+|------|---------|
+| `DiseaseAndSymptoms.csv` | Primary training dataset |
+| `Disease precaution.csv` | Disease precaution lookup |
+| `backend/symptom_vocabulary.json` | Extracted symptom vocabulary (generated) |
+| `backend/scripts/extract_symptoms.py` | Vocabulary extraction script |
+| `backend/train_model.py` | Model training pipeline |
+| `backend/predict_disease.py` | Inference + SHAP + LIME + preprocessing |
+| `backend/symptom_disease_model/` | Saved model weights + tokenizer |
+| `backend/models/aiModel.js` | Node.js ↔ Python bridge |
+| `backend/routes/diagnosis.js` | REST API routes (submit, symptoms, history) |
+| `frontend/src/pages/SymptomChecker.jsx` | Symptom input + results display |
+| `frontend/src/services/api.jsx` | API client methods |
 
 ## Configuration
 
 ### Environment Variables
 
 ```env
-# Python executable path
-PYTHON_PATH=python  # or python3 on Linux/Mac
-
-# Model path (optional)
-MODEL_PATH=/path/to/symptom_disease_model
-
-# Timeout (optional, in milliseconds)
-MODEL_TIMEOUT=60000
+PYTHON_PATH=python          # Python executable (or python3)
+MODEL_PATH=/path/to/model   # Override model directory
+MODEL_TIMEOUT=180000        # Timeout in ms (default 3 min)
 ```
-
-### Config File
-
-`backend/config.js`:
-
-```javascript
-aiModel: {
-  confidenceThreshold: 0.1,
-  maxPredictions: 5,
-  enableExplanations: true,
-  pythonPath: process.env.PYTHON_PATH || 'python',
-  modelTimeout: 60000
-}
-```
-
-## Testing the Integration
-
-### 1. Test Python Script Independently
-
-```bash
-cd backend
-python predict_disease.py "I have fever, cough, and fatigue"
-```
-
-Expected: JSON output with predictions
-
-### 2. Test Through API
-
-```bash
-curl -X POST http://localhost:5000/api/diagnosis/submit \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "symptoms": "fever, cough, fatigue",
-    "severity": 5,
-    "duration": "3-7 days",
-    "additionalInfo": ""
-  }'
-```
-
-### 3. Test Through Frontend
-
-1. Start backend: `cd backend && npm run dev`
-2. Start frontend: `cd frontend && npm run dev`
-3. Login as patient
-4. Navigate to Symptom Checker
-5. Fill in symptoms
-6. Submit and verify SHAP visualization appears
 
 ## Troubleshooting
 
-### Common Issues
-
 | Issue | Solution |
 |-------|----------|
-| "Python not found" | Set `PYTHON_PATH` in `.env` or system env |
-| Timeout errors | Increase `MODEL_TIMEOUT` in config |
-| Model not loading | Check `symptom_disease_model/` directory exists |
-| JSON parse errors | Check Python script outputs valid JSON |
-| Memory errors | Ensure 4GB+ RAM available |
-| Slow predictions | Use GPU or keep server running |
-
-### Debug Mode
-
-Enable detailed logging:
-
-```javascript
-// backend/models/aiModel.js
-console.log('Calling Python with:', symptomText);
-console.log('Python output:', outputData);
-console.log('Python errors:', errorData);
-```
-
-## Updating the Model
-
-When you have a new fine-tuned model:
-
-1. **Replace model files**:
-   ```bash
-   cp -r /path/to/new/model/* backend/symptom_disease_model/
-   ```
-
-2. **Restart backend**:
-   ```bash
-   cd backend
-   npm restart
-   ```
-
-3. **Test predictions**:
-   ```bash
-   python predict_disease.py "test symptoms"
-   ```
-
-4. **Verify in application**:
-   - Submit test symptoms
-   - Check prediction accuracy
-   - Verify SHAP explanations
-
-## Future Enhancements
-
-Potential improvements:
-
-1. **Model caching**: Keep model in memory between requests
-2. **Batch processing**: Handle multiple predictions simultaneously
-3. **Model versioning**: Support multiple model versions
-4. **A/B testing**: Compare different models
-5. **Prediction caching**: Cache common symptom patterns
-6. **Async queuing**: Queue predictions during high load
-7. **Microservice**: Separate Python service with REST API
-
-## Security Considerations
-
-- **Input validation**: Sanitize symptom text before passing to Python
-- **Command injection**: Use array arguments in `spawn()`, not string
-- **Resource limits**: Implement timeout and memory limits
-- **Rate limiting**: Prevent abuse of expensive predictions
-- **Access control**: Require authentication for predictions
+| "Symptom vocabulary not available" | Run `python scripts/extract_symptoms.py` |
+| Irrelevant predictions | Retrain with `python train_model.py` — augmentation improves generalisation |
+| LIME explanation empty | Check `lime` package is installed (`pip install lime`) |
+| Python not found | Set `PYTHON_PATH` in `.env` |
+| Timeout errors | Increase `MODEL_TIMEOUT` — first load is slow |
+| Memory errors | Ensure 4GB+ RAM; disable SHAP/LIME if constrained |
 
 ## References
 
+- [Bio_ClinicalBERT on HuggingFace](https://huggingface.co/emilyalsentzer/Bio_ClinicalBERT)
+- [BioBERT Paper](https://arxiv.org/abs/1901.08746) — Lee et al., 2020
+- [ClinicalBERT Paper](https://arxiv.org/abs/1904.03323) — Alsentzer et al., 2019
 - [Transformers Documentation](https://huggingface.co/docs/transformers)
 - [SHAP Documentation](https://shap.readthedocs.io/)
+- [LIME Documentation](https://lime-ml.readthedocs.io/)
 - [Node.js Child Process](https://nodejs.org/api/child_process.html)
-- [Medical AI Guidelines](https://www.fda.gov/medical-devices/software-medical-device-samd)
-
----
-
-For setup instructions, see [PYTHON_SETUP.md](./PYTHON_SETUP.md)...
-

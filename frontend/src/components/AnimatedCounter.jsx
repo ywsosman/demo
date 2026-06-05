@@ -6,7 +6,8 @@ const AnimatedCounter = ({
   start = 0, 
   suffix = '', 
   prefix = '',
-  className = ''
+  className = '',
+  compact = true,
 }) => {
   const [count, setCount] = useState(start);
   const [isVisible, setIsVisible] = useState(false);
@@ -67,6 +68,9 @@ const AnimatedCounter = ({
   }, [isVisible, end, duration, start]);
 
   const formatCount = (num) => {
+    if (!compact) {
+      return num % 1 !== 0 ? num.toFixed(1) : Math.floor(num).toLocaleString();
+    }
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + 'M';
     } else if (num >= 1000) {

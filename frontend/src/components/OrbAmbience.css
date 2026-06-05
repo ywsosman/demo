@@ -19,15 +19,15 @@
   animation: ambience-float 20s ease-in-out infinite;
 }
 
-/* Light mode - Blue/Cyan ambience */
+/* Light mode - Green ambience */
 .light .orb-ambience-gradient {
   background: radial-gradient(
     circle at 50% 50%, 
-    rgba(56, 189, 248, 0.4) 0%,
-    rgba(14, 165, 233, 0.3) 25%,
-    rgba(6, 182, 212, 0.25) 40%,
-    rgba(34, 211, 238, 0.2) 55%,
-    rgba(125, 211, 252, 0.15) 70%,
+    rgba(74, 222, 128, 0.4) 0%,
+    rgba(34, 197, 94, 0.3) 25%,
+    rgba(34, 168, 74, 0.25) 40%,
+    rgba(134, 239, 172, 0.2) 55%,
+    rgba(187, 247, 208, 0.15) 70%,
     transparent 85%
   );
 }
@@ -79,17 +79,17 @@
   animation: blob-float-3 22s ease-in-out infinite;
 }
 
-/* Light mode blobs - Blue/Cyan tones */
+/* Light mode blobs - Green tones */
 .light .orb-ambience-blob-1 {
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.6) 0%, transparent 70%);
 }
 
 .light .orb-ambience-blob-2 {
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.5) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%);
 }
 
 .light .orb-ambience-blob-3 {
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.55) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(34, 168, 74, 0.55) 0%, transparent 70%);
 }
 
 /* Dark mode blobs - Mint/Green tones */

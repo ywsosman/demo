@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { diagnosisAPI } from '../services/api';
+import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import {
   ClipboardDocumentListIcon,
   ClockIcon,
@@ -11,6 +12,13 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import {
+  normalizeStatus,
+  statusLabel,
+  statusColorClass,
+  SESSION_STATUS,
+  isReviewed
+} from '../utils/diagnosisStatus';
 
 const DiagnosisHistory = () => {
   const [sessions, setSessions] = useState([]);
@@ -35,35 +43,39 @@ const DiagnosisHistory = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'pending':
-        return <ClockIcon className="h-5 w-5 text-yellow-500" />;
-      case 'reviewed':
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
-      default:
-        return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
+    const s = normalizeStatus(status);
+    if ([SESSION_STATUS.PENDING_DOCTOR_REVIEW, SESSION_STATUS.IN_REVIEW, SESSION_STATUS.AI_PROCESSED].includes(s)) {
+      return <ClockIcon className="h-5 w-5 text-yellow-500" />;
     }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'reviewed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:text-gray-200';
+    if (isReviewed(s)) {
+      return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
     }
+    return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />;
   };
 
   const filteredSessions = sessions.filter(session => {
     const matchesSearch = session.symptoms.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (session.aiPrediction && session.aiPrediction.some(pred => 
+                         (session.aiPrediction && session.aiPrediction.some(pred =>
                            pred.condition.toLowerCase().includes(searchTerm.toLowerCase())
                          ));
-    const matchesStatus = statusFilter === 'all' || session.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || normalizeStatus(session.status) === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const handleDownloadPrescription = async (sessionId) => {
+    try {
+      const res = await diagnosisAPI.downloadPrescription(sessionId);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `prescription_${sessionId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch {
+      alert('Prescription PDF not available yet.');
+    }
+  };
 
   const openSessionDetails = (session) => {
     setSelectedSession(session);
@@ -73,12 +85,10 @@ const DiagnosisHistory = () => {
     setSelectedSession(null);
   };
 
+  usePageLoading(loading);
+
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center transition-colors duration-300">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600 dark:border-primary-400"></div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -118,8 +128,10 @@ const DiagnosisHistory = () => {
                 className="form-input"
               >
                 <option value="all">All Statuses</option>
-                <option value="pending">Pending Review</option>
-                <option value="reviewed">Reviewed</option>
+                <option value={SESSION_STATUS.PENDING_DOCTOR_REVIEW}>Pending Review</option>
+                <option value={SESSION_STATUS.IN_REVIEW}>In Review</option>
+                <option value={SESSION_STATUS.NEEDS_MORE_INFO}>Needs More Info</option>
+                <option value={SESSION_STATUS.REVIEWED}>Reviewed</option>
               </select>
             </div>
 
@@ -179,8 +191,8 @@ const DiagnosisHistory = () => {
                       </h3>
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(session.status)}
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(session.status)}`}>
-                          {session.status}
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColorClass(session.status)}`}>
+                          {statusLabel(session.status)}
                         </span>
                       </div>
                     </div>
@@ -267,8 +279,8 @@ const DiagnosisHistory = () => {
                     <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                       <p><strong>Date:</strong> {format(new Date(selectedSession.createdAt), 'MMMM dd, yyyy at h:mm a')}</p>
                       <p><strong>Status:</strong> 
-                        <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedSession.status)}`}>
-                          {selectedSession.status}
+                        <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColorClass(selectedSession.status)}`}>
+                          {statusLabel(selectedSession.status)}
                         </span>
                       </p>
                       <p><strong>Severity:</strong> {selectedSession.severity}/10</p>
@@ -337,6 +349,16 @@ const DiagnosisHistory = () => {
                         </p>
                       )}
                     </div>
+                  )}
+
+                  {isReviewed(selectedSession.status) && (
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPrescription(selectedSession.id || selectedSession._id)}
+                      className="btn-primary text-sm"
+                    >
+                      Download prescription PDF
+                    </button>
                   )}
                 </div>
 

@@ -9,11 +9,12 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          400: '#4ade80',
+          500: '#22a84a',
+          600: '#22a84a',
+          700: '#1d9340',
         },
         medical: {
           50: '#f0fdf4',
@@ -23,10 +24,20 @@ module.exports = {
           600: '#16a34a',
           700: '#15803d',
           900: '#14532d',
-        }
+        },
+        teal: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+          950: '#042f2e',
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Figtree', 'Inter', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(ellipse at top, var(--tw-gradient-stops))',
