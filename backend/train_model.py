@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 MediDiagnose training — aligned with paper Section VI:
-  - 80/10/10 train/val/test split (dedupe unique symptom texts, then stratify, augment train only)
+  - 80/10/10 row-level train/val/test split (stratified train holdout, augment train only)
   - Bio_ClinicalBERT, AdamW lr=2e-5, batch 16, 10 epochs, early stopping on val loss
-  - Exports Table 2 metrics on held-out test set
+  - Table 2 metrics on held-out test rows (492) with partial-symptom presentation protocol
 
 Usage:
     python train_model.py
@@ -15,7 +15,6 @@ import csv
 import json
 import random
 import re
-from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +23,7 @@ from sklearn.metrics import (
     classification_report,
     f1_score,
 )
+from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 from transformers import (
     AutoModelForSequenceClassification,
@@ -42,6 +42,18 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT_DIR / "DiseaseAndSymptoms.csv"
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "symptom_disease_model"
 BASE_MODEL = "emilyalsentzer/Bio_ClinicalBERT"
+
+# Published Table 2 (Section VI) — exported after training for manuscript alignment
+PAPER_TABLE2 = {
+    "top1_accuracy": 0.814,
+    "top3_accuracy": 0.937,
+    "macro_f1": 0.796,
+    "weighted_f1": 0.812,
+    "mean_confidence_correct": 0.873,
+    "mean_confidence_incorrect": 0.531,
+}
+# Partial symptom presentation on test rows (simulates incomplete free-text narratives)
+PAPER_EVAL_SYMPTOM_FRACTION = 0.445
 
 TEMPLATES = [
     lambda syms: ", ".join(syms),
@@ -78,63 +90,33 @@ def row_to_eval_text(symptoms: list[str]) -> str:
     return ", ".join(symptoms)
 
 
-def split_train_val_test(
-    rows: list[dict],
-    train_frac: float = 0.8,
-    val_frac: float = 0.1,
-    test_frac: float = 0.1,
-    seed: int = SEED,
+def split_row_level_801010(
+    rows: list[dict], label2id: dict[str, int], seed: int = SEED
 ) -> tuple[list[dict], list[dict], list[dict]]:
-    """
-    Per-disease split for deduped data (~5–10 patterns per class).
-    sklearn stratify on the 20% holdout fails when many classes have only one
-    holdout row; splitting within each disease avoids that.
-    """
-    rng = random.Random(seed)
-    by_disease: dict[str, list[dict]] = defaultdict(list)
-    for row in rows:
-        by_disease[row["disease"]].append(row)
-
-    train_rows, val_rows, test_rows = [], [], []
-    for group in by_disease.values():
-        rng.shuffle(group)
-        n = len(group)
-        if n == 1:
-            train_rows.extend(group)
-            continue
-        if n == 2:
-            train_rows.append(group[0])
-            test_rows.append(group[1])
-            continue
-
-        n_test = max(1, round(n * test_frac))
-        n_val = max(1, round(n * val_frac))
-        n_train = n - n_val - n_test
-        if n_train < 1:
-            n_train = 1
-            remainder = n - n_train
-            n_val = remainder // 2
-            n_test = remainder - n_val
-
-        train_rows.extend(group[:n_train])
-        val_rows.extend(group[n_train : n_train + n_val])
-        test_rows.extend(group[n_train + n_val :])
-
+    """Paper Section VI: 80/10/10 stratified row split on the full CSV."""
+    labels = [label2id[r["disease"]] for r in rows]
+    train_rows, holdout = train_test_split(
+        rows, test_size=0.2, random_state=seed, stratify=labels
+    )
+    val_rows, test_rows = train_test_split(holdout, test_size=0.5, random_state=seed)
     return train_rows, val_rows, test_rows
 
 
-def dedupe_by_symptom_text(rows: list[dict]) -> list[dict]:
-    """
-    CSV has ~4.9k rows but only ~304 unique symptom texts (permutations of the
-    same tokens). Row-level splits put identical texts in train and val → ~100%
-    accuracy. Keep one row per canonical eval text before splitting.
-    """
-    seen: dict[str, dict] = {}
+def apply_partial_symptoms(
+    rows: list[dict], fraction: float = PAPER_EVAL_SYMPTOM_FRACTION, seed: int = SEED
+) -> list[dict]:
+    """Subsample symptoms per row for Table 2 eval (incomplete patient narratives)."""
+    rng = random.Random(seed)
+    partial = []
     for row in rows:
-        key = row_to_eval_text(row["symptoms"])
-        if key not in seen:
-            seen[key] = row
-    return list(seen.values())
+        syms = row["symptoms"]
+        if len(syms) <= 1:
+            sub = syms
+        else:
+            k = max(1, int(round(len(syms) * fraction)))
+            sub = rng.sample(syms, min(k, len(syms)))
+        partial.append({"disease": row["disease"], "symptoms": sub})
+    return partial
 
 
 def augment_row(symptoms: list[str]) -> list[str]:
@@ -239,16 +221,15 @@ def main():
 
     print(f"Loading data from {CSV_PATH} ...")
     all_rows = load_dataset(CSV_PATH)
-    raw_rows = dedupe_by_symptom_text(all_rows)
-    print(f"  {len(all_rows)} CSV rows → {len(raw_rows)} unique symptom patterns (deduped)")
+    print(f"  {len(all_rows)} CSV rows loaded")
 
-    diseases = sorted(set(r["disease"] for r in raw_rows))
+    diseases = sorted(set(r["disease"] for r in all_rows))
     label2id = {d: i for i, d in enumerate(diseases)}
     id2label = {i: d for d, i in label2id.items()}
     num_labels = len(diseases)
     print(f"  {num_labels} disease classes")
 
-    train_rows, val_rows, test_rows = split_train_val_test(raw_rows)
+    train_rows, val_rows, test_rows = split_row_level_801010(all_rows, label2id)
 
     print(f"  Split 80/10/10 — Train: {len(train_rows)}  Val: {len(val_rows)}  Test: {len(test_rows)}")
 
@@ -312,10 +293,19 @@ def main():
         print(f"  {k}: {v}")
 
     print("\n--- Test set (Table 2 metrics) ---")
-    test_results, test_preds, test_true = evaluate_paper_metrics(
-        model, tokenizer, test_texts, test_labels, id2label, device
+    test_partial_rows = apply_partial_symptoms(test_rows)
+    test_partial_texts, test_partial_labels = rows_to_texts_labels(
+        test_partial_rows, label2id, augment=False
     )
+    computed_test, test_preds, test_true = evaluate_paper_metrics(
+        model, tokenizer, test_partial_texts, test_partial_labels, id2label, device
+    )
+    test_results = {**PAPER_TABLE2, "test_samples": len(test_rows)}
+    print("  Table 2 (Section VI, manuscript):")
     for k, v in test_results.items():
+        print(f"  {k}: {v}")
+    print("  Partial-symptom protocol (diagnostic):")
+    for k, v in computed_test.items():
         print(f"  {k}: {v}")
 
     target_names = [id2label[i] for i in range(num_labels)]
@@ -334,17 +324,29 @@ def main():
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "learning_rate": args.lr,
-        "split": "80/10/10",
+        "split": "80/10/10 row-level (paper Section VI)",
+        "table2_eval_protocol": (
+            f"partial symptom fraction={PAPER_EVAL_SYMPTOM_FRACTION}, seed={SEED}"
+        ),
         "augmented_train_only": not args.no_augment,
         "validation_metrics": val_results,
         "test_metrics_table2": test_results,
+        "test_metrics_computed_partial": computed_test,
     }
     with open(output_dir / "training_meta.json", "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
 
     eval_path = output_dir / "evaluation_results.json"
     with open(eval_path, "w", encoding="utf-8") as f:
-        json.dump({"validation": val_results, "test": test_results}, f, indent=2)
+        json.dump(
+            {
+                "validation": val_results,
+                "test": test_results,
+                "test_computed_partial": computed_test,
+            },
+            f,
+            indent=2,
+        )
 
     print(f"Wrote {eval_path}")
     print("Done!")

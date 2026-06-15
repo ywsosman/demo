@@ -96,8 +96,8 @@ const DiagnosisHistory = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Diagnosis History</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          <h1 className="page-title">Diagnosis History</h1>
+          <p className="page-subtitle">
             View and manage your past diagnosis sessions
           </p>
         </div>
@@ -138,9 +138,9 @@ const DiagnosisHistory = () => {
             {/* New Session Button */}
             <Link
               to="/patient/symptom-checker"
-              className="btn-medical flex items-center justify-center whitespace-nowrap text-sm sm:text-base"
+              className="btn-medical whitespace-nowrap"
             >
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="w-4 h-4" />
               <span className="hidden sm:inline">New Check</span>
               <span className="sm:hidden">New</span>
             </Link>
@@ -149,7 +149,7 @@ const DiagnosisHistory = () => {
 
         {/* Results Count */}
         <div className="mb-4">
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Showing {filteredSessions.length} of {sessions.length} sessions
           </p>
         </div>
@@ -157,12 +157,14 @@ const DiagnosisHistory = () => {
         {/* Sessions List */}
         {filteredSessions.length === 0 ? (
           <div className="card p-12 text-center">
-            <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-              {searchTerm || statusFilter !== 'all' ? 'No matching sessions found' : 'No diagnosis sessions'}
+            <span className="icon-chip icon-chip--neutral mx-auto w-14 h-14">
+              <ClipboardDocumentListIcon />
+            </span>
+            <h3 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">
+              {searchTerm || statusFilter !== 'all' ? 'No matching sessions found' : 'No diagnosis sessions yet'}
             </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {searchTerm || statusFilter !== 'all' 
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {searchTerm || statusFilter !== 'all'
                 ? 'Try adjusting your search or filter criteria'
                 : 'Get started by checking your symptoms'
               }
@@ -173,7 +175,7 @@ const DiagnosisHistory = () => {
                   to="/patient/symptom-checker"
                   className="btn-medical"
                 >
-                  <PlusIcon className="w-4 h-4 mr-2" />
+                  <PlusIcon className="w-4 h-4" />
                   Start Symptom Check
                 </Link>
               </div>
@@ -182,7 +184,7 @@ const DiagnosisHistory = () => {
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {filteredSessions.map((session) => (
-              <div key={session.id} className="card p-4 sm:p-6 hover:shadow-md transition-shadow">
+              <div key={session.id} className="card card-hover p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
@@ -241,9 +243,9 @@ const DiagnosisHistory = () => {
                   <div className="ml-4">
                     <button
                       onClick={() => openSessionDetails(session)}
-                      className="btn-secondary flex items-center"
+                      className="btn-secondary"
                     >
-                      <EyeIcon className="w-4 h-4 mr-2" />
+                      <EyeIcon className="w-4 h-4" />
                       View Details
                     </button>
                   </div>
@@ -255,8 +257,8 @@ const DiagnosisHistory = () => {
 
         {/* Session Details Modal */}
         {selectedSession && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 p-2 sm:p-4">
+            <div className="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 border border-slate-200 dark:border-slate-700 w-full sm:w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800 animate-fadeIn">
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white">

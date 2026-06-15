@@ -47,13 +47,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     const result = await login(formData.email, formData.password);
-    
+
     if (result.success) {
       // Navigate to landing page after login to show welcome animation
       navigate('/');
@@ -61,39 +61,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-md w-full space-y-6 sm:space-y-8">
-        <div>
-          <div className="flex justify-center">
-            <HeartIcon className="h-10 w-10 sm:h-12 sm:w-12 text-medical-600" />
+    <div className="min-h-[calc(100vh-88px)] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full animate-fadeIn">
+        <div className="card p-7 sm:p-9">
+          {/* Brand */}
+          <div className="text-center">
+            <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
+              <HeartIcon />
+            </span>
+            <h1 className="mt-5 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+              Welcome back
+            </h1>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Sign in to continue to MediDiagnose
+            </p>
           </div>
-          <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
-            Or{' '}
-            <Link
-              to="/register"
-              className="font-medium text-medical-600 hover:text-medical-500"
-            >
-              create a new account
-            </Link>
-          </p>
-        </div>
 
-        {/* Demo credentials info */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 sm:p-4">
-          <h3 className="text-xs sm:text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">Demo Credentials:</h3>
-          <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-            <div><strong>Doctor:</strong> doctor@demo.com / demo123</div>
-            <div><strong>Patient:</strong> patient@demo.com / demo123</div>
-          </div>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="form-label">
                 Email address
               </label>
               <input
@@ -104,21 +90,19 @@ const Login = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 form-input dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
-                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                }`}
-                placeholder="Enter your email"
+                className={`form-input ${errors.email ? 'form-input--error' : ''}`}
+                placeholder="you@example.com"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+                <p className="form-error">{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="form-label">
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <input
                   id="password"
                   name="password"
@@ -127,83 +111,72 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`form-input pr-10 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
-                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                  }`}
+                  className={`form-input pr-11 ${errors.password ? 'form-input--error' : ''}`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    <EyeSlashIcon className="h-5 w-5" />
                   ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                    <EyeIcon className="h-5 w-5" />
                   )}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
+                <p className="form-error">{errors.password}</p>
               )}
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+            <div className="flex items-center justify-between">
+              <label htmlFor="remember-me" className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                />
                 Remember me
               </label>
-            </div>
 
-            <div className="text-sm">
               <a
                 href="#"
-                className="font-medium text-medical-600 hover:text-medical-500"
+                className="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
               >
-                Forgot your password?
+                Forgot password?
               </a>
             </div>
-          </div>
 
-          <div>
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-medical-600 hover:bg-medical-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-medical-500 ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="btn-primary w-full"
             >
               {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <>
+                  <span className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white"></span>
                   Signing in...
-                </div>
+                </>
               ) : (
                 'Sign in'
               )}
             </button>
-          </div>
+          </form>
+        </div>
 
-          <div className="text-center">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Don't have an account?{' '}
-              <Link
-                to="/register"
-                className="font-medium text-medical-600 hover:text-medical-500"
-              >
-                Sign up here
-              </Link>
-            </span>
-          </div>
-        </form>
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          Don't have an account?{' '}
+          <Link
+            to="/register"
+            className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );

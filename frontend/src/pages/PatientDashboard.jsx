@@ -7,11 +7,11 @@ import { usePageLoading } from '../contexts/LoadingOverlayContext';
 import {
   HeartIcon,
   ClipboardDocumentListIcon,
-  ChartBarIcon,
   ClockIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  PlusIcon
+  PlusIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import { normalizeStatus, statusLabel, statusColorClass, SESSION_STATUS, isReviewed } from '../utils/diagnosisStatus';
@@ -72,10 +72,10 @@ const PatientDashboard = () => {
         {/* Header */}
         <ScrollReveal direction="down" delay={0} duration={600}>
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Welcome back, {user.firstName}!
+            <h1 className="page-title">
+              Welcome back, {user.firstName}
             </h1>
-            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            <p className="page-subtitle">
               Manage your health with our AI-powered diagnosis system
             </p>
           </div>
@@ -90,34 +90,30 @@ const PatientDashboard = () => {
             <ScrollReveal direction="up" delay={150} duration={600}>
               <Link
                 to="/patient/symptom-checker"
-                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+                className="card card-hover p-5 sm:p-6 flex items-center gap-4 group h-full"
               >
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-medical-100 rounded-lg flex items-center justify-center group-hover:bg-medical-200 transition-colors duration-300">
-                    <HeartIcon className="w-6 h-6 text-medical-600" />
-                  </div>
+                <span className="icon-chip icon-chip--brand group-hover:scale-105 transition-transform duration-200">
+                  <HeartIcon />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-white">Symptom Checker</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Get AI-powered health insights</p>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Symptom Checker</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Get AI-powered health insights</p>
-                </div>
-                <PlusIcon className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-200 transition-colors duration-300" />
+                <PlusIcon className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all duration-200" />
               </Link>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={250} duration={600}>
               <Link
                 to="/patient/history"
-                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+                className="card card-hover p-5 sm:p-6 flex items-center gap-4 group h-full"
               >
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
-                    <ClipboardDocumentListIcon className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">View History</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Review past diagnoses</p>
+                <span className="icon-chip icon-chip--info group-hover:scale-105 transition-transform duration-200">
+                  <ClipboardDocumentListIcon />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-white">View History</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Review past diagnoses</p>
                 </div>
               </Link>
             </ScrollReveal>
@@ -125,16 +121,14 @@ const PatientDashboard = () => {
             <ScrollReveal direction="up" delay={350} duration={600}>
               <Link
                 to="/patient/profile"
-                className="card card-hover p-6 flex items-center space-x-4 group transition-all duration-300 hover:scale-105"
+                className="card card-hover p-5 sm:p-6 flex items-center gap-4 group h-full"
               >
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors duration-300">
-                    <ChartBarIcon className="w-6 h-6 text-purple-600" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">Profile</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Update medical information</p>
+                <span className="icon-chip icon-chip--neutral group-hover:scale-105 transition-transform duration-200">
+                  <UserIcon />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-white">Profile</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Update medical information</p>
                 </div>
               </Link>
             </ScrollReveal>
@@ -148,43 +142,37 @@ const PatientDashboard = () => {
           </ScrollReveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             <ScrollReveal direction="up" delay={150} duration={600}>
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.total}</p>
-                  </div>
+              <div className="stat-card">
+                <span className="icon-chip icon-chip--info">
+                  <ClipboardDocumentListIcon />
+                </span>
+                <div>
+                  <p className="stat-card-label">Total Sessions</p>
+                  <p className="stat-card-value">{stats.total}</p>
                 </div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={250} duration={600}>
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClockIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.pending}</p>
-                  </div>
+              <div className="stat-card">
+                <span className="icon-chip icon-chip--warning">
+                  <ClockIcon />
+                </span>
+                <div>
+                  <p className="stat-card-label">Pending Review</p>
+                  <p className="stat-card-value">{stats.pending}</p>
                 </div>
               </div>
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={350} duration={600}>
-              <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CheckCircleIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-                  </div>
-                  <div className="ml-3 sm:ml-4">
-                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                    <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewed}</p>
-                  </div>
+              <div className="stat-card">
+                <span className="icon-chip icon-chip--brand">
+                  <CheckCircleIcon />
+                </span>
+                <div>
+                  <p className="stat-card-label">Reviewed</p>
+                  <p className="stat-card-value">{stats.reviewed}</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -195,84 +183,72 @@ const PatientDashboard = () => {
         <ScrollReveal direction="up" delay={100} duration={600}>
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Diagnosis Sessions</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Diagnosis Sessions</h2>
               <Link
                 to="/patient/history"
-                className="text-sm text-medical-600 hover:text-medical-500 font-medium transition-colors duration-300"
+                className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-semibold transition-colors duration-200"
               >
-                View all
+                View all &rarr;
               </Link>
             </div>
 
           {recentSessions.length === 0 ? (
-            <div className="card p-6 text-center">
-              <HeartIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No diagnosis sessions</h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <div className="card p-10 text-center">
+              <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
+                <HeartIcon />
+              </span>
+              <h3 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">No diagnosis sessions yet</h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Get started by checking your symptoms
               </p>
               <div className="mt-6">
-                <Link
-                  to="/patient/symptom-checker"
-                  className="btn-medical"
-                >
-                  <PlusIcon className="w-4 h-4 mr-2" />
+                <Link to="/patient/symptom-checker" className="btn-medical">
+                  <PlusIcon className="w-4 h-4" />
                   New Symptom Check
                 </Link>
               </div>
             </div>
           ) : (
-            <div className="card">
+            <div className="card overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Symptoms
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        AI Prediction
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Status
-                      </th>
+                      <th>Date</th>
+                      <th>Symptoms</th>
+                      <th>AI Prediction</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody>
                     {recentSessions.map((session) => (
-                      <tr 
-                        key={session.id} 
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
-                      >
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 dark:text-white">
+                      <tr key={session.id}>
+                        <td className="whitespace-nowrap text-slate-900 dark:text-white">
                           {format(new Date(session.createdAt), 'MMM dd, yyyy')}
                         </td>
-                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-900 dark:text-white">
+                        <td>
                           <div className="max-w-[150px] sm:max-w-xs truncate">
                             {session.symptoms}
                           </div>
                         </td>
-                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-900 dark:text-white">
+                        <td>
                           {session.aiPrediction && session.aiPrediction.length > 0 ? (
                             <div>
-                              <div className="font-medium max-w-[120px] sm:max-w-none truncate">
+                              <div className="font-medium text-slate-900 dark:text-white max-w-[120px] sm:max-w-none truncate">
                                 {session.aiPrediction[0].condition}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                              <div className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                 {Math.round(session.aiPrediction[0].confidence * 100)}% confidence
                               </div>
                             </div>
                           ) : (
-                            <span className="text-gray-400 dark:text-gray-500">Processing...</span>
+                            <span className="text-slate-400 dark:text-slate-500">Processing...</span>
                           )}
                         </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-1 sm:space-x-2">
+                        <td className="whitespace-nowrap">
+                          <div className="flex items-center gap-2">
                             {getStatusIcon(session.status)}
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColorClass(session.status)}`}>
+                            <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full ${statusColorClass(session.status)}`}>
                               {statusLabel(session.status)}
                             </span>
                           </div>

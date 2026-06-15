@@ -209,9 +209,9 @@ const Navbar = () => {
       onLogoClick={handleMenuClose}
       menuButtonColor={isDarkMode ? '#f9fafb' : '#111827'}
       openMenuButtonColor={isDarkMode ? '#f9fafb' : '#111827'}
-      accentColor="#ef4444"
+      accentColor="#22a84a"
       changeMenuColorOnOpen={true}
-      colors={isDarkMode ? ['#1f2937', '#111827'] : ['#e5e7eb', '#f3f4f6']}
+      colors={isDarkMode ? ['#14532d', '#111827'] : ['#dcfce7', '#f0fdf4']}
       onMenuOpen={handleMenuOpen}
       onMenuClose={handleMenuClose}
       user={user}

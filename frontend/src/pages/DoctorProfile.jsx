@@ -132,8 +132,8 @@ const DoctorProfile = () => {
       <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          <h1 className="page-title">My Profile</h1>
+          <p className="page-subtitle">
             Manage your professional information and credentials
           </p>
         </div>
@@ -148,7 +148,7 @@ const DoctorProfile = () => {
                   <UserIcon className="inline h-4 w-4 mr-1" />
                   Full Name
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
                   Dr. {user.firstName} {user.lastName}
                 </div>
               </div>
@@ -158,7 +158,7 @@ const DoctorProfile = () => {
                   <EnvelopeIcon className="inline h-4 w-4 mr-1" />
                   Email Address
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
                   {user.email}
                 </div>
               </div>
@@ -168,7 +168,7 @@ const DoctorProfile = () => {
                   <IdentificationIcon className="inline h-4 w-4 mr-1" />
                   Account Type
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300 capitalize">
+                <div className="form-input bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 capitalize">
                   {user.role}
                 </div>
               </div>
@@ -178,7 +178,7 @@ const DoctorProfile = () => {
                   <CalendarIcon className="inline h-4 w-4 mr-1" />
                   Member Since
                 </label>
-                <div className="form-input bg-gray-50 text-gray-600 dark:text-gray-300">
+                <div className="form-input bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
                   {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                 </div>
               </div>
@@ -296,42 +296,40 @@ const DoctorProfile = () => {
           </form>
 
           {/* Professional Verification Notice */}
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <IdentificationIcon className="h-5 w-5 text-blue-400" />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
+          <div className="rounded-xl border border-amber-200/70 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/10 p-4">
+            <div className="flex gap-3">
+              <span className="icon-chip icon-chip--warning w-9 h-9 shrink-0">
+                <IdentificationIcon />
+              </span>
+              <div>
+                <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
                   Professional Verification
                 </h3>
-                <div className="mt-1 text-sm text-blue-700">
-                  <p>
-                    Your medical license and credentials are subject to verification. 
-                    Please ensure all information is accurate and up-to-date. 
-                    Any misrepresentation of medical credentials is strictly prohibited 
-                    and may result in account suspension.
-                  </p>
-                </div>
+                <p className="mt-1 text-sm text-amber-700 dark:text-amber-300/90 leading-relaxed">
+                  Your medical license and credentials are subject to verification.
+                  Please ensure all information is accurate and up-to-date.
+                  Any misrepresentation of medical credentials is strictly prohibited
+                  and may result in account suspension.
+                </p>
               </div>
             </div>
           </div>
 
           {/* Practice Statistics */}
           <div className="card p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Practice Statistics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Sessions Reviewed</div>
+            <h2 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white mb-4">Practice Statistics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50 p-5">
+                <div className="text-3xl font-bold tracking-tight text-primary-600 dark:text-primary-400">12</div>
+                <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">Sessions Reviewed</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">8</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Patients Helped</div>
+              <div className="text-center rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50 p-5">
+                <div className="text-3xl font-bold tracking-tight text-teal-600 dark:text-teal-400">8</div>
+                <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">Patients Helped</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">95%</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Accuracy Rating</div>
+              <div className="text-center rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50 p-5">
+                <div className="text-3xl font-bold tracking-tight text-slate-700 dark:text-slate-200">95%</div>
+                <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">Accuracy Rating</div>
               </div>
             </div>
           </div>

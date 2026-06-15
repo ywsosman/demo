@@ -106,8 +106,8 @@ const PatientProfile = () => {
       <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          <h1 className="page-title">My Profile</h1>
+          <p className="page-subtitle">
             Manage your personal information and medical details
           </p>
         </div>
@@ -299,18 +299,18 @@ const PatientProfile = () => {
           </form>
 
           {/* Privacy Notice */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <IdentificationIcon className="h-5 w-5 text-blue-400" />
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                  Privacy & Security
+          <div className="rounded-xl border border-teal-200/70 dark:border-teal-500/20 bg-teal-50/70 dark:bg-teal-500/10 p-4">
+            <div className="flex gap-3">
+              <span className="icon-chip icon-chip--info w-9 h-9 shrink-0">
+                <IdentificationIcon />
+              </span>
+              <div>
+                <h3 className="text-sm font-semibold text-teal-800 dark:text-teal-200">
+                  Privacy &amp; Security
                 </h3>
-                <div className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-                  <p>Your medical information is encrypted and securely stored. Only you and authorized healthcare professionals can access this information. We follow strict HIPAA guidelines to protect your privacy.</p>
-                </div>
+                <p className="mt-1 text-sm text-teal-700 dark:text-teal-300/90 leading-relaxed">
+                  Your medical information is encrypted and securely stored. Only you and authorized healthcare professionals can access this information. We follow strict HIPAA guidelines to protect your privacy.
+                </p>
               </div>
             </div>
           </div>

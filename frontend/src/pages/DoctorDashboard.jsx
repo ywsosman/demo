@@ -209,63 +209,55 @@ const DoctorDashboard = () => {
         >
           {/* Header */}
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Welcome, Dr. {user.firstName}!
+            <h1 className="page-title">
+              Welcome, Dr. {user.firstName}
             </h1>
-            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            <p className="page-subtitle">
               Review patient diagnoses and provide professional medical guidance
             </p>
           </div>
 
           {/* Stats Overview */}
           <div className="mb-8">
-          <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-4">Overview</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClipboardDocumentListIcon className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-                </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Sessions</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalSessions}</p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--info">
+                <ClipboardDocumentListIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Total Sessions</p>
+                <p className="stat-card-value">{stats.totalSessions}</p>
               </div>
             </div>
 
-            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClockIcon className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
-                </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.pendingSessions}</p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--warning">
+                <ClockIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Pending Review</p>
+                <p className="stat-card-value">{stats.pendingSessions}</p>
               </div>
             </div>
 
-            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CheckCircleIcon className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
-                </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Reviewed</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.reviewedSessions}</p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--brand">
+                <CheckCircleIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Reviewed</p>
+                <p className="stat-card-value">{stats.reviewedSessions}</p>
               </div>
             </div>
 
-            <div className="card p-4 sm:p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <UserGroupIcon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
-                </div>
-                <div className="ml-3 sm:ml-4">
-                  <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalPatients}</p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--neutral">
+                <UserGroupIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Total Patients</p>
+                <p className="stat-card-value">{stats.totalPatients}</p>
               </div>
             </div>
           </div>
@@ -315,10 +307,12 @@ const DoctorDashboard = () => {
           {activeTab === 'pending' && (
             <div className="animate-fadeIn">
                 {pendingSessions.length === 0 ? (
-                  <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
-                    <CheckCircleIcon className="mx-auto h-12 w-12 text-green-500" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">All caught up!</h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="card p-12 text-center">
+                    <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
+                      <CheckCircleIcon />
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">All caught up!</h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       No pending diagnosis sessions to review at this time.
                     </p>
                   </div>
@@ -327,7 +321,7 @@ const DoctorDashboard = () => {
                     {pendingSessions.map((session) => (
                 <div 
                   key={session.id} 
-                  className="card p-3 sm:p-4 md:p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+                  className="card card-hover p-3 sm:p-4 md:p-6"
                 >
                   <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                     <div className="flex-1 w-full">
@@ -410,9 +404,9 @@ const DoctorDashboard = () => {
                       <button
                         onClick={() => openReviewModal(session)}
                         disabled={locking}
-                        className="btn-primary flex items-center justify-center transition-all duration-300 hover:scale-105 w-full sm:w-auto text-sm sm:text-base disabled:opacity-50"
+                        className="btn-primary w-full sm:w-auto"
                       >
-                        <ChatBubbleLeftRightIcon className="w-4 h-4 mr-2" />
+                        <ChatBubbleLeftRightIcon className="w-4 h-4" />
                         {locking ? 'Acquiring lock…' : 'Acquire lock & review'}
                       </button>
                     </div>
@@ -428,10 +422,12 @@ const DoctorDashboard = () => {
           {activeTab === 'reviewed' && (
             <div className="animate-fadeIn">
                 {reviewedSessions.length === 0 ? (
-                  <div className="card p-12 text-center transition-all duration-300 hover:shadow-xl">
-                    <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No reviewed sessions yet</h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="card p-12 text-center">
+                    <span className="icon-chip icon-chip--neutral mx-auto w-14 h-14">
+                      <ClipboardDocumentListIcon />
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">No reviewed sessions yet</h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       Sessions you review will appear here.
                     </p>
                   </div>
@@ -440,7 +436,7 @@ const DoctorDashboard = () => {
                     {reviewedSessions.map((session) => (
                     <div 
                       key={session.id || session._id} 
-                      className="card p-3 sm:p-4 md:p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+                      className="card card-hover p-3 sm:p-4 md:p-6"
                     >
                       <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                         <div className="flex-1 w-full">
@@ -508,8 +504,8 @@ const DoctorDashboard = () => {
 
         {/* Review Modal */}
         {selectedSession && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 p-2 sm:p-4">
-            <div className="relative top-4 sm:top-10 md:top-20 mx-auto p-3 sm:p-4 md:p-5 border border-gray-200 dark:border-gray-700 w-full sm:w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-4">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 p-2 sm:p-4">
+            <div className="relative top-4 sm:top-10 md:top-20 mx-auto p-4 sm:p-5 md:p-6 border border-slate-200 dark:border-slate-700 w-full sm:w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800 mb-4 animate-fadeIn">
               <div className="mt-2 sm:mt-3">
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white">

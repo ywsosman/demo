@@ -72,14 +72,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     const { confirmPassword, ...userData } = formData;
     const result = await register(userData);
-    
+
     if (result.success) {
       // Navigate to landing page after registration to show welcome animation
       navigate('/');
@@ -87,32 +87,27 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-md w-full space-y-6 sm:space-y-8">
-        <div>
-          <div className="flex justify-center">
-            <HeartIcon className="h-10 w-10 sm:h-12 sm:w-12 text-medical-600" />
+    <div className="min-h-[calc(100vh-88px)] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full animate-fadeIn">
+        <div className="card p-7 sm:p-9">
+          {/* Brand */}
+          <div className="text-center">
+            <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
+              <HeartIcon />
+            </span>
+            <h1 className="mt-5 text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+              Create your account
+            </h1>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Join MediDiagnose for smarter symptom insights
+            </p>
           </div>
-          <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
-            Or{' '}
-            <Link
-              to="/login"
-              className="font-medium text-medical-600 hover:text-medical-500"
-            >
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
 
-        <form className="mt-6 sm:mt-8 space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-3 sm:space-y-4">
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             {/* Name fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="firstName" className="form-label">
                   First Name
                 </label>
                 <input
@@ -122,18 +117,16 @@ const Register = () => {
                   required
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                    errors.firstName ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                  }`}
+                  className={`form-input ${errors.firstName ? 'form-input--error' : ''}`}
                   placeholder="John"
                 />
                 {errors.firstName && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.firstName}</p>
+                  <p className="form-error">{errors.firstName}</p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="lastName" className="form-label">
                   Last Name
                 </label>
                 <input
@@ -143,20 +136,18 @@ const Register = () => {
                   required
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                    errors.lastName ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                  }`}
+                  className={`form-input ${errors.lastName ? 'form-input--error' : ''}`}
                   placeholder="Doe"
                 />
                 {errors.lastName && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.lastName}</p>
+                  <p className="form-error">{errors.lastName}</p>
                 )}
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="form-label">
                 Email address
               </label>
               <input
@@ -167,19 +158,17 @@ const Register = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`mt-1 form-input dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                }`}
+                className={`form-input ${errors.email ? 'form-input--error' : ''}`}
                 placeholder="john@example.com"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+                <p className="form-error">{errors.email}</p>
               )}
             </div>
 
             {/* Role selection */}
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="role" className="form-label">
                 I am a
               </label>
               <select
@@ -187,24 +176,22 @@ const Register = () => {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className={`mt-1 form-input dark:bg-gray-800 dark:text-white ${
-                  errors.role ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                }`}
+                className={`form-input ${errors.role ? 'form-input--error' : ''}`}
               >
                 <option value="patient">Patient</option>
                 <option value="doctor">Doctor</option>
               </select>
               {errors.role && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.role}</p>
+                <p className="form-error">{errors.role}</p>
               )}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="form-label">
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <input
                   id="password"
                   name="password"
@@ -213,34 +200,33 @@ const Register = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`form-input pr-10 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                  }`}
-                  placeholder="Enter your password"
+                  className={`form-input pr-11 ${errors.password ? 'form-input--error' : ''}`}
+                  placeholder="At least 6 characters"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    <EyeSlashIcon className="h-5 w-5" />
                   ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                    <EyeIcon className="h-5 w-5" />
                   )}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
+                <p className="form-error">{errors.password}</p>
               )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="confirmPassword" className="form-label">
                 Confirm Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -249,81 +235,74 @@ const Register = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`form-input pr-10 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                    errors.confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-500' : ''
-                  }`}
-                  placeholder="Confirm your password"
+                  className={`form-input pr-11 ${errors.confirmPassword ? 'form-input--error' : ''}`}
+                  placeholder="Re-enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    <EyeSlashIcon className="h-5 w-5" />
                   ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                    <EyeIcon className="h-5 w-5" />
                   )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.confirmPassword}</p>
+                <p className="form-error">{errors.confirmPassword}</p>
               )}
             </div>
-          </div>
 
-          {/* Terms and conditions */}
-          <div className="flex items-center">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              className="h-4 w-4 text-medical-600 focus:ring-medical-500 border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
-            />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-              I agree to the{' '}
-              <a href="#" className="text-medical-600 hover:text-medical-500">
-                Terms and Conditions
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-medical-600 hover:text-medical-500">
-                Privacy Policy
-              </a>
+            {/* Terms and conditions */}
+            <label htmlFor="terms" className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                required
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
+              />
+              <span>
+                I agree to the{' '}
+                <a href="#" className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                  Terms and Conditions
+                </a>{' '}
+                and{' '}
+                <a href="#" className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                  Privacy Policy
+                </a>
+              </span>
             </label>
-          </div>
 
-          <div>
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-medical-600 hover:bg-medical-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-medical-500 ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="btn-primary w-full"
             >
               {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <>
+                  <span className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white"></span>
                   Creating account...
-                </div>
+                </>
               ) : (
                 'Create Account'
               )}
             </button>
-          </div>
+          </form>
+        </div>
 
-          <div className="text-center">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Already have an account?{' '}
-              <Link
-                to="/login"
-                className="font-medium text-medical-600 hover:text-medical-500"
-              >
-                Sign in here
-              </Link>
-            </span>
-          </div>
-        </form>
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
+          Already have an account?{' '}
+          <Link
+            to="/login"
+            className="font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );
