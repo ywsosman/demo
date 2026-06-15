@@ -42,6 +42,12 @@ backend/database.sqlite-journal
 # Temporary files
 tmp/
 temp/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Runtime uploads (prescription PDFs, etc.)
+backend/uploads/
 
 # ML model artifacts (large binary files)
 backend/symptom_disease_model/checkpoints/

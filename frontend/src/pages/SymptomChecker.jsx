@@ -87,8 +87,8 @@ const SymptomImportanceChart = ({ wordImportance }) => {
         })}
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <p className="text-xs text-blue-800 dark:text-blue-300">
+      <div className="mt-4 p-3 bg-teal-50 dark:bg-teal-500/10 border border-teal-200/60 dark:border-teal-500/20 rounded-lg">
+        <p className="text-xs text-teal-800 dark:text-teal-200">
           <strong>How to read this:</strong> The importance score reflects how much each symptom
           term influenced the AI&apos;s prediction. The analysis combines multiple explainability
           techniques to provide a robust and reliable assessment.
@@ -326,7 +326,7 @@ const SymptomChecker = () => {
                             {prediction.matchedSymptoms.map((symptom, idx) => (
                               <span
                                 key={idx}
-                                className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
+                                className="inline-flex px-2 py-1 text-xs bg-teal-100 text-teal-800 dark:bg-teal-500/15 dark:text-teal-200 rounded"
                               >
                                 {symptom}
                               </span>
@@ -405,7 +405,7 @@ const SymptomChecker = () => {
               </h2>
               <div className="space-y-3">
                 <div className="flex items-start">
-                  <ClockIcon className="h-5 w-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" />
+                  <ClockIcon className="h-5 w-5 text-teal-500 mt-0.5 mr-3 flex-shrink-0" />
                   <div>
                     <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                       Doctor Review Pending

@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../services/api';
 import { usePageLoading } from '../contexts/LoadingOverlayContext';
+import {
+  UsersIcon,
+  UserGroupIcon,
+  DocumentTextIcon,
+  ArrowTrendingUpIcon,
+  ChevronRightIcon
+} from '@heroicons/react/24/outline';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -28,15 +35,15 @@ const AdminDashboard = () => {
     }
   };
 
-  const getActionColor = (action) => {
-    const colors = {
-      'LOGIN': 'text-blue-600 bg-blue-100',
-      'USER_CREATED': 'text-green-600 bg-green-100',
-      'USER_UPDATED': 'text-yellow-600 bg-yellow-100',
-      'USER_DELETED': 'text-red-600 bg-red-100',
-      'PASSWORD_RESET': 'text-purple-600 bg-purple-100',
+  const getActionBadge = (action) => {
+    const map = {
+      LOGIN: 'badge--info',
+      USER_CREATED: 'badge--success',
+      USER_UPDATED: 'badge--warning',
+      USER_DELETED: 'badge--danger',
+      PASSWORD_RESET: 'badge--neutral',
     };
-    return colors[action] || 'text-gray-600 bg-gray-100';
+    return map[action] || 'badge--neutral';
   };
 
   const formatDate = (dateString) => {
@@ -50,186 +57,98 @@ const AdminDashboard = () => {
     return null;
   }
 
+  const statCards = [
+    { label: 'Total Doctors', value: stats?.totalDoctors || 0, Icon: UsersIcon, chip: 'icon-chip--info' },
+    { label: 'Total Patients', value: stats?.totalPatients || 0, Icon: UserGroupIcon, chip: 'icon-chip--brand' },
+    { label: 'Total Diagnoses', value: stats?.totalDiagnoses || 0, Icon: DocumentTextIcon, chip: 'icon-chip--neutral' },
+    { label: 'Recent (7 days)', value: stats?.recentDiagnoses || 0, Icon: ArrowTrendingUpIcon, chip: 'icon-chip--warning' },
+  ];
+
+  const quickActions = [
+    { title: 'Manage Doctors', desc: 'View, add, edit, and remove doctor accounts', to: '/admin/users?role=doctor' },
+    { title: 'Manage Patients', desc: 'View, add, edit, and remove patient accounts', to: '/admin/users?role=patient' },
+    { title: 'All Users', desc: 'View and manage all user accounts', to: '/admin/users' },
+  ];
+
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h1 className="page-title">Admin Dashboard</h1>
+          <p className="page-subtitle">
             Manage users, view statistics, and monitor system activity
           </p>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          {statCards.map(({ label, value, Icon, chip }) => (
+            <div key={label} className="stat-card">
+              <span className={`icon-chip ${chip}`}>
+                <Icon />
+              </span>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Doctors
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats?.totalDoctors || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                <svg className="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <p className="stat-card-label">{label}</p>
+                <p className="stat-card-value">{value}</p>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Patients
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats?.totalPatients || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                <svg className="w-8 h-8 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Diagnoses
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats?.totalDiagnoses || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                <svg className="w-8 h-8 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Recent (7 days)
-                </p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                  {stats?.recentDiagnoses || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
-                <svg className="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <button
-            onClick={() => navigate('/admin/users?role=doctor')}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors text-left group"
-          >
-            <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          {quickActions.map(({ title, desc, to }) => (
+            <button
+              key={title}
+              onClick={() => navigate(to)}
+              className="card card-hover p-6 text-left group flex items-center justify-between gap-4"
+            >
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Manage Doctors
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
+                  {title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  View, add, edit, and remove doctor accounts
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {desc}
                 </p>
               </div>
-              <svg className="w-6 h-6 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </button>
-
-          <button
-            onClick={() => navigate('/admin/users?role=patient')}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-colors text-left group"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Manage Patients
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  View, add, edit, and remove patient accounts
-                </p>
-              </div>
-              <svg className="w-6 h-6 text-green-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </button>
-
-          <button
-            onClick={() => navigate('/admin/users')}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors text-left group"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  All Users
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  View and manage all user accounts
-                </p>
-              </div>
-              <svg className="w-6 h-6 text-purple-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </button>
+              <ChevronRightIcon className="w-5 h-5 shrink-0 text-slate-300 dark:text-slate-600 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all duration-200" />
+            </button>
+          ))}
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="card">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               Recent Activity
             </h2>
           </div>
-          <div className="p-6">
+          <div className="p-5 sm:p-6">
             {recentActivity.length === 0 ? (
-              <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+              <p className="text-center text-slate-500 dark:text-slate-400 py-8">
                 No recent activity
               </p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {recentActivity.map((activity) => (
                   <div
                     key={activity._id}
-                    className="flex items-start space-x-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                    className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-700/50"
                   >
-                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${getActionColor(activity.action)}`}>
+                    <span className={`badge ${getActionBadge(activity.action)} shrink-0`}>
                       {activity.action.replace(/_/g, ' ')}
-                    </div>
+                    </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 dark:text-white">
+                      <p className="text-sm text-slate-900 dark:text-white">
                         {activity.details}
                       </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           {activity.userId ? `${activity.userId.firstName} ${activity.userId.lastName}` : 'System'}
                         </p>
-                        <span className="text-xs text-gray-400">•</span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-slate-300 dark:text-slate-600">•</span>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           {formatDate(activity.createdAt)}
                         </p>
                       </div>
@@ -246,4 +165,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

@@ -60,16 +60,16 @@ const DoctorPatients = () => {
     }
   });
 
-  const getStatusColor = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'badge--success';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+        return 'badge--warning';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'badge--info';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        return 'badge--neutral';
     }
   };
 
@@ -93,26 +93,25 @@ const DoctorPatients = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">My Patients</h1>
-          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          <h1 className="page-title">My Patients</h1>
+          <p className="page-subtitle">
             Manage and view patients you have reviewed or taken requests from
           </p>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="card p-4 sm:p-5 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none flex-shrink-0 z-10" />
+                <MagnifyingGlassIcon className="h-5 w-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10" />
                 <input
                   type="text"
                   placeholder="Search patients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  style={{ paddingLeft: '2.75rem' }}
+                  className="form-input pl-11"
                 />
               </div>
             </div>
@@ -122,7 +121,7 @@ const DoctorPatients = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                className="form-input"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -136,7 +135,7 @@ const DoctorPatients = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                className="form-input"
               >
                 <option value="recent">Most Recent</option>
                 <option value="name">Name A-Z</option>
@@ -147,86 +146,77 @@ const DoctorPatients = () => {
         </div>
 
         {/* Patients List */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="card overflow-hidden">
           {sortedPatients.length === 0 ? (
             <div className="text-center py-12">
-              <UserIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No patients found</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                {searchTerm || filterStatus !== 'all' 
+              <span className="icon-chip icon-chip--neutral mx-auto w-14 h-14">
+                <UserIcon />
+              </span>
+              <h3 className="mt-4 text-base font-semibold text-slate-900 dark:text-white">No patients found</h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                {searchTerm || filterStatus !== 'all'
                   ? 'Try adjusting your search or filter criteria'
                   : 'You haven\'t reviewed any patients yet'
                 }
               </p>
             </div>
           ) : (
-            <div className="overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-900">
-                    <tr>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Patient
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">
-                        Contact
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell">
-                        Last Visit
-                      </th>
-                      <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {sortedPatients.map((patient) => (
-                      <tr key={patient._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
-                              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                                <UserIcon className="h-4 w-4 sm:h-6 sm:w-6 text-primary-600" />
-                              </div>
-                            </div>
-                            <div className="ml-2 sm:ml-4">
-                              <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white max-w-[120px] sm:max-w-none truncate">
-                                {patient.firstName} {patient.lastName}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                ID: {patient._id?.slice(-8)}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                          <div className="text-xs sm:text-sm text-gray-900 dark:text-white truncate max-w-[200px]">{patient.email}</div>
-                          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{patient.phone || 'N/A'}</div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(patient.status)}`}>
-                            {patient.status || 'Unknown'}
+            <div className="overflow-x-auto">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th className="hidden md:table-cell">Contact</th>
+                    <th>Status</th>
+                    <th className="hidden lg:table-cell">Last Visit</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedPatients.map((patient) => (
+                    <tr key={patient._id}>
+                      <td className="whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <span className="icon-chip icon-chip--brand w-9 h-9 sm:w-10 sm:h-10 rounded-full">
+                            <UserIcon />
                           </span>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900 dark:text-white hidden lg:table-cell">
-                          <div className="flex items-center">
-                            <CalendarIcon className="h-4 w-4 text-gray-400 mr-1 flex-shrink-0" />
-                            {formatDate(patient.lastVisit)}
+                          <div>
+                            <div className="text-sm font-semibold text-slate-900 dark:text-white max-w-[120px] sm:max-w-none truncate">
+                              {patient.firstName} {patient.lastName}
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                              ID: {patient._id?.slice(-8)}
+                            </div>
                           </div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button className="text-primary-600 hover:text-primary-900 hover:bg-primary-50 px-2 sm:px-3 py-1 rounded-md transition-all duration-200 hover:shadow-sm">
-                            <EyeIcon className="h-4 w-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap hidden md:table-cell">
+                        <div className="text-sm text-slate-900 dark:text-white truncate max-w-[200px]">{patient.email}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{patient.phone || 'N/A'}</div>
+                      </td>
+                      <td className="whitespace-nowrap">
+                        <span className={`badge ${getStatusBadge(patient.status)} capitalize`}>
+                          {patient.status || 'Unknown'}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap hidden lg:table-cell">
+                        <div className="flex items-center text-slate-600 dark:text-slate-300">
+                          <CalendarIcon className="h-4 w-4 text-slate-400 mr-1.5 shrink-0" />
+                          {formatDate(patient.lastVisit)}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap">
+                        <button
+                          aria-label="View patient details"
+                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-500/10 transition-colors"
+                        >
+                          <EyeIcon className="h-5 w-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -234,41 +224,35 @@ const DoctorPatients = () => {
         {/* Summary Stats */}
         {sortedPatients.length > 0 && (
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <UserIcon className="h-8 w-8 text-blue-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Patients</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">{patients.length}</p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--info">
+                <UserIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Total Patients</p>
+                <p className="stat-card-value">{patients.length}</p>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <ClockIcon className="h-8 w-8 text-yellow-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Reviews</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                    {patients.filter(p => p.status === 'pending').length}
-                  </p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--warning">
+                <ClockIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Pending Reviews</p>
+                <p className="stat-card-value">
+                  {patients.filter(p => p.status === 'pending').length}
+                </p>
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <CalendarIcon className="h-8 w-8 text-green-600" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Patients</p>
-                  <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                    {patients.filter(p => p.status === 'active').length}
-                  </p>
-                </div>
+            <div className="stat-card">
+              <span className="icon-chip icon-chip--brand">
+                <CalendarIcon />
+              </span>
+              <div>
+                <p className="stat-card-label">Active Patients</p>
+                <p className="stat-card-value">
+                  {patients.filter(p => p.status === 'active').length}
+                </p>
               </div>
             </div>
           </div>

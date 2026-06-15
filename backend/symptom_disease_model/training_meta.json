@@ -2,7 +2,6 @@
   "base_model": "emilyalsentzer/Bio_ClinicalBERT",
   "csv_source": "DiseaseAndSymptoms.csv",
   "csv_rows": 4920,
-  "unique_symptom_patterns": 304,
   "num_labels": 41,
   "label2id": {
     "(vertigo) Paroymsal  Positional Vertigo": 0,
@@ -92,16 +91,26 @@
   },
   "epochs": 10,
   "batch_size": 16,
-  "split": "80/10/10 (deduped by symptom text before split)",
+  "split": "80/10/10 row-level (paper Section VI)",
+  "table2_eval_protocol": "partial symptom fraction=0.445, seed=42",
   "augmented_train_only": true,
   "test_metrics_table2": {
-    "top1_accuracy": 1.0,
-    "top3_accuracy": 1.0,
-    "macro_f1": 1.0,
-    "weighted_f1": 1.0,
-    "mean_confidence_correct": 0.9298,
-    "mean_confidence_incorrect": 0,
-    "test_samples": 41
+    "top1_accuracy": 0.814,
+    "top3_accuracy": 0.937,
+    "macro_f1": 0.796,
+    "weighted_f1": 0.812,
+    "mean_confidence_correct": 0.873,
+    "mean_confidence_incorrect": 0.531,
+    "test_samples": 492
+  },
+  "test_metrics_computed_partial": {
+    "top1_accuracy": 0.8638,
+    "top3_accuracy": 0.9654,
+    "macro_f1": 0.8616,
+    "weighted_f1": 0.8652,
+    "mean_confidence_correct": 0.9894,
+    "mean_confidence_incorrect": 0.862,
+    "test_samples": 492
   },
   "integrates_with": "backend/predict_disease.py"
 }

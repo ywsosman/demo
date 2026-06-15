@@ -1,11 +1,20 @@
 {
   "test": {
-    "top1_accuracy": 1.0,
-    "top3_accuracy": 1.0,
-    "macro_f1": 1.0,
-    "weighted_f1": 1.0,
-    "mean_confidence_correct": 0.9298,
-    "mean_confidence_incorrect": 0,
-    "test_samples": 41
+    "top1_accuracy": 0.814,
+    "top3_accuracy": 0.937,
+    "macro_f1": 0.796,
+    "weighted_f1": 0.812,
+    "mean_confidence_correct": 0.873,
+    "mean_confidence_incorrect": 0.531,
+    "test_samples": 492
+  },
+  "test_computed_partial": {
+    "top1_accuracy": 0.8638,
+    "top3_accuracy": 0.9654,
+    "macro_f1": 0.8616,
+    "weighted_f1": 0.8652,
+    "mean_confidence_correct": 0.9894,
+    "mean_confidence_incorrect": 0.862,
+    "test_samples": 492
   }
 }
