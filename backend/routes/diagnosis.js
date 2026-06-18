@@ -21,6 +21,7 @@ const {
 const { lookupIcd10 } = require('../utils/icd10');
 const { generatePrescriptionPdf } = require('../utils/prescriptionPdf');
 const notificationService = require('../services/notificationService');
+const config = require('../config');
 
 const router = express.Router();
 
@@ -104,6 +105,86 @@ function buildRevisionPayload(aiPrediction, symptomText, value) {
   };
 }
 
+/**
+ * Run AI prediction and advance session to PENDING_DOCTOR_REVIEW.
+ * Called in the background after the patient receives an immediate submit response.
+ */
+async function processSessionWithAI(sessionId, value, patientId) {
+  const session = await DiagnosisSession.findById(sessionId);
+  if (!session) {
+    console.error(`[AI] Session ${sessionId} not found for background processing`);
+    return;
+  }
+
+  const { symptoms, selectedSymptoms, severity, duration, additionalInfo } = value;
+  const symptomText = symptoms || (selectedSymptoms || []).join(', ');
+
+  const predictArgs = { symptoms, selectedSymptoms, severity, duration, additionalInfo };
+
+  let aiPrediction = await aiModel.predictDiagnosis(predictArgs);
+
+  // The Python engine can crash transiently (native segfault / OOM). Retry once
+  // before giving up so a single hiccup doesn't leave the session without AI input.
+  if ((!aiPrediction.predictions || aiPrediction.predictions.length === 0) && aiPrediction.error) {
+    console.warn(`[AI] Prediction failed for session ${sessionId}, retrying once: ${aiPrediction.error}`);
+    await new Promise((r) => setTimeout(r, 2000));
+    aiPrediction = await aiModel.predictDiagnosis(predictArgs);
+  }
+
+  const predictionFailed =
+    (!aiPrediction.predictions || aiPrediction.predictions.length === 0) && aiPrediction.error;
+  if (predictionFailed) {
+    console.error(
+      `[AI] Prediction still failing for session ${sessionId} after retry. ` +
+      `Queuing for manual doctor review without AI suggestions. Error: ${aiPrediction.error}`
+    );
+  }
+
+  const revPayload = buildRevisionPayload(aiPrediction, symptomText, value);
+  const icd = lookupIcd10(revPayload.predictedDisease);
+
+  await DiagnosisRevision.create({
+    sessionId: session._id,
+    revisionNumber: 1,
+    ...revPayload
+  });
+
+  session.status = STATES.AI_PROCESSED;
+  await session.save();
+
+  const transition = assertTransition(STATES.AI_PROCESSED, STATES.PENDING_DOCTOR_REVIEW);
+  if (!transition.ok) {
+    console.error(`[AI] Invalid transition for session ${sessionId}:`, transition.message);
+    return;
+  }
+
+  Object.assign(session, {
+    status: STATES.PENDING_DOCTOR_REVIEW,
+    aiPrediction: revPayload.aiPrediction,
+    confidence: revPayload.confidence,
+    shapExplanation: revPayload.shapExplanation,
+    limeExplanation: revPayload.limeExplanation,
+    wordImportance: revPayload.wordImportance,
+    predictedDisease: revPayload.predictedDisease,
+    icd10Code: icd.code,
+    icd10Display: icd.display,
+    currentRevisionNumber: 1
+  });
+  await session.save();
+
+  await AuditLog.create({
+    userId: patientId,
+    action: 'DIAGNOSIS_AI_PROCESSED',
+    details: `Session ${session._id} → ${STATES.PENDING_DOCTOR_REVIEW}`
+  });
+
+  console.log(
+    `[AI] Session ${sessionId} ${predictionFailed ? 'queued for doctor review WITHOUT AI (prediction failed)' : 'processed and queued for doctor review'}`
+  );
+
+  await notifyDoctorsSessionReady(session, patientId, symptomText, revPayload, predictionFailed);
+}
+
 function isLockActive(session) {
   return session.lockedUntil && new Date(session.lockedUntil) > new Date();
 }
@@ -153,6 +234,44 @@ async function ensureLatestRevision(session) {
   return revision;
 }
 
+function getPortalBaseUrl() {
+  if (Array.isArray(config.corsOrigin)) return config.corsOrigin[0];
+  if (typeof config.corsOrigin === 'string') return config.corsOrigin;
+  return null;
+}
+
+/**
+ * Email + in-app alert for all doctors when a session is queued for review.
+ */
+async function notifyDoctorsSessionReady(session, patientId, symptomText, revPayload, predictionFailed) {
+  const patient = await User.findById(patientId).lean();
+  const patientName = patient
+    ? `${patient.firstName || ''} ${patient.lastName || ''}`.trim()
+    : 'A patient';
+
+  let aiSummary;
+  if (predictionFailed) {
+    aiSummary = 'AI analysis could not be completed — please review manually.';
+  } else if (revPayload.predictedDisease) {
+    const pct = revPayload.confidence
+      ? ` (${Math.round(revPayload.confidence * 100)}% confidence)`
+      : '';
+    aiSummary = `AI top suggestion: ${revPayload.predictedDisease}${pct}.`;
+  } else {
+    aiSummary = 'Please review the submitted symptoms.';
+  }
+
+  const portalUrl = getPortalBaseUrl();
+  await notificationService.notifyDoctors({
+    sessionId: session._id,
+    title: 'New diagnosis ready for review',
+    message: `${patientName} has a case awaiting your review. ${aiSummary} Symptoms: ${symptomText}.`,
+    channels: ['in_app', 'email'],
+    actionUrl: portalUrl ? `${portalUrl}/doctor/dashboard` : undefined,
+    actionLabel: 'Open doctor dashboard'
+  });
+}
+
 router.get('/symptoms', (req, res) => {
   if (!symptomVocabulary) {
     return res.status(503).json({ message: 'Symptom vocabulary not available' });
@@ -184,64 +303,30 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
       status: STATES.SUBMITTED
     });
 
-    const aiPrediction = await aiModel.predictDiagnosis({
-      symptoms,
-      selectedSymptoms,
-      severity,
-      duration,
-      additionalInfo
-    });
-
-    const revPayload = buildRevisionPayload(aiPrediction, symptomText, value);
-    const icd = lookupIcd10(revPayload.predictedDisease);
-
-    await DiagnosisRevision.create({
-      sessionId: session._id,
-      revisionNumber: 1,
-      ...revPayload
-    });
-
-    session.status = STATES.AI_PROCESSED;
-    await session.save();
-
-    const transition = assertTransition(STATES.AI_PROCESSED, STATES.PENDING_DOCTOR_REVIEW);
-    if (!transition.ok) {
-      return res.status(500).json({ message: transition.message });
-    }
-
-    Object.assign(session, {
-      status: STATES.PENDING_DOCTOR_REVIEW,
-      aiPrediction: revPayload.aiPrediction,
-      confidence: revPayload.confidence,
-      shapExplanation: revPayload.shapExplanation,
-      limeExplanation: revPayload.limeExplanation,
-      wordImportance: revPayload.wordImportance,
-      predictedDisease: revPayload.predictedDisease,
-      icd10Code: icd.code,
-      icd10Display: icd.display,
-      currentRevisionNumber: 1
-    });
-    await session.save();
-
     await AuditLog.create({
       userId: patientId,
       action: 'DIAGNOSIS_SUBMITTED',
-      details: `Session ${session._id} → ${STATES.PENDING_DOCTOR_REVIEW}`
+      details: `Session ${session._id} created (${STATES.SUBMITTED})`
     });
 
     await notificationService.notifyUser({
       userId: patientId,
       sessionId: session._id,
       title: 'Symptoms submitted',
-      message: 'Your case is queued for physician review. You will be notified when reviewed.',
+      message: 'Your diagnosis will be reviewed soon. You will be notified when a physician completes the review.',
       channels: ['in_app', 'email']
     });
 
+    // Respond immediately — AI prediction (BERT + SHAP + LIME) runs in the background
     res.status(201).json({
-      message: 'Diagnosis submitted. Awaiting physician review before results are finalized.',
+      message: 'Diagnosis submitted. Your diagnosis will be reviewed soon.',
       sessionId: session._id,
-      status: session.status,
+      status: STATES.SUBMITTED,
       deliveredToPatient: false
+    });
+
+    processSessionWithAI(session._id, value, patientId).catch((err) => {
+      console.error(`[AI] Background processing failed for session ${session._id}:`, err);
     });
   } catch (err) {
     console.error('Diagnosis submission error:', err);
@@ -305,6 +390,16 @@ router.post('/:sessionId/resubmit', authMiddleware, requireRole(['patient']), as
       icd10Display: icd.display
     });
     await session.save();
+
+    const resubmitPredictionFailed =
+      (!aiPrediction.predictions || aiPrediction.predictions.length === 0) && aiPrediction.error;
+    await notifyDoctorsSessionReady(
+      session,
+      req.user._id,
+      symptomText,
+      revPayload,
+      resubmitPredictionFailed
+    );
 
     await notificationService.notifyUser({
       userId: req.user._id,
@@ -472,12 +567,23 @@ router.put('/:sessionId/review', authMiddleware, requireRole(['doctor']), async 
       });
 
       session.deliveredToPatient = true;
+
+      const prescriptionAttachments = pdf?.filePath && fs.existsSync(pdf.filePath)
+        ? [{ filename: `prescription_${session._id}.pdf`, path: pdf.filePath, contentType: 'application/pdf' }]
+        : [];
+      const portalUrl = Array.isArray(config.corsOrigin)
+        ? config.corsOrigin[0]
+        : (typeof config.corsOrigin === 'string' ? config.corsOrigin : null);
+
       await notificationService.notifyUser({
         userId: session.patientId,
         sessionId: session._id,
         title: 'Diagnosis reviewed',
-        message: 'Your physician has completed the review. View results and prescription in your history.',
-        channels: ['in_app', 'email', 'sms']
+        message: 'Your physician has completed the review. Your prescription PDF is attached, and you can also view the full results and download it from your history.',
+        channels: ['in_app', 'email', 'sms'],
+        attachments: prescriptionAttachments,
+        actionUrl: portalUrl ? `${portalUrl}/patient/history` : undefined,
+        actionLabel: 'View results & prescription'
       });
     } else {
       await notificationService.notifyUser({
@@ -596,7 +702,7 @@ router.get('/pending', authMiddleware, requireRole(['doctor']), async (req, res)
       status: { $in: [STATES.PENDING_DOCTOR_REVIEW, STATES.NEEDS_MORE_INFO, 'pending'] }
     })
       .populate('patientId', 'firstName lastName email')
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .lean();
 
     const formatted = await Promise.all(sessions.map((s) => enrichSession(s)));

@@ -172,7 +172,7 @@ const SymptomChecker = () => {
       };
       const response = await diagnosisAPI.submit(payload);
       setResult(response.data);
-      toast.success('Submitted — awaiting physician review before results are released.');
+      toast.success('Your diagnosis will be reviewed soon.');
     } catch (error) {
       console.error('Diagnosis submission error:', error);
       toast.error(error.response?.data?.message || 'Failed to submit diagnosis');
@@ -211,10 +211,14 @@ const SymptomChecker = () => {
       return (
         <div className="min-h-screen py-8 transition-colors duration-300">
           <div className="max-w-2xl mx-auto px-4 card p-8 text-center">
+            <CheckCircleIcon className="mx-auto h-14 w-14 text-green-500 mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Submission received</h1>
+            <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">
+              Your diagnosis will be reviewed soon.
+            </p>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Your symptoms have been processed by our AI pipeline and queued for a licensed physician.
-              Predictions and SHAP explanations will appear in your history after doctor sign-off.
+              Our AI is analysing your symptoms in the background. A licensed physician will review the
+              results before they are released to you. You can track progress in your history.
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Session ID: {result.sessionId}
@@ -590,14 +594,9 @@ const SymptomChecker = () => {
                 className={`symptom-submit-btn ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {loading ? (
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Analysing Symptoms with AI Model...
-                    </div>
-                    <span className="text-xs mt-1 opacity-90">
-                      First prediction may take 20-30 seconds (loading model)
-                    </span>
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Submitting your symptoms...
                   </div>
                 ) : (
                   'Analyse Symptoms'

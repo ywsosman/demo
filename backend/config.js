@@ -13,6 +13,16 @@ module.exports = {
   
   // CORS settings
   corsOrigin: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? false : ['http://localhost:5173', 'http://localhost:5174']),
+
+  // Email (SMTP) settings — when host/user/pass are unset, emails are logged only
+  email: {
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for 587
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+    from: process.env.EMAIL_FROM || 'MediDiagnose <no-reply@medidiagnose.local>'
+  },
   
   // Database settings
   database: {

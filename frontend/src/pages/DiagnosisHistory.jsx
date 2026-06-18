@@ -44,7 +44,7 @@ const DiagnosisHistory = () => {
 
   const getStatusIcon = (status) => {
     const s = normalizeStatus(status);
-    if ([SESSION_STATUS.PENDING_DOCTOR_REVIEW, SESSION_STATUS.IN_REVIEW, SESSION_STATUS.AI_PROCESSED].includes(s)) {
+    if ([SESSION_STATUS.SUBMITTED, SESSION_STATUS.PENDING_DOCTOR_REVIEW, SESSION_STATUS.IN_REVIEW, SESSION_STATUS.AI_PROCESSED].includes(s)) {
       return <ClockIcon className="h-5 w-5 text-yellow-500" />;
     }
     if (isReviewed(s)) {

@@ -51,6 +51,12 @@ warnings.filterwarnings('ignore')
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
+# Temperature scaling for calibration. The model trained on the near-deterministic
+# symptom→disease dataset produces saturated logits, so raw softmax collapses to
+# ~100% / 0% / 0%. Dividing logits by T > 1 softens the distribution into a more
+# realistic confidence spread. Tune via PREDICTION_TEMPERATURE (1.0 = disabled).
+TEMPERATURE = float(os.environ.get('PREDICTION_TEMPERATURE', '2.5'))
+
 # ---------------------------------------------------------------------------
 # Symptom preprocessor
 # ---------------------------------------------------------------------------
@@ -224,6 +230,29 @@ class DiseasePredictor:
             print(traceback.format_exc(), file=sys.stderr)
             raise Exception(f"Failed to load model from {model_path}: {e}")
 
+    # -- scoring helper ------------------------------------------------------
+
+    def _predict_scores(self, text: str) -> list[dict]:
+        """Run the model and apply temperature scaling to produce calibrated scores.
+
+        Bypasses the pipeline's built-in softmax so we can divide the logits by
+        TEMPERATURE before normalising, giving a realistic confidence spread
+        instead of the saturated ~100%/0%/0% output.
+        """
+        device = next(self.model.parameters()).device
+        enc = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
+        enc = {k: v.to(device) for k, v in enc.items()}
+        with torch.no_grad():
+            logits = self.model(**enc).logits[0]
+        if TEMPERATURE and TEMPERATURE != 1.0:
+            logits = logits / TEMPERATURE
+        probs = torch.softmax(logits, dim=-1).cpu().numpy()
+        id2label = self.model.config.id2label
+        return [
+            {"label": id2label[i], "score": float(probs[i])}
+            for i in range(len(probs))
+        ]
+
     # -- LIME helper ---------------------------------------------------------
 
     def _lime_predict_proba(self, texts: list[str]) -> np.ndarray:
@@ -254,11 +283,8 @@ class DiseasePredictor:
 
             print(f"Normalised input: {normalised}", file=sys.stderr)
 
-            # --- Model inference ---
-            predictions = self.clf_pipeline(normalised)
-            if isinstance(predictions, list) and len(predictions) > 0:
-                if isinstance(predictions[0], list):
-                    predictions = predictions[0]
+            # --- Model inference (temperature-scaled for calibrated confidence) ---
+            predictions = self._predict_scores(normalised)
 
             best = max(predictions, key=lambda x: x['score'])
             predicted_disease = best['label']
@@ -408,7 +434,77 @@ class DiseasePredictor:
 # CLI entry point
 # ---------------------------------------------------------------------------
 
+def _resolve_paths():
+    script_dir = Path(__file__).resolve().parent
+    model_path = os.environ.get('MODEL_PATH', str(script_dir / 'symptom_disease_model'))
+    vocab_path = script_dir / 'symptom_vocabulary.json'
+    precaution_csv = script_dir.parent / 'Disease precaution.csv'
+    return model_path, vocab_path, precaution_csv
+
+
+def _parse_request(raw_arg: str):
+    """Accept either plain text (backward compat) or a JSON object."""
+    try:
+        parsed = json.loads(raw_arg)
+        if isinstance(parsed, dict):
+            return parsed.get('text'), parsed.get('selectedSymptoms')
+        return raw_arg, None
+    except json.JSONDecodeError:
+        return raw_arg, None
+
+
+def serve():
+    """Persistent worker mode.
+
+    Load the model ONCE, then read newline-delimited JSON requests from stdin and
+    write a single-line JSON response per request to stdout. This avoids paying
+    the (very expensive) import + model-load cost on every prediction.
+
+    Protocol:
+      stdin  : {"id": <any>, "text": "...", "selectedSymptoms": [...]}\n
+      stdout : {"id": <same>, ...prediction...}\n   (one line, flushed)
+      stderr : human-readable logs + a "__READY__" marker once loaded.
+    """
+    model_path, vocab_path, precaution_csv = _resolve_paths()
+
+    if not Path(model_path).exists():
+        print(json.dumps({'error': f'Model not found at {model_path}'}), flush=True)
+        sys.exit(1)
+    if not vocab_path.exists():
+        print(json.dumps({'error': f'Symptom vocabulary not found at {vocab_path}'}), flush=True)
+        sys.exit(1)
+
+    try:
+        predictor = DiseasePredictor(model_path, vocab_path, precaution_csv)
+    except Exception as e:
+        print(json.dumps({'success': False, 'error': str(e)}), flush=True)
+        sys.exit(1)
+
+    # Signal readiness to the parent process (Node) on stderr.
+    print('__READY__', file=sys.stderr, flush=True)
+
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        req_id = None
+        try:
+            req = json.loads(line)
+            req_id = req.get('id')
+            result = predictor.predict(req.get('text'), req.get('selectedSymptoms'))
+        except Exception as e:
+            result = {'success': False, 'error': str(e), 'message': 'Prediction failed'}
+        if req_id is not None:
+            result['id'] = req_id
+        print(json.dumps(result), flush=True)
+
+
 def main():
+    # Persistent worker mode: `python predict_disease.py --serve`
+    if len(sys.argv) >= 2 and sys.argv[1] == '--serve':
+        serve()
+        return
+
     if len(sys.argv) < 2:
         print(json.dumps({
             'error': 'No input provided',
@@ -416,25 +512,8 @@ def main():
         }))
         sys.exit(1)
 
-    # Parse input — accept either plain text (backward compat) or JSON object
-    raw_arg = sys.argv[1]
-    text = None
-    selected_symptoms = None
-
-    try:
-        parsed = json.loads(raw_arg)
-        if isinstance(parsed, dict):
-            text = parsed.get('text')
-            selected_symptoms = parsed.get('selectedSymptoms')
-        else:
-            text = raw_arg
-    except json.JSONDecodeError:
-        text = raw_arg
-
-    script_dir = Path(__file__).resolve().parent
-    model_path = os.environ.get('MODEL_PATH', str(script_dir / 'symptom_disease_model'))
-    vocab_path = script_dir / 'symptom_vocabulary.json'
-    precaution_csv = script_dir.parent / 'Disease precaution.csv'
+    text, selected_symptoms = _parse_request(sys.argv[1])
+    model_path, vocab_path, precaution_csv = _resolve_paths()
 
     if not Path(model_path).exists():
         print(json.dumps({

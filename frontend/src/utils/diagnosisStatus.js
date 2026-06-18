@@ -37,6 +37,7 @@ export function statusLabel(status) {
 export function statusColorClass(status) {
   const s = normalizeStatus(status);
   switch (s) {
+    case SESSION_STATUS.SUBMITTED:
     case SESSION_STATUS.PENDING_DOCTOR_REVIEW:
     case SESSION_STATUS.AI_PROCESSED:
       return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200';
@@ -51,6 +52,17 @@ export function statusColorClass(status) {
     default:
       return 'bg-gray-100 text-gray-800';
   }
+}
+
+export function isPendingForPatient(status) {
+  const s = normalizeStatus(status);
+  return [
+    SESSION_STATUS.SUBMITTED,
+    SESSION_STATUS.AI_PROCESSED,
+    SESSION_STATUS.PENDING_DOCTOR_REVIEW,
+    SESSION_STATUS.IN_REVIEW,
+    SESSION_STATUS.NEEDS_MORE_INFO
+  ].includes(s);
 }
 
 export function isAwaitingDoctor(status) {
