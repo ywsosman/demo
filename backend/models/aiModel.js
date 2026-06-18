@@ -4,37 +4,87 @@ const path = require('path');
 
 const PYTHON_SCRIPT_PATH = path.join(__dirname, '..', 'predict_disease.py');
 const VENV_PYTHON = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
-const PYTHON_COMMAND = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : (process.env.PYTHON_PATH || 'python');
-const MODEL_TIMEOUT = 180000; // 3 minutes — BERT model + SHAP + LIME init
+
+// Interpreter resolution order:
+//   1. Local venv (has torch, shap, lime, transformers installed).
+//   2. Explicit PYTHON_PATH (.env) — optional override.
+//   3. 'python' on PATH.
+const PYTHON_COMMAND = fs.existsSync(VENV_PYTHON)
+  ? VENV_PYTHON
+  : (process.env.PYTHON_PATH || 'python');
+
+// First request pays the one-time import + model-load cost (can be minutes on a
+// slow machine). Subsequent requests only pay inference + SHAP/LIME time.
+const LOAD_TIMEOUT = 600000;    // 10 minutes — worker cold start (imports + model load)
+const REQUEST_TIMEOUT = 180000; // 3 minutes — single warm prediction (SHAP + LIME)
+
+// Environment hardening for the Python subprocess. These reduce native crashes
+// (access violations / 0xC0000005) caused by duplicate OpenMP runtimes and
+// multi-threaded contention when loading torch on Windows.
+const PYTHON_ENV = {
+  ...process.env,
+  KMP_DUPLICATE_LIB_OK: 'TRUE',
+  OMP_NUM_THREADS: '1',
+  MKL_NUM_THREADS: '1',
+  TOKENIZERS_PARALLELISM: 'false',
+  PYTHONUNBUFFERED: '1'
+};
 
 class AIModel {
   constructor() {
     this.initialized = true;
     this.modelReady = false;
+
+    // Persistent worker state
+    this._worker = null;
+    this._ready = null;        // Promise that resolves once the worker prints __READY__
+    this._stdoutBuffer = '';
+    this._pending = null;      // { id, resolve, timer } for the in-flight request
+    this._reqCounter = 0;
+
+    // Serialize predictions: the worker processes one request at a time, so we
+    // keep a single in-flight request on the Node side too (simplest + robust).
+    this._chain = Promise.resolve();
+
+    // Clean up the worker when the backend shuts down.
+    const cleanup = () => this._killWorker();
+    process.on('exit', cleanup);
+    process.on('SIGINT', () => { cleanup(); process.exit(0); });
+    process.on('SIGTERM', () => { cleanup(); process.exit(0); });
+  }
+
+  /**
+   * Public entry point. Queues the prediction so requests never overlap.
+   */
+  predictDiagnosis(patientData) {
+    const resultPromise = this._chain.then(
+      () => this._predictDiagnosis(patientData),
+      () => this._predictDiagnosis(patientData)
+    );
+    // Advance the chain regardless of this call's outcome (swallow to avoid
+    // unhandled rejections and prevent retaining results in memory).
+    this._chain = resultPromise.catch(() => {});
+    return resultPromise;
   }
 
   /**
    * Predict disease from patient data.
    * Accepts both free-text symptoms and structured dropdown selections.
    */
-  async predictDiagnosis(patientData) {
+  async _predictDiagnosis(patientData) {
     try {
       const { symptoms, selectedSymptoms, severity, duration, additionalInfo } = patientData;
 
-      // Build the JSON payload that predict_disease.py now expects
+      // Build the JSON payload for predict_disease.py (symptoms only — severity/duration
+      // are stored on the session for the doctor, not sent to the model)
       const payload = {};
 
       if (selectedSymptoms && selectedSymptoms.length > 0) {
         payload.selectedSymptoms = selectedSymptoms;
       }
 
-      // Free-text goes into "text" field; append additionalInfo if present
-      let text = symptoms || '';
-      if (additionalInfo) {
-        text += `. Additional info: ${additionalInfo}`;
-      }
-      if (text) {
-        payload.text = text;
+      if (symptoms && symptoms.trim()) {
+        payload.text = symptoms.trim();
       }
 
       const pythonResult = await this.callPythonPredictor(JSON.stringify(payload));
@@ -97,74 +147,178 @@ class AIModel {
   }
 
   /**
-   * Spawn Python process with a JSON payload instead of plain text.
+   * Ensure the persistent Python worker is running and has finished loading the
+   * model. Returns a promise that resolves when the worker is ready.
    */
-  callPythonPredictor(jsonPayload) {
+  _ensureWorker() {
+    if (this._worker && this._ready) {
+      return this._ready;
+    }
+
+    this._ready = new Promise((resolve, reject) => {
+      console.log('[AI] Starting persistent prediction worker:', PYTHON_COMMAND);
+
+      let worker;
+      try {
+        worker = spawn(PYTHON_COMMAND, [PYTHON_SCRIPT_PATH, '--serve'], { env: PYTHON_ENV });
+      } catch (err) {
+        return reject(err);
+      }
+      this._worker = worker;
+      this._stdoutBuffer = '';
+
+      let loadTimer = setTimeout(() => {
+        console.error('[AI] Worker failed to become ready within load timeout.');
+        this._killWorker();
+        reject(new Error('Model load timeout'));
+      }, LOAD_TIMEOUT);
+
+      worker.stdout.on('data', (data) => this._onStdout(data));
+
+      worker.stderr.on('data', (data) => {
+        const text = data.toString();
+        if (text.includes('__READY__')) {
+          clearTimeout(loadTimer);
+          loadTimer = null;
+          this.modelReady = true;
+          console.log('[AI] Worker ready — model loaded and warm.');
+          resolve();
+        }
+        // Surface a trimmed view of worker logs for debugging.
+        const trimmed = text.trim();
+        if (trimmed) console.log('[AI worker]', trimmed.slice(-300));
+      });
+
+      worker.on('exit', (code) => {
+        if (loadTimer) clearTimeout(loadTimer);
+        console.error(`[AI] Worker exited (code ${code}).`);
+        const isNativeCrash = code === 3221225477 || code === 139;
+        if (isNativeCrash) {
+          console.error(
+            `[AI] Worker crashed natively (exit ${code}) — likely an unstable ` +
+            `interpreter/torch build or OOM. Ensure PYTHON_PATH points to a stable env.`
+          );
+        }
+        this._worker = null;
+        this._ready = null;
+        this.modelReady = false;
+        // Fail the in-flight request, if any, so the caller doesn't hang.
+        if (this._pending) {
+          const { resolve: res, timer } = this._pending;
+          clearTimeout(timer);
+          this._pending = null;
+          res({
+            success: false,
+            error: `Worker exited with code ${code}`,
+            message: isNativeCrash
+              ? 'Prediction engine crashed. It will restart on the next request.'
+              : 'Prediction engine stopped unexpectedly.'
+          });
+        }
+        reject(new Error(`Worker exited with code ${code}`));
+      });
+
+      worker.on('error', (err) => {
+        if (loadTimer) clearTimeout(loadTimer);
+        console.error('[AI] Failed to start worker:', err.message);
+        this._worker = null;
+        this._ready = null;
+        reject(err);
+      });
+    });
+
+    // Avoid unhandled rejection noise; callers handle failures explicitly.
+    this._ready.catch(() => {});
+    return this._ready;
+  }
+
+  /**
+   * Parse newline-delimited JSON responses from the worker's stdout and resolve
+   * the matching in-flight request.
+   */
+  _onStdout(data) {
+    this._stdoutBuffer += data.toString();
+    let newlineIndex;
+    while ((newlineIndex = this._stdoutBuffer.indexOf('\n')) !== -1) {
+      const line = this._stdoutBuffer.slice(0, newlineIndex).trim();
+      this._stdoutBuffer = this._stdoutBuffer.slice(newlineIndex + 1);
+      if (!line) continue;
+
+      let result;
+      try {
+        result = JSON.parse(line);
+      } catch (err) {
+        console.error('[AI] Could not parse worker output line:', line.slice(0, 200));
+        continue;
+      }
+
+      if (this._pending && (result.id === undefined || result.id === this._pending.id)) {
+        const { resolve, timer } = this._pending;
+        clearTimeout(timer);
+        this._pending = null;
+        delete result.id;
+        resolve(result);
+      }
+    }
+  }
+
+  /**
+   * Send a JSON payload to the persistent worker and await its response.
+   */
+  async callPythonPredictor(jsonPayload) {
+    try {
+      await this._ensureWorker();
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message,
+        message: 'Failed to start prediction engine. Check PYTHON_PATH and dependencies.'
+      };
+    }
+
+    const id = ++this._reqCounter;
+    const request = { id, ...JSON.parse(jsonPayload) };
+
     return new Promise((resolve) => {
-      console.log('[AI] Python command:', PYTHON_COMMAND);
-      console.log('[AI] Script path:', PYTHON_SCRIPT_PATH);
-      console.log('[AI] Payload:', jsonPayload);
-
-      const pythonProcess = spawn(PYTHON_COMMAND, [
-        PYTHON_SCRIPT_PATH,
-        jsonPayload
-      ]);
-
-      let outputData = '';
-      let errorData = '';
-
-      pythonProcess.stdout.on('data', (data) => {
-        outputData += data.toString();
-      });
-
-      pythonProcess.stderr.on('data', (data) => {
-        errorData += data.toString();
-      });
-
-      pythonProcess.on('close', (code) => {
-        console.log('[AI] Python exit code:', code);
-        if (errorData) console.log('[AI] stderr:', errorData.slice(-500));
-        if (code !== 0) {
-          console.error('Python script error:', errorData || '(empty stderr)');
-          resolve({
-            success: false,
-            error: errorData || 'Python script execution failed',
-            message: 'Failed to run prediction model'
-          });
-          return;
-        }
-
-        try {
-          const result = JSON.parse(outputData);
-          resolve(result);
-        } catch (parseError) {
-          console.error('Failed to parse Python output:', outputData);
-          resolve({
-            success: false,
-            error: parseError.message,
-            message: 'Failed to parse model output'
-          });
-        }
-      });
-
-      pythonProcess.on('error', (error) => {
-        console.error('Failed to start Python process:', error);
-        resolve({
-          success: false,
-          error: error.message,
-          message: 'Failed to start prediction process. Ensure Python is installed.'
-        });
-      });
-
-      setTimeout(() => {
-        pythonProcess.kill();
+      const timer = setTimeout(() => {
+        console.error(`[AI] Request ${id} timed out; restarting worker.`);
+        this._pending = null;
+        this._killWorker(); // stuck worker — force a clean restart next call
         resolve({
           success: false,
           error: 'Prediction timeout',
           message: 'Model prediction took too long. Please try again.'
         });
-      }, MODEL_TIMEOUT);
+      }, REQUEST_TIMEOUT);
+
+      this._pending = { id, resolve, timer };
+
+      try {
+        this._worker.stdin.write(JSON.stringify(request) + '\n');
+      } catch (err) {
+        clearTimeout(timer);
+        this._pending = null;
+        this._killWorker();
+        resolve({
+          success: false,
+          error: err.message,
+          message: 'Failed to send request to prediction engine.'
+        });
+      }
     });
+  }
+
+  _killWorker() {
+    if (this._worker) {
+      try {
+        this._worker.kill();
+      } catch {
+        /* ignore */
+      }
+      this._worker = null;
+    }
+    this._ready = null;
+    this.modelReady = false;
   }
 
   generateExplanationFromShap(disease, confidence, wordImportance) {

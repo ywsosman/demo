@@ -14,7 +14,7 @@ import {
   UserIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
-import { normalizeStatus, statusLabel, statusColorClass, SESSION_STATUS, isReviewed } from '../utils/diagnosisStatus';
+import { normalizeStatus, statusLabel, statusColorClass, SESSION_STATUS, isReviewed, isPendingForPatient } from '../utils/diagnosisStatus';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
@@ -40,10 +40,7 @@ const PatientDashboard = () => {
       // Calculate stats
       setStats({
         total: sessions.length,
-        pending: sessions.filter(s => {
-          const st = normalizeStatus(s.status);
-          return [SESSION_STATUS.PENDING_DOCTOR_REVIEW, SESSION_STATUS.IN_REVIEW, SESSION_STATUS.NEEDS_MORE_INFO, SESSION_STATUS.AI_PROCESSED].includes(st);
-        }).length,
+        pending: sessions.filter(s => isPendingForPatient(s.status)).length,
         reviewed: sessions.filter(s => isReviewed(s.status)).length
       });
     } catch (error) {

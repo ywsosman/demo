@@ -97,7 +97,7 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Initialize database and start server
+// Initialize database and start server (async diagnosis submit enabled)
 db.initialize().then(() => {
   app.listen(PORT, () => {
     console.log(`🏥 Medical Diagnosis Server running on port ${PORT}`);
