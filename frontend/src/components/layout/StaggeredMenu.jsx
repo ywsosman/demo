@@ -1,6 +1,7 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import NotificationBell from './NotificationBell';
 import './StaggeredMenu.css';
 
 export const StaggeredMenu = ({
@@ -494,6 +495,7 @@ export const StaggeredMenu = ({
               <MoonIcon className="sm-theme-icon" />
             )}
           </button>
+          {user && <NotificationBell user={user} />}
           {user && (
             <>
               <div ref={welcomeMessageRef} className="sm-welcome-message">

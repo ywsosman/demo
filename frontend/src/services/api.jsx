@@ -69,6 +69,7 @@ export const notificationsAPI = {
   list: (unreadOnly = false) =>
     api.get(`/notifications${unreadOnly ? '?unread=true' : ''}`),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAllRead: () => api.patch('/notifications/read-all'),
 };
 
 export const userAPI = {

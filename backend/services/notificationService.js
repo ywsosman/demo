@@ -131,22 +131,36 @@ async function notifyDoctors({
 }
 
 async function listForUser(userId, { unreadOnly = false, limit = 50 } = {}) {
-  const query = { userId };
+  const query = { userId, channel: 'in_app' };
   if (unreadOnly) query.read = false;
   return Notification.find(query).sort({ createdAt: -1 }).limit(limit).lean();
 }
 
+async function unreadCount(userId) {
+  return Notification.countDocuments({ userId, channel: 'in_app', read: false });
+}
+
 async function markRead(notificationId, userId) {
   return Notification.findOneAndUpdate(
-    { _id: notificationId, userId },
+    { _id: notificationId, userId, channel: 'in_app' },
     { read: true },
     { new: true }
   );
+}
+
+async function markAllRead(userId) {
+  const result = await Notification.updateMany(
+    { userId, channel: 'in_app', read: false },
+    { read: true }
+  );
+  return result.modifiedCount;
 }
 
 module.exports = {
   notifyUser,
   notifyDoctors,
   listForUser,
-  markRead
+  unreadCount,
+  markRead,
+  markAllRead
 };

@@ -286,12 +286,6 @@ async function generatePrescriptionPdf({
 
     doc.text(finalDiagnosis || 'See clinical notes');
 
-    if (icd10Code) {
-
-      doc.text(`ICD-10: ${icd10Code} — ${icd10Display || ''}`);
-
-    }
-
 
 
     drawSectionTitle(doc, 'Medications / Treatment');

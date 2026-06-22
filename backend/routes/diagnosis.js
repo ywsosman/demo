@@ -19,6 +19,7 @@ const {
   isDoctorQueueStatus
 } = require('../utils/diagnosisStateMachine');
 const { lookupIcd10 } = require('../utils/icd10');
+const { formatSymptomsForDisplay } = require('../utils/formatSymptoms');
 const { generatePrescriptionPdf } = require('../utils/prescriptionPdf');
 const notificationService = require('../services/notificationService');
 const config = require('../config');
@@ -182,7 +183,14 @@ async function processSessionWithAI(sessionId, value, patientId) {
     `[AI] Session ${sessionId} ${predictionFailed ? 'queued for doctor review WITHOUT AI (prediction failed)' : 'processed and queued for doctor review'}`
   );
 
-  await notifyDoctorsSessionReady(session, patientId, symptomText, revPayload, predictionFailed);
+  await notifyDoctorsSessionReady(
+    session,
+    patientId,
+    symptomText,
+    revPayload,
+    predictionFailed,
+    value.selectedSymptoms
+  );
 }
 
 function isLockActive(session) {
@@ -243,11 +251,20 @@ function getPortalBaseUrl() {
 /**
  * Email + in-app alert for all doctors when a session is queued for review.
  */
-async function notifyDoctorsSessionReady(session, patientId, symptomText, revPayload, predictionFailed) {
+async function notifyDoctorsSessionReady(
+  session,
+  patientId,
+  symptomText,
+  revPayload,
+  predictionFailed,
+  selectedSymptoms
+) {
   const patient = await User.findById(patientId).lean();
   const patientName = patient
     ? `${patient.firstName || ''} ${patient.lastName || ''}`.trim()
     : 'A patient';
+
+  const displaySymptoms = formatSymptomsForDisplay(symptomText, selectedSymptoms);
 
   let aiSummary;
   if (predictionFailed) {
@@ -265,7 +282,7 @@ async function notifyDoctorsSessionReady(session, patientId, symptomText, revPay
   await notificationService.notifyDoctors({
     sessionId: session._id,
     title: 'New diagnosis ready for review',
-    message: `${patientName} has a case awaiting your review. ${aiSummary} Symptoms: ${symptomText}.`,
+    message: `${patientName} has a case awaiting your review. ${aiSummary} Symptoms: ${displaySymptoms}.`,
     channels: ['in_app', 'email'],
     actionUrl: portalUrl ? `${portalUrl}/doctor/dashboard` : undefined,
     actionLabel: 'Open doctor dashboard'
@@ -398,7 +415,8 @@ router.post('/:sessionId/resubmit', authMiddleware, requireRole(['patient']), as
       req.user._id,
       symptomText,
       revPayload,
-      resubmitPredictionFailed
+      resubmitPredictionFailed,
+      value.selectedSymptoms
     );
 
     await notificationService.notifyUser({
@@ -406,7 +424,7 @@ router.post('/:sessionId/resubmit', authMiddleware, requireRole(['patient']), as
       sessionId: session._id,
       title: 'Updated symptoms received',
       message: 'Your updated information has been sent for physician review.',
-      channels: ['in_app']
+      channels: ['in_app', 'email']
     });
 
     res.json({ message: 'Revision submitted', session: await enrichSession(session) });
