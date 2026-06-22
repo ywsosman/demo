@@ -7,10 +7,22 @@ const router = express.Router();
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const unreadOnly = req.query.unread === 'true';
-    const notifications = await notificationService.listForUser(req.user._id, { unreadOnly });
-    res.json({ notifications });
+    const [notifications, unreadCount] = await Promise.all([
+      notificationService.listForUser(req.user._id, { unreadOnly }),
+      notificationService.unreadCount(req.user._id)
+    ]);
+    res.json({ notifications, unreadCount });
   } catch (err) {
     res.status(500).json({ message: 'Error fetching notifications' });
+  }
+});
+
+router.patch('/read-all', authMiddleware, async (req, res) => {
+  try {
+    const count = await notificationService.markAllRead(req.user._id);
+    res.json({ markedRead: count });
+  } catch (err) {
+    res.status(500).json({ message: 'Error marking notifications as read' });
   }
 });
 
