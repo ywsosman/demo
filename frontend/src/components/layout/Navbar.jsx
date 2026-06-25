@@ -18,7 +18,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Safely get auth context with fallbacks
+  
   let user = null;
   let logout = () => {};
   let loading = false;
@@ -32,7 +32,7 @@ const Navbar = () => {
     console.warn('Auth context not available:', error);
   }
   
-  // Safely get theme context with fallbacks
+  
   let isDarkMode = false;
   let toggleTheme = () => {};
   
@@ -62,7 +62,7 @@ const Navbar = () => {
     };
   }, []);
 
-  // Build menu items for StaggeredMenu
+  
   const getMenuItems = () => {
     const items = [
       { 
@@ -159,7 +159,7 @@ const Navbar = () => {
       );
     }
 
-    // Add logout for authenticated users
+    
     if (user) {
       items.push({
         label: 'Logout',
@@ -177,16 +177,16 @@ const Navbar = () => {
 
   const menuItems = getMenuItems();
 
-  // Ref to access the StaggeredMenu's close function
+  
   const menuRef = useRef(null);
 
-  // Custom logo component for the menu
+  
   const LogoComponent = ({ onLogoClick }) => (
             <Link
               to="/"
       className="flex items-center space-x-2 group"
       onClick={(e) => {
-        // Close menu if it's open
+        
         if (onLogoClick) {
           onLogoClick();
         }

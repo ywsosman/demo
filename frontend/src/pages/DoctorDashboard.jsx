@@ -35,7 +35,7 @@ const DoctorDashboard = () => {
   const [reviewedSessions, setReviewedSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSession, setSelectedSession] = useState(null);
-  const [activeTab, setActiveTab] = useState('pending'); // 'pending' or 'reviewed'
+  const [activeTab, setActiveTab] = useState('pending'); 
   const [reviewData, setReviewData] = useState({
     doctorNotes: '',
     finalDiagnosis: '',
@@ -49,7 +49,7 @@ const DoctorDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    // Trigger fade-in animation immediately on mount
+    
     setTimeout(() => setIsVisible(true), 50);
   }, []);
 
@@ -58,13 +58,13 @@ const DoctorDashboard = () => {
       const [statsResponse, pendingResponse, allSessionsResponse] = await Promise.all([
         diagnosisAPI.getStats(),
         diagnosisAPI.getPending(),
-        diagnosisAPI.getAll() // Get all sessions for doctor
+        diagnosisAPI.getAll() 
       ]);
 
       setStats(statsResponse.data);
       setPendingSessions(pendingResponse.data.sessions || []);
       
-      // Filter for reviewed and closed sessions
+      
       const allSessions = allSessionsResponse.data.sessions || [];
       const reviewed = allSessions.filter(s => isReviewed(s.status));
       setReviewedSessions(reviewed);
@@ -135,7 +135,7 @@ const DoctorDashboard = () => {
       try {
         await diagnosisAPI.releaseLock(selectedSession.id || selectedSession._id);
       } catch {
-        /* ignore */
+        
       }
     }
     setSelectedSession(null);
@@ -207,7 +207,7 @@ const DoctorDashboard = () => {
             transition: 'opacity 800ms ease-out, transform 800ms ease-out'
           }}
         >
-          {/* Header */}
+          {}
           <div className="mb-6 sm:mb-8">
             <h1 className="page-title">
               Welcome, Dr. {user.firstName}
@@ -217,7 +217,7 @@ const DoctorDashboard = () => {
             </p>
           </div>
 
-          {/* Stats Overview */}
+          {}
           <div className="mb-8">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -263,9 +263,9 @@ const DoctorDashboard = () => {
           </div>
           </div>
 
-          {/* Sessions Tabs */}
+          {}
           <div>
-          {/* Tab Navigation */}
+          {}
           <div className="border-b border-gray-200 dark:border-gray-700 mb-4 sm:mb-6 overflow-x-auto">
               <nav className="-mb-px flex space-x-4 sm:space-x-8">
                 <button
@@ -303,7 +303,7 @@ const DoctorDashboard = () => {
               </nav>
             </div>
 
-          {/* Pending Tab Content */}
+          {}
           {activeTab === 'pending' && (
             <div className="animate-fadeIn">
                 {pendingSessions.length === 0 ? (
@@ -418,7 +418,7 @@ const DoctorDashboard = () => {
               </div>
           )}
 
-          {/* Reviewed Tab Content */}
+          {}
           {activeTab === 'reviewed' && (
             <div className="animate-fadeIn">
                 {reviewedSessions.length === 0 ? (
@@ -502,7 +502,7 @@ const DoctorDashboard = () => {
           </div>
         </div>
 
-        {/* Review Modal */}
+        {}
         {selectedSession && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 p-2 sm:p-4">
             <div className="relative top-4 sm:top-10 md:top-20 mx-auto p-4 sm:p-5 md:p-6 border border-slate-200 dark:border-slate-700 w-full sm:w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800 mb-4 animate-fadeIn">

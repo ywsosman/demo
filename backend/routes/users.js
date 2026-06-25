@@ -7,7 +7,7 @@ const { authMiddleware, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all patients (for doctors)
+
 router.get('/patients', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
     const patients = await User.find({ role: 'patient' })
@@ -15,7 +15,7 @@ router.get('/patients', authMiddleware, requireRole(['doctor']), async (req, res
       .sort({ createdAt: -1 })
       .lean();
 
-    // Get patient profiles and session counts
+    
     const patientsWithDetails = await Promise.all(patients.map(async (patient) => {
       const profile = await PatientProfile.findOne({ userId: patient._id }).lean();
       const sessionCount = await DiagnosisSession.countDocuments({ patientId: patient._id });
@@ -41,7 +41,7 @@ router.get('/patients', authMiddleware, requireRole(['doctor']), async (req, res
   }
 });
 
-// Get specific patient details (for doctors)
+
 router.get('/patients/:patientId', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
     const { patientId } = req.params;
@@ -56,13 +56,13 @@ router.get('/patients/:patientId', authMiddleware, requireRole(['doctor']), asyn
 
     const profile = await PatientProfile.findOne({ userId: patientId }).lean();
 
-    // Get patient's diagnosis sessions
+    
     const sessions = await DiagnosisSession.find({ patientId })
       .populate('doctorId', 'firstName lastName')
       .sort({ createdAt: -1 })
       .lean();
 
-    // Format sessions
+    
     const formattedSessions = sessions.map(session => ({
       ...session,
       id: session._id,
@@ -92,7 +92,7 @@ router.get('/patients/:patientId', authMiddleware, requireRole(['doctor']), asyn
   }
 });
 
-// Search patients by name or email (for doctors)
+
 router.get('/search/patients', authMiddleware, requireRole(['doctor']), async (req, res) => {
   try {
     const { q } = req.query;
@@ -116,7 +116,7 @@ router.get('/search/patients', authMiddleware, requireRole(['doctor']), async (r
       .limit(10)
       .lean();
 
-    // Get patient profiles
+    
     const patientsWithProfiles = await Promise.all(patients.map(async (patient) => {
       const profile = await PatientProfile.findOne({ userId: patient._id }).lean();
       
@@ -138,17 +138,17 @@ router.get('/search/patients', authMiddleware, requireRole(['doctor']), async (r
   }
 });
 
-// Get user activity logs
+
 router.get('/activity/:userId?', authMiddleware, async (req, res) => {
   try {
     const { userId } = req.params;
     const requestingUserId = req.user._id;
     const userRole = req.user.role;
 
-    // If no userId specified, get current user's activity
+    
     let targetUserId = userId || requestingUserId;
 
-    // Authorization check - patients can only see their own activity
+    
     if (userRole === 'patient' && targetUserId.toString() !== requestingUserId.toString()) {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
@@ -159,7 +159,7 @@ router.get('/activity/:userId?', authMiddleware, async (req, res) => {
       .limit(50)
       .lean();
 
-    // Format logs
+    
     const formattedLogs = logs.map(log => ({
       ...log,
       id: log._id,

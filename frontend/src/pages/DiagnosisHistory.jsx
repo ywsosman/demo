@@ -94,7 +94,7 @@ const DiagnosisHistory = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <div className="mb-6 sm:mb-8">
           <h1 className="page-title">Diagnosis History</h1>
           <p className="page-subtitle">
@@ -102,10 +102,10 @@ const DiagnosisHistory = () => {
           </p>
         </div>
 
-        {/* Filters and Search */}
+        {}
         <div className="mb-4 sm:mb-6 card p-3 sm:p-4">
           <div className="flex flex-col md:flex-row gap-3 sm:gap-4">
-            {/* Search */}
+            {}
             <div className="flex-1">
               <div className="relative">
                 <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none flex-shrink-0 z-10" />
@@ -120,7 +120,7 @@ const DiagnosisHistory = () => {
               </div>
             </div>
 
-            {/* Status Filter */}
+            {}
             <div className="md:w-48">
               <select
                 value={statusFilter}
@@ -135,7 +135,7 @@ const DiagnosisHistory = () => {
               </select>
             </div>
 
-            {/* New Session Button */}
+            {}
             <Link
               to="/patient/symptom-checker"
               className="btn-medical whitespace-nowrap"
@@ -147,14 +147,14 @@ const DiagnosisHistory = () => {
           </div>
         </div>
 
-        {/* Results Count */}
+        {}
         <div className="mb-4">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             Showing {filteredSessions.length} of {sessions.length} sessions
           </p>
         </div>
 
-        {/* Sessions List */}
+        {}
         {filteredSessions.length === 0 ? (
           <div className="card p-12 text-center">
             <span className="icon-chip icon-chip--neutral mx-auto w-14 h-14">
@@ -255,7 +255,7 @@ const DiagnosisHistory = () => {
           </div>
         )}
 
-        {/* Session Details Modal */}
+        {}
         {selectedSession && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 p-2 sm:p-4">
             <div className="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 border border-slate-200 dark:border-slate-700 w-full sm:w-11/12 md:w-3/4 lg:w-1/2 max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800 animate-fadeIn">
@@ -275,7 +275,7 @@ const DiagnosisHistory = () => {
                 </div>
 
                 <div className="space-y-4 max-h-96 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'auto' }}>
-                  {/* Basic Info */}
+                  {}
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">Session Information</h4>
                     <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
@@ -290,7 +290,7 @@ const DiagnosisHistory = () => {
                     </div>
                   </div>
 
-                  {/* Symptoms */}
+                  {}
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white">Symptoms</h4>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
@@ -298,7 +298,7 @@ const DiagnosisHistory = () => {
                     </p>
                   </div>
 
-                  {/* Additional Info */}
+                  {}
                   {selectedSession.additionalInfo && (
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">Additional Information</h4>
@@ -308,7 +308,7 @@ const DiagnosisHistory = () => {
                     </div>
                   )}
 
-                  {/* AI Predictions */}
+                  {}
                   {selectedSession.aiPrediction && selectedSession.aiPrediction.length > 0 && (
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">AI Analysis</h4>
@@ -338,7 +338,7 @@ const DiagnosisHistory = () => {
                     </div>
                   )}
 
-                  {/* Doctor's Review */}
+                  {}
                   {selectedSession.doctorNotes && (
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">Doctor's Review</h4>

@@ -4,10 +4,7 @@ import Lenis from 'lenis';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import 'lenis/dist/lenis.css';
 
-/**
- * Lenis only on the landing page (scroll-stack section).
- * Other routes use native scroll for snappy forms and dashboards.
- */
+
 const SmoothScroll = ({ children }) => {
   const { pathname } = useLocation();
 

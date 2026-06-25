@@ -38,10 +38,7 @@ function formatSymptomToken(token) {
   return trimmed;
 }
 
-/**
- * Format symptoms for human-readable notifications and emails.
- * Uses vocabulary labels when available; otherwise replaces underscores with spaces.
- */
+
 function formatSymptomsForDisplay(symptomText, selectedSymptoms) {
   if (Array.isArray(selectedSymptoms) && selectedSymptoms.length > 0) {
     return selectedSymptoms.map(formatSymptomToken).join(', ');

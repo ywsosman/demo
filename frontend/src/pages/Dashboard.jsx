@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      // Redirect to role-specific dashboard
+      
       if (user.role === 'patient') {
         navigate('/patient/dashboard', { replace: true });
       } else if (user.role === 'doctor') {

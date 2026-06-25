@@ -4,10 +4,7 @@ const config = require('../config');
 let transporter = null;
 let initialized = false;
 
-/**
- * Lazily build the SMTP transporter from config. Returns null when SMTP is not
- * configured so the caller can fall back to logging instead of crashing.
- */
+
 function getTransporter() {
   if (initialized) return transporter;
   initialized = true;
@@ -30,13 +27,7 @@ function getTransporter() {
   return transporter;
 }
 
-/**
- * Send an email. Falls back to a console stub when SMTP is not configured so
- * local/dev environments keep working without credentials.
- *
- * @param {Array} [attachments] nodemailer attachment objects, e.g.
- *   [{ filename: 'prescription.pdf', path: '/abs/path/to.pdf' }]
- */
+
 async function sendMail({ to, subject, text, html, attachments }) {
   if (!to) {
     console.warn('[email] No recipient address; skipping send.');

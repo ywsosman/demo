@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Extract unique symptoms from DiseaseAndSymptoms.csv and build a structured
-symptom vocabulary JSON used by the prediction pipeline and frontend dropdown.
-"""
 
 import csv
 import json
@@ -16,16 +12,12 @@ OUTPUT_PATH = Path(__file__).resolve().parent.parent / "symptom_vocabulary.json"
 
 
 def clean_symptom(raw: str) -> str:
-    """Normalise a raw symptom token from the CSV (strip, lowercase, collapse spaces)."""
     s = raw.strip().lower()
     s = re.sub(r"\s+", " ", s)
     return s
 
 
 def symptom_to_label(sym_id: str) -> str:
-    """Convert a snake_case symptom id to a human-readable label.
-    e.g.  'nodal_skin_eruptions' -> 'Nodal Skin Eruptions'
-    """
     return sym_id.replace("_", " ").strip().title()
 
 
@@ -63,7 +55,6 @@ def main():
             "raw": sym,
         })
 
-    # Build keyword index: individual words -> symptom ids (for fuzzy matching)
     keyword_index: dict[str, list[str]] = defaultdict(list)
     for sym in symptoms_sorted:
         words = sym.replace("_", " ").split()

@@ -14,8 +14,8 @@ const ScrollReveal = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Only set visible when entering viewport (scrolling down)
-        // Once visible, stay visible (don't toggle back to false)
+        
+        
         if (entry.isIntersecting && !isVisible) {
           setIsVisible(true);
         }

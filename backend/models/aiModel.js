@@ -5,22 +5,16 @@ const path = require('path');
 const PYTHON_SCRIPT_PATH = path.join(__dirname, '..', 'predict_disease.py');
 const VENV_PYTHON = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
 
-// Interpreter resolution order:
-//   1. Local venv (has torch, shap, lime, transformers installed).
-//   2. Explicit PYTHON_PATH (.env) — optional override.
-//   3. 'python' on PATH.
+
 const PYTHON_COMMAND = fs.existsSync(VENV_PYTHON)
   ? VENV_PYTHON
   : (process.env.PYTHON_PATH || 'python');
 
-// First request pays the one-time import + model-load cost (can be minutes on a
-// slow machine). Subsequent requests only pay inference + SHAP/LIME time.
-const LOAD_TIMEOUT = 600000;    // 10 minutes — worker cold start (imports + model load)
-const REQUEST_TIMEOUT = 180000; // 3 minutes — single warm prediction (SHAP + LIME)
 
-// Environment hardening for the Python subprocess. These reduce native crashes
-// (access violations / 0xC0000005) caused by duplicate OpenMP runtimes and
-// multi-threaded contention when loading torch on Windows.
+const LOAD_TIMEOUT = 600000;    
+const REQUEST_TIMEOUT = 180000; 
+
+
 const PYTHON_ENV = {
   ...process.env,
   KMP_DUPLICATE_LIB_OK: 'TRUE',
@@ -35,48 +29,41 @@ class AIModel {
     this.initialized = true;
     this.modelReady = false;
 
-    // Persistent worker state
+    
     this._worker = null;
-    this._ready = null;        // Promise that resolves once the worker prints __READY__
+    this._ready = null;        
     this._stdoutBuffer = '';
-    this._pending = null;      // { id, resolve, timer } for the in-flight request
+    this._pending = null;      
     this._reqCounter = 0;
 
-    // Serialize predictions: the worker processes one request at a time, so we
-    // keep a single in-flight request on the Node side too (simplest + robust).
+    
     this._chain = Promise.resolve();
 
-    // Clean up the worker when the backend shuts down.
+    
     const cleanup = () => this._killWorker();
     process.on('exit', cleanup);
     process.on('SIGINT', () => { cleanup(); process.exit(0); });
     process.on('SIGTERM', () => { cleanup(); process.exit(0); });
   }
 
-  /**
-   * Public entry point. Queues the prediction so requests never overlap.
-   */
+  
   predictDiagnosis(patientData) {
     const resultPromise = this._chain.then(
       () => this._predictDiagnosis(patientData),
       () => this._predictDiagnosis(patientData)
     );
-    // Advance the chain regardless of this call's outcome (swallow to avoid
-    // unhandled rejections and prevent retaining results in memory).
+    
+    
     this._chain = resultPromise.catch(() => {});
     return resultPromise;
   }
 
-  /**
-   * Predict disease from patient data.
-   * Accepts both free-text symptoms and structured dropdown selections.
-   */
+  
   async _predictDiagnosis(patientData) {
     try {
       const { symptoms, selectedSymptoms, severity, duration, additionalInfo } = patientData;
 
-      // Build the JSON payload for predict_disease.py (symptoms only — severity/duration
-      // are stored on the session for the doctor, not sent to the model)
+      
       const payload = {};
 
       if (selectedSymptoms && selectedSymptoms.length > 0) {
@@ -100,7 +87,7 @@ class AIModel {
         };
       }
 
-      // Use real precautions returned by the Python script (from Disease precaution.csv)
+      
       const precautions = pythonResult.precautions || [];
 
       const predictions = pythonResult.top_predictions.map(pred => ({
@@ -146,10 +133,7 @@ class AIModel {
     }
   }
 
-  /**
-   * Ensure the persistent Python worker is running and has finished loading the
-   * model. Returns a promise that resolves when the worker is ready.
-   */
+  
   _ensureWorker() {
     if (this._worker && this._ready) {
       return this._ready;
@@ -184,7 +168,7 @@ class AIModel {
           console.log('[AI] Worker ready — model loaded and warm.');
           resolve();
         }
-        // Surface a trimmed view of worker logs for debugging.
+        
         const trimmed = text.trim();
         if (trimmed) console.log('[AI worker]', trimmed.slice(-300));
       });
@@ -202,7 +186,7 @@ class AIModel {
         this._worker = null;
         this._ready = null;
         this.modelReady = false;
-        // Fail the in-flight request, if any, so the caller doesn't hang.
+        
         if (this._pending) {
           const { resolve: res, timer } = this._pending;
           clearTimeout(timer);
@@ -227,15 +211,12 @@ class AIModel {
       });
     });
 
-    // Avoid unhandled rejection noise; callers handle failures explicitly.
+    
     this._ready.catch(() => {});
     return this._ready;
   }
 
-  /**
-   * Parse newline-delimited JSON responses from the worker's stdout and resolve
-   * the matching in-flight request.
-   */
+  
   _onStdout(data) {
     this._stdoutBuffer += data.toString();
     let newlineIndex;
@@ -262,9 +243,7 @@ class AIModel {
     }
   }
 
-  /**
-   * Send a JSON payload to the persistent worker and await its response.
-   */
+  
   async callPythonPredictor(jsonPayload) {
     try {
       await this._ensureWorker();
@@ -283,7 +262,7 @@ class AIModel {
       const timer = setTimeout(() => {
         console.error(`[AI] Request ${id} timed out; restarting worker.`);
         this._pending = null;
-        this._killWorker(); // stuck worker — force a clean restart next call
+        this._killWorker(); 
         resolve({
           success: false,
           error: 'Prediction timeout',
@@ -313,7 +292,7 @@ class AIModel {
       try {
         this._worker.kill();
       } catch {
-        /* ignore */
+        
       }
       this._worker = null;
     }

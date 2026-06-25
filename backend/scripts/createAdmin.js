@@ -1,21 +1,10 @@
-/**
- * Create (or promote) an admin user.
- *
- * Usage:
- *   node scripts/createAdmin.js
- *   node scripts/createAdmin.js <email> <password> [firstName] [lastName]
- *
- * Or via env vars: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_FIRST_NAME, ADMIN_LAST_NAME
- *
- * Idempotent: if the email already exists, it is updated to an admin with the
- * given password instead of creating a duplicate.
- */
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/medical-diagnosis';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb:
 
 const email = (process.argv[2] || process.env.ADMIN_EMAIL || 'admin@medidiagnose.com').toLowerCase().trim();
 const password = process.argv[3] || process.env.ADMIN_PASSWORD || 'Admin@12345';

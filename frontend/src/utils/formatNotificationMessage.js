@@ -11,9 +11,7 @@ function formatSymptomToken(token) {
   return trimmed;
 }
 
-/**
- * Format symptom lists inside notification messages (handles legacy DB records).
- */
+
 export function formatNotificationMessage(message) {
   if (!message) return message;
 

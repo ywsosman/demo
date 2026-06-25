@@ -1,4 +1,4 @@
-/** MediDiagnose FSM labels (paper Section V-A) */
+
 export const SESSION_STATUS = {
   SUBMITTED: 'SUBMITTED',
   AI_PROCESSED: 'AI_PROCESSED',

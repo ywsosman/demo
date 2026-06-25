@@ -1,22 +1,8 @@
-# Python Requirements for Disease Prediction Model
-# Install with: pip install -r requirements.txt
-
-# ⚠️ IMPORTANT: Python Version Requirements ⚠️
-# REQUIRES: Python 3.12.x or 3.13.x
-# Python 3.14+ is NOT supported due to torch.compile incompatibility
-
-# Core ML libraries
 torch>=2.9.0
 transformers>=4.45.0
 shap>=0.46.0
 lime>=0.2.0.1
-
-# Additional dependencies
 numpy>=1.26.0
 scikit-learn>=1.5.0
 networkx>=3.0
 scipy>=1.14.0
-
-# Optional: CUDA support (uncomment if using GPU)
-# torch>=2.9.0+cu124 -f https://download.pytorch.org/whl/torch_stable.html
-

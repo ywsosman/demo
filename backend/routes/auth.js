@@ -10,7 +10,6 @@ const { authMiddleware } = require('../middleware/auth');
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secure_jwt_secret_key_change_in_production';
 
-// Validation schemas
 const registerSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
@@ -24,10 +23,8 @@ const loginSchema = Joi.object({
   password: Joi.string().required()
 });
 
-// Register endpoint
 router.post('/register', async (req, res) => {
   try {
-    // Validate input
     const { error, value } = registerSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
@@ -35,16 +32,13 @@ router.post('/register', async (req, res) => {
 
     const { email, password, firstName, lastName, role } = value;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
     const user = await User.create({
       email,
       password: hashedPassword,
@@ -53,14 +47,12 @@ router.post('/register', async (req, res) => {
       lastName
     });
 
-    // Create role-specific profile
     if (role === 'patient') {
       await PatientProfile.create({ userId: user._id });
     } else if (role === 'doctor') {
       await DoctorProfile.create({ userId: user._id });
     }
 
-    // Generate JWT token
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
@@ -80,10 +72,8 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login endpoint
 router.post('/login', async (req, res) => {
   try {
-    // Validate input
     const { error, value } = loginSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
@@ -91,23 +81,19 @@ router.post('/login', async (req, res) => {
 
     const { email, password } = value;
 
-    // Find user
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
-    // Log audit event
     const AuditLog = require('../models/AuditLog');
     await AuditLog.create({
       userId: user._id,
@@ -132,7 +118,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get current user profile
 router.get('/profile', authMiddleware, async (req, res) => {
   try {
     const user = req.user;
@@ -154,7 +139,6 @@ router.get('/profile', authMiddleware, async (req, res) => {
   }
 });
 
-// Update user profile
 router.put('/profile', authMiddleware, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -162,7 +146,7 @@ router.put('/profile', authMiddleware, async (req, res) => {
 
     if (role === 'patient') {
       const { age, gender, medicalHistory, allergies, currentMedications, emergencyContact } = req.body;
-      
+
       await PatientProfile.findOneAndUpdate(
         { userId },
         { age, gender, medicalHistory, allergies, currentMedications, emergencyContact },
@@ -170,7 +154,7 @@ router.put('/profile', authMiddleware, async (req, res) => {
       );
     } else if (role === 'doctor') {
       const { specialization, licenseNumber, yearsOfExperience, hospital } = req.body;
-      
+
       await DoctorProfile.findOneAndUpdate(
         { userId },
         { specialization, licenseNumber, yearsOfExperience, hospital },

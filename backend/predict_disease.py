@@ -1,18 +1,4 @@
 #!/usr/bin/env python3
-"""
-Disease Prediction Script with SHAP + LIME Explanations.
-
-Called by the Node.js backend (models/aiModel.js) as a subprocess.
-Accepts either:
-  - structured symptoms  (comma-separated snake_case ids from the dropdown)
-  - free-text description (natural language)
-and normalises the input before inference.
-
-Input  (argv):   python predict_disease.py '<json>'
-  where <json> = {"text": "...", "selectedSymptoms": ["itching","skin_rash"]}
-
-Output (stdout):  single JSON object with prediction + explanations.
-"""
 
 import csv
 import json
@@ -24,8 +10,6 @@ from pathlib import Path
 
 try:
     import torch
-    # Python 3.14+ does not support torch.compile; patch it to a no-op
-    # decorator so that lazy imports inside transformers don't crash.
     if sys.version_info >= (3, 14) and not getattr(torch, '_compile_patched', False):
         _orig_compile = torch.compile
         def _noop_compile(fn=None, **kwargs):
@@ -51,18 +35,9 @@ warnings.filterwarnings('ignore')
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-# Temperature scaling for calibration. The model trained on the near-deterministic
-# symptom→disease dataset produces saturated logits, so raw softmax collapses to
-# ~100% / 0% / 0%. Dividing logits by T > 1 softens the distribution into a more
-# realistic confidence spread. Tune via PREDICTION_TEMPERATURE (1.0 = disabled).
 TEMPERATURE = float(os.environ.get('PREDICTION_TEMPERATURE', '2.5'))
 
-# ---------------------------------------------------------------------------
-# Symptom preprocessor
-# ---------------------------------------------------------------------------
-
 class SymptomPreprocessor:
-    """Normalise user input so the model receives text that resembles training data."""
 
     def __init__(self, vocab_path: Path):
         with open(vocab_path, encoding="utf-8") as f:
@@ -72,20 +47,11 @@ class SymptomPreprocessor:
         self.symptom_labels: dict[str, str] = {s["id"]: s["label"] for s in vocab["symptoms"]}
         self.keyword_index: dict[str, list[str]] = vocab.get("keyword_index", {})
 
-        # Build a flat set of all keywords for quick lookup
         self._label_words: dict[str, set[str]] = {}
         for sid in self.symptom_ids:
             self._label_words[sid] = set(sid.replace("_", " ").lower().split())
 
-    # -- public API ----------------------------------------------------------
-
     def preprocess(self, text: str | None, selected_symptoms: list[str] | None) -> str:
-        """Return a normalised symptom string ready for the model.
-
-        If *selected_symptoms* is supplied (from the dropdown), we use those
-        directly in snake_case format which matches training data exactly.
-        Otherwise we fuzzy-match the free-text against our vocabulary.
-        """
         if selected_symptoms:
             valid = [s for s in selected_symptoms if s in set(self.symptom_ids)]
             if valid:
@@ -98,11 +64,9 @@ class SymptomPreprocessor:
         if matched:
             return ", ".join(matched)
 
-        # Fallback: return cleaned text so the model at least sees something
         return text.strip().lower()
 
     def get_matched_symptoms(self, text: str | None, selected_symptoms: list[str] | None) -> list[dict]:
-        """Return list of matched symptom objects with id + label for the frontend."""
         if selected_symptoms:
             valid = [s for s in selected_symptoms if s in set(self.symptom_ids)]
             return [{"id": s, "label": self.symptom_labels[s]} for s in valid]
@@ -113,10 +77,7 @@ class SymptomPreprocessor:
         matched = self._match_free_text(text)
         return [{"id": s, "label": self.symptom_labels[s]} for s in matched]
 
-    # -- private -------------------------------------------------------------
-
     def _match_free_text(self, text: str) -> list[str]:
-        """Fuzzy-match free text against the symptom vocabulary."""
         text_lower = text.lower()
         text_words = set(re.findall(r"[a-z]+", text_lower))
 
@@ -126,23 +87,19 @@ class SymptomPreprocessor:
             overlap = text_words & label_words
             if not overlap:
                 continue
-            # Score = fraction of label words found in input text
             score = len(overlap) / len(label_words)
-            # Boost for exact substring match
             readable = sid.replace("_", " ")
             if readable in text_lower:
                 score = 1.0
             if score >= 0.5:
                 scored.append((sid, score))
 
-        # Also try keyword index for single-word hits
         for word in text_words:
             if word in self.keyword_index:
                 for sid in self.keyword_index[word]:
                     if not any(s[0] == sid for s in scored):
                         scored.append((sid, 0.5))
 
-        # Deduplicate and sort by score descending
         seen = set()
         unique: list[tuple[str, float]] = []
         for sid, score in sorted(scored, key=lambda x: -x[1]):
@@ -152,13 +109,7 @@ class SymptomPreprocessor:
 
         return [sid for sid, _ in unique]
 
-
-# ---------------------------------------------------------------------------
-# Precaution loader
-# ---------------------------------------------------------------------------
-
 class PrecautionLoader:
-    """Load disease precautions from the CSV so we can return real advice."""
 
     def __init__(self, csv_path: Path):
         self.precautions: dict[str, list[str]] = {}
@@ -166,7 +117,7 @@ class PrecautionLoader:
             return
         with open(csv_path, newline="", encoding="utf-8") as f:
             reader = csv.reader(f)
-            next(reader)  # skip header
+            next(reader)
             for row in reader:
                 disease = row[0].strip()
                 precs = [c.strip() for c in row[1:] if c.strip()]
@@ -176,16 +127,10 @@ class PrecautionLoader:
     def get(self, disease_name: str) -> list[str]:
         if disease_name in self.precautions:
             return self.precautions[disease_name]
-        # Try case-insensitive lookup
         for key, val in self.precautions.items():
             if key.lower() == disease_name.lower():
                 return val
         return []
-
-
-# ---------------------------------------------------------------------------
-# Predictor
-# ---------------------------------------------------------------------------
 
 class DiseasePredictor:
     def __init__(self, model_path: str, vocab_path: Path, precaution_csv: Path):
@@ -230,15 +175,7 @@ class DiseasePredictor:
             print(traceback.format_exc(), file=sys.stderr)
             raise Exception(f"Failed to load model from {model_path}: {e}")
 
-    # -- scoring helper ------------------------------------------------------
-
     def _predict_scores(self, text: str) -> list[dict]:
-        """Run the model and apply temperature scaling to produce calibrated scores.
-
-        Bypasses the pipeline's built-in softmax so we can divide the logits by
-        TEMPERATURE before normalising, giving a realistic confidence spread
-        instead of the saturated ~100%/0%/0% output.
-        """
         device = next(self.model.parameters()).device
         enc = self.tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
         enc = {k: v.to(device) for k, v in enc.items()}
@@ -253,10 +190,7 @@ class DiseasePredictor:
             for i in range(len(probs))
         ]
 
-    # -- LIME helper ---------------------------------------------------------
-
     def _lime_predict_proba(self, texts: list[str]) -> np.ndarray:
-        """Adapter: LIME needs a function that returns (n_samples, n_classes)."""
         results = self.clf_pipeline(list(texts))
         proba = []
         for res in results:
@@ -266,11 +200,8 @@ class DiseasePredictor:
             proba.append(scores)
         return np.array(proba)
 
-    # -- predict -------------------------------------------------------------
-
     def predict(self, raw_text: str | None, selected_symptoms: list[str] | None):
         try:
-            # --- Preprocessing ---
             normalised = self.preprocessor.preprocess(raw_text, selected_symptoms)
             matched = self.preprocessor.get_matched_symptoms(raw_text, selected_symptoms)
 
@@ -283,7 +214,6 @@ class DiseasePredictor:
 
             print(f"Normalised input: {normalised}", file=sys.stderr)
 
-            # --- Model inference (temperature-scaled for calibrated confidence) ---
             predictions = self._predict_scores(normalised)
 
             best = max(predictions, key=lambda x: x['score'])
@@ -292,12 +222,10 @@ class DiseasePredictor:
 
             top_predictions = sorted(predictions, key=lambda x: x['score'], reverse=True)[:3]
 
-            # --- Explainability (SHAP + LIME merged into unified scores) ---
             shap_result = self._compute_shap(normalised, predicted_disease)
             lime_result = self._compute_lime(normalised, predicted_disease)
             unified = self._merge_explanations(shap_result['word_importance'], lime_result)
 
-            # --- Precautions ---
             precautions = self.precaution_loader.get(predicted_disease)
 
             return {
@@ -323,8 +251,6 @@ class DiseasePredictor:
                 'error': str(e),
                 'message': 'Failed to generate prediction',
             }
-
-    # -- explainability helpers ----------------------------------------------
 
     def _compute_shap(self, text: str, predicted_disease: str) -> dict:
         shap_values = self.shap_explainer([text])
@@ -375,14 +301,6 @@ class DiseasePredictor:
             return {'features': [], 'score': None}
 
     def _merge_explanations(self, shap_items: list[dict], lime_result: dict) -> list[dict]:
-        """Combine SHAP and LIME into a single unified importance score per word.
-
-        Strategy: normalise both sets of scores to [0, 1] range by absolute max,
-        then average them.  If only one method produced a score for a word, use
-        that score alone.  The user sees one coherent ranking without needing to
-        know which method contributed what.
-        """
-        # Build word -> raw scores lookup
         shap_map: dict[str, float] = {}
         for item in shap_items:
             w = item['word'].lower().strip()
@@ -397,9 +315,8 @@ class DiseasePredictor:
 
         all_words = set(shap_map.keys()) | set(lime_map.keys())
         if not all_words:
-            return shap_items  # fallback
+            return shap_items
 
-        # Normalise each set independently by its absolute max
         shap_abs_max = max((abs(v) for v in shap_map.values()), default=1.0) or 1.0
         lime_abs_max = max((abs(v) for v in lime_map.values()), default=1.0) or 1.0
 
@@ -429,11 +346,6 @@ class DiseasePredictor:
         merged.sort(key=lambda x: abs(x['importance']), reverse=True)
         return merged[:10]
 
-
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
-
 def _resolve_paths():
     script_dir = Path(__file__).resolve().parent
     model_path = os.environ.get('MODEL_PATH', str(script_dir / 'symptom_disease_model'))
@@ -441,9 +353,7 @@ def _resolve_paths():
     precaution_csv = script_dir.parent / 'Disease precaution.csv'
     return model_path, vocab_path, precaution_csv
 
-
 def _parse_request(raw_arg: str):
-    """Accept either plain text (backward compat) or a JSON object."""
     try:
         parsed = json.loads(raw_arg)
         if isinstance(parsed, dict):
@@ -452,19 +362,7 @@ def _parse_request(raw_arg: str):
     except json.JSONDecodeError:
         return raw_arg, None
 
-
 def serve():
-    """Persistent worker mode.
-
-    Load the model ONCE, then read newline-delimited JSON requests from stdin and
-    write a single-line JSON response per request to stdout. This avoids paying
-    the (very expensive) import + model-load cost on every prediction.
-
-    Protocol:
-      stdin  : {"id": <any>, "text": "...", "selectedSymptoms": [...]}\n
-      stdout : {"id": <same>, ...prediction...}\n   (one line, flushed)
-      stderr : human-readable logs + a "__READY__" marker once loaded.
-    """
     model_path, vocab_path, precaution_csv = _resolve_paths()
 
     if not Path(model_path).exists():
@@ -480,7 +378,6 @@ def serve():
         print(json.dumps({'success': False, 'error': str(e)}), flush=True)
         sys.exit(1)
 
-    # Signal readiness to the parent process (Node) on stderr.
     print('__READY__', file=sys.stderr, flush=True)
 
     for line in sys.stdin:
@@ -498,9 +395,7 @@ def serve():
             result['id'] = req_id
         print(json.dumps(result), flush=True)
 
-
 def main():
-    # Persistent worker mode: `python predict_disease.py --serve`
     if len(sys.argv) >= 2 and sys.argv[1] == '--serve':
         serve()
         return
@@ -541,7 +436,6 @@ def main():
             'message': 'Unexpected error during prediction',
         }))
         sys.exit(1)
-
 
 if __name__ == '__main__':
     main()

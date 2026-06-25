@@ -106,10 +106,7 @@ function buildRevisionPayload(aiPrediction, symptomText, value) {
   };
 }
 
-/**
- * Run AI prediction and advance session to PENDING_DOCTOR_REVIEW.
- * Called in the background after the patient receives an immediate submit response.
- */
+
 async function processSessionWithAI(sessionId, value, patientId) {
   const session = await DiagnosisSession.findById(sessionId);
   if (!session) {
@@ -124,8 +121,7 @@ async function processSessionWithAI(sessionId, value, patientId) {
 
   let aiPrediction = await aiModel.predictDiagnosis(predictArgs);
 
-  // The Python engine can crash transiently (native segfault / OOM). Retry once
-  // before giving up so a single hiccup doesn't leave the session without AI input.
+  
   if ((!aiPrediction.predictions || aiPrediction.predictions.length === 0) && aiPrediction.error) {
     console.warn(`[AI] Prediction failed for session ${sessionId}, retrying once: ${aiPrediction.error}`);
     await new Promise((r) => setTimeout(r, 2000));
@@ -197,10 +193,7 @@ function isLockActive(session) {
   return session.lockedUntil && new Date(session.lockedUntil) > new Date();
 }
 
-/**
- * Resolve the revision a doctor is reviewing. Backfills from session data for
- * legacy sessions created before DiagnosisRevision records existed.
- */
+
 async function ensureLatestRevision(session) {
   const revNum = session.currentRevisionNumber || 1;
 
@@ -248,9 +241,7 @@ function getPortalBaseUrl() {
   return null;
 }
 
-/**
- * Email + in-app alert for all doctors when a session is queued for review.
- */
+
 async function notifyDoctorsSessionReady(
   session,
   patientId,
@@ -334,7 +325,7 @@ router.post('/submit', authMiddleware, requireRole(['patient']), async (req, res
       channels: ['in_app', 'email']
     });
 
-    // Respond immediately — AI prediction (BERT + SHAP + LIME) runs in the background
+    
     res.status(201).json({
       message: 'Diagnosis submitted. Your diagnosis will be reviewed soon.',
       sessionId: session._id,

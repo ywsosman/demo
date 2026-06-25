@@ -21,7 +21,6 @@ import DoctorPatients from './pages/DoctorPatients';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageUsers from './pages/ManageUsers';
 
-// Protected Route Component
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { user, loading } = useAuth();
   usePageLoading(loading);
@@ -41,7 +40,6 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   return children;
 };
 
-// Public Route Component (redirect to dashboard if authenticated)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
   usePageLoading(loading);
@@ -65,14 +63,14 @@ function App() {
           <LoadingOverlayProvider>
           <SmoothScroll>
           <div className="min-h-screen relative transition-colors duration-300">
-            {/* Aurora Background */}
+            {}
             <AuroraBackground />
             
             <div className="relative z-10">
               <Navbar />
               <main className="pt-[88px] xl:pt-20">
             <Routes>
-              {/* Public routes */}
+              {}
               <Route path="/" element={<Landing />} />
               <Route 
                 path="/login" 
@@ -91,7 +89,7 @@ function App() {
                 } 
               />
 
-              {/* Protected routes */}
+              {}
               <Route 
                 path="/dashboard" 
                 element={
@@ -101,7 +99,7 @@ function App() {
                 } 
               />
               
-              {/* Patient routes */}
+              {}
               <Route 
                 path="/patient/dashboard" 
                 element={
@@ -135,7 +133,7 @@ function App() {
                 } 
               />
 
-              {/* Doctor routes */}
+              {}
               <Route 
                 path="/doctor/dashboard" 
                 element={
@@ -161,7 +159,7 @@ function App() {
                 } 
               />
 
-              {/* Admin routes */}
+              {}
               <Route 
                 path="/admin/dashboard" 
                 element={
@@ -179,12 +177,12 @@ function App() {
                 } 
               />
 
-              {/* Catch all route */}
+              {}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
               </main>
               
-              {/* Toast notifications */}
+              {}
               <Toaster 
                 position="top-center"
                 toastOptions={{

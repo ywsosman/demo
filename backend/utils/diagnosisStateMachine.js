@@ -1,7 +1,4 @@
-/**
- * MediDiagnose diagnosis session FSM (paper Section V-A).
- * Illegal transitions return { ok: false, code, message }.
- */
+
 
 const STATES = {
   SUBMITTED: 'SUBMITTED',
@@ -13,7 +10,7 @@ const STATES = {
   SOFT_DELETED: 'SOFT_DELETED'
 };
 
-/** Map legacy DB values to paper states */
+
 const LEGACY_MAP = {
   pending: STATES.PENDING_DOCTOR_REVIEW,
   reviewed: STATES.REVIEWED,
@@ -57,7 +54,7 @@ function assertTransition(fromStatus, toStatus) {
   return { ok: true, from, to };
 }
 
-/** Doctor queue: awaiting or in active review */
+
 function isDoctorQueueStatus(status) {
   const s = normalizeStatus(status);
   return [

@@ -2,10 +2,10 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-// Auth Context
+
 const AuthContext = createContext();
 
-// Action types
+
 const AUTH_ACTIONS = {
   LOGIN_START: 'LOGIN_START',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
@@ -18,7 +18,7 @@ const AUTH_ACTIONS = {
   UPDATE_PROFILE: 'UPDATE_PROFILE'
 };
 
-// Initial state
+
 const initialState = {
   user: null,
   token: localStorage.getItem('token'),
@@ -26,7 +26,7 @@ const initialState = {
   error: null
 };
 
-// Auth reducer
+
 const authReducer = (state, action) => {
   switch (action.type) {
     case AUTH_ACTIONS.LOGIN_START:
@@ -87,19 +87,19 @@ const authReducer = (state, action) => {
   }
 };
 
-// Auth Provider
+
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Load user on app start - with better error handling
+  
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          // Add timeout to prevent hanging
+          
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+          const timeoutId = setTimeout(() => controller.abort(), 5000); 
           
           const response = await api.get('/auth/profile', {
             signal: controller.signal
@@ -113,12 +113,12 @@ export const AuthProvider = ({ children }) => {
           });
         } catch (error) {
           console.warn('Failed to load user, clearing token:', error.message);
-          // Clear invalid token immediately
+          
           localStorage.removeItem('token');
           dispatch({ type: AUTH_ACTIONS.LOGOUT });
         }
       } else {
-        // No token, ensure we're in logged out state
+        
         dispatch({ type: AUTH_ACTIONS.LOGOUT });
       }
     };
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  // Login function
+  
   const login = async (email, password) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
     
@@ -152,7 +152,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register function
+  
   const register = async (userData) => {
     dispatch({ type: AUTH_ACTIONS.REGISTER_START });
     
@@ -178,9 +178,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
+  
   const logout = () => {
-    // Clear all welcome animation session storage for all users
+    
     const keysToRemove = [];
     for (let i = 0; i < sessionStorage.length; i++) {
       const key = sessionStorage.key(i);
@@ -194,7 +194,7 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
-  // Update profile function
+  
   const updateProfile = async (profileData) => {
     try {
       await api.put('/auth/profile', profileData);
@@ -229,7 +229,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth context
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

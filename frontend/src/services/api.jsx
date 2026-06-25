@@ -2,16 +2,14 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 120000, // 120 seconds (2 minutes) - needed for first AI model prediction
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -25,14 +23,12 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
@@ -40,7 +36,6 @@ api.interceptors.response.use(
   }
 );
 
-// API methods
 export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
@@ -80,4 +75,3 @@ export const userAPI = {
 };
 
 export default api;
-

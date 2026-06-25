@@ -11,10 +11,10 @@ export default function Orb({
   const ctnDom = useRef(null);
   const { isDarkMode } = useTheme();
   
-  // Blue/Cyan for light mode (~190), Mint/Green for dark mode (~150)
+  
   const hue = isDarkMode ? 150 : 190;
 
-  const vert = /* glsl */ `
+  const vert =  `
     precision highp float;
     attribute vec2 position;
     attribute vec2 uv;
@@ -25,7 +25,7 @@ export default function Orb({
     }
   `;
 
-  const frag = /* glsl */ `
+  const frag =  `
     precision highp float;
 
     uniform float iTime;
@@ -116,7 +116,7 @@ export default function Orb({
       return intensity / (1.0 + dist * dist * attenuation);
     }
 
-    // Glint function - creates moving sparkles
+    
     float glint(vec2 uv, vec2 pos, float time) {
       float d = distance(uv, pos);
       float sparkle = smoothstep(0.03, 0.0, d);
@@ -153,48 +153,47 @@ export default function Orb({
       col = mix(color3, col, v0);
       col = (col + v1) * v2 * v3;
       
-      // Add aesthetic glints with contrasting color
-      // Contrasting colors: amber/gold for jade/turquoise
-      vec3 glintColor = vec3(1.0, 0.8, 0.3); // Warm golden color
       
-      // Create multiple moving glints at different speeds and positions
+      vec3 glintColor = vec3(1.0, 0.8, 0.3); 
+      
+      
       float glintTime = iTime * 0.8;
       
-      // Glint 1 - orbiting
+      
       vec2 glintPos1 = vec2(
         cos(glintTime * 1.2 + 0.0) * 0.5,
         sin(glintTime * 1.2 + 0.0) * 0.5
       );
       float g1 = glint(uv, glintPos1, iTime);
       
-      // Glint 2 - counter-orbiting
+      
       vec2 glintPos2 = vec2(
         cos(-glintTime * 0.9 + 2.0) * 0.65,
         sin(-glintTime * 0.9 + 2.0) * 0.65
       );
       float g2 = glint(uv, glintPos2, iTime + 1.0);
       
-      // Glint 3 - figure-8 pattern
+      
       vec2 glintPos3 = vec2(
         sin(glintTime * 1.5) * 0.4,
         sin(glintTime * 3.0) * 0.3
       );
       float g3 = glint(uv, glintPos3, iTime + 2.0);
       
-      // Glint 4 - slower outer orbit
+      
       vec2 glintPos4 = vec2(
         cos(glintTime * 0.6 + 4.0) * 0.75,
         sin(glintTime * 0.6 + 4.0) * 0.75
       );
       float g4 = glint(uv, glintPos4, iTime + 3.5);
       
-      // Combine glints
+      
       float totalGlint = (g1 + g2 + g3 + g4) * 0.8;
       
-      // Only show glints within the orb boundary
+      
       totalGlint *= smoothstep(1.0, 0.8, len);
       
-      // Add glints to the final color
+      
       col += glintColor * totalGlint;
       
       col = clamp(col, 0.0, 1.0);
@@ -254,7 +253,7 @@ export default function Orb({
 
     function resize() {
       if (!container) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2 for mobile performance
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); 
       const width = container.clientWidth;
       const height = container.clientHeight;
       renderer.setSize(width * dpr, height * dpr);
@@ -312,7 +311,7 @@ export default function Orb({
     };
 
     const handleTouchMove = e => {
-      e.preventDefault(); // Prevent scrolling when touching the orb
+      e.preventDefault(); 
       const rect = container.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
@@ -382,7 +381,7 @@ export default function Orb({
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [hue, hoverIntensity, rotateOnHover, forceHoverState, isDarkMode]);
 
   return <div ref={ctnDom} className="orb-container" />;

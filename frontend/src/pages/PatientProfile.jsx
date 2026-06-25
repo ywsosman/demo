@@ -58,7 +58,7 @@ const PatientProfile = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -104,7 +104,7 @@ const PatientProfile = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <div className="mb-6 sm:mb-8">
           <h1 className="page-title">My Profile</h1>
           <p className="page-subtitle">
@@ -113,7 +113,7 @@ const PatientProfile = () => {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* Basic Information (Read-only) */}
+          {}
           <div className="card p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -159,7 +159,7 @@ const PatientProfile = () => {
             </div>
           </div>
 
-          {/* Medical Information */}
+          {}
           <form onSubmit={handleSubmit} className="card p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Medical Information</h2>
             
@@ -298,7 +298,7 @@ const PatientProfile = () => {
             </div>
           </form>
 
-          {/* Privacy Notice */}
+          {}
           <div className="rounded-xl border border-teal-200/70 dark:border-teal-500/20 bg-teal-50/70 dark:bg-teal-500/10 p-4">
             <div className="flex gap-3">
               <span className="icon-chip icon-chip--info w-9 h-9 shrink-0">

@@ -91,7 +91,7 @@ const DoctorPatients = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <div className="mb-6 sm:mb-8">
           <h1 className="page-title">My Patients</h1>
           <p className="page-subtitle">
@@ -99,10 +99,10 @@ const DoctorPatients = () => {
           </p>
         </div>
 
-        {/* Filters and Search */}
+        {}
         <div className="card p-4 sm:p-5 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            {/* Search */}
+            {}
             <div className="flex-1">
               <div className="relative">
                 <MagnifyingGlassIcon className="h-5 w-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10" />
@@ -116,7 +116,7 @@ const DoctorPatients = () => {
               </div>
             </div>
 
-            {/* Status Filter */}
+            {}
             <div className="sm:w-48">
               <select
                 value={filterStatus}
@@ -130,7 +130,7 @@ const DoctorPatients = () => {
               </select>
             </div>
 
-            {/* Sort */}
+            {}
             <div className="sm:w-48">
               <select
                 value={sortBy}
@@ -145,7 +145,7 @@ const DoctorPatients = () => {
           </div>
         </div>
 
-        {/* Patients List */}
+        {}
         <div className="card overflow-hidden">
           {sortedPatients.length === 0 ? (
             <div className="text-center py-12">
@@ -221,7 +221,7 @@ const DoctorPatients = () => {
           )}
         </div>
 
-        {/* Summary Stats */}
+        {}
         {sortedPatients.length > 0 && (
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="stat-card">
