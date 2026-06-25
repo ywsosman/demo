@@ -9,21 +9,21 @@ const { authMiddleware, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-// All admin routes require authentication and admin role
+
 router.use(authMiddleware);
 router.use(requireRole(['admin']));
 
-// Get dashboard statistics
+
 router.get('/stats', async (req, res) => {
   try {
     const totalDoctors = await User.countDocuments({ role: 'doctor' });
     const totalPatients = await User.countDocuments({ role: 'patient' });
     const totalDiagnoses = await DiagnosisSession.countDocuments();
     const recentDiagnoses = await DiagnosisSession.countDocuments({
-      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Last 7 days
+      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
     });
 
-    // Get recent activity
+    
     const recentActivity = await AuditLog.find()
       .sort({ createdAt: -1 })
       .limit(10)
@@ -44,18 +44,18 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// Get all users (with filters)
+
 router.get('/users', async (req, res) => {
   try {
     const { role, search, page = 1, limit = 10 } = req.query;
     const query = {};
 
-    // Filter by role
+    
     if (role && role !== 'all') {
       query.role = role;
     }
 
-    // Search by name or email
+    
     if (search) {
       query.$or = [
         { email: { $regex: search, $options: 'i' } },
@@ -74,7 +74,7 @@ router.get('/users', async (req, res) => {
 
     const total = await User.countDocuments(query);
 
-    // Get profiles for each user
+    
     const usersWithProfiles = await Promise.all(users.map(async (user) => {
       let profile = null;
       if (user.role === 'doctor') {
@@ -103,7 +103,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Get single user by ID
+
 router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
@@ -119,7 +119,7 @@ router.get('/users/:id', async (req, res) => {
       profile = await PatientProfile.findOne({ userId: user._id });
     }
 
-    // Get user's diagnosis sessions if patient
+    
     let diagnosisSessions = [];
     if (user.role === 'patient') {
       diagnosisSessions = await DiagnosisSession.find({ patientId: user._id })
@@ -138,26 +138,26 @@ router.get('/users/:id', async (req, res) => {
   }
 });
 
-// Create new user
+
 router.post('/users', async (req, res) => {
   try {
     const { email, password, firstName, lastName, role, profileData } = req.body;
 
-    // Validate required fields
+    
     if (!email || !password || !firstName || !lastName || !role) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Check if user already exists
+    
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    // Hash password
+    
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
+    
     const user = await User.create({
       email,
       password: hashedPassword,
@@ -166,7 +166,7 @@ router.post('/users', async (req, res) => {
       lastName
     });
 
-    // Create role-specific profile
+    
     if (role === 'patient') {
       await PatientProfile.create({ 
         userId: user._id,
@@ -179,7 +179,7 @@ router.post('/users', async (req, res) => {
       });
     }
 
-    // Log audit event
+    
     await AuditLog.create({
       userId: req.user._id,
       action: 'USER_CREATED',
@@ -202,7 +202,7 @@ router.post('/users', async (req, res) => {
   }
 });
 
-// Update user
+
 router.put('/users/:id', async (req, res) => {
   try {
     const { firstName, lastName, email, role, profileData } = req.body;
@@ -212,12 +212,12 @@ router.put('/users/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Prevent admin from demoting themselves
+    
     if (user._id.toString() === req.user._id.toString() && user.role === 'admin' && role !== 'admin') {
       return res.status(400).json({ message: 'Cannot change your own admin role' });
     }
 
-    // Check if email is being changed and if it's already taken
+    
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -225,14 +225,14 @@ router.put('/users/:id', async (req, res) => {
       }
     }
 
-    // Update basic user info
+    
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
     if (email) user.email = email;
     
-    // Handle role change
+    
     if (role && role !== user.role) {
-      // Delete old profile
+      
       if (user.role === 'doctor') {
         await DoctorProfile.findOneAndDelete({ userId: user._id });
       } else if (user.role === 'patient') {
@@ -241,14 +241,14 @@ router.put('/users/:id', async (req, res) => {
 
       user.role = role;
 
-      // Create new profile
+      
       if (role === 'doctor') {
         await DoctorProfile.create({ userId: user._id, ...profileData });
       } else if (role === 'patient') {
         await PatientProfile.create({ userId: user._id, ...profileData });
       }
     } else {
-      // Update existing profile
+      
       if (profileData) {
         if (user.role === 'doctor') {
           await DoctorProfile.findOneAndUpdate(
@@ -268,7 +268,7 @@ router.put('/users/:id', async (req, res) => {
 
     await user.save();
 
-    // Log audit event
+    
     await AuditLog.create({
       userId: req.user._id,
       action: 'USER_UPDATED',
@@ -291,7 +291,7 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// Delete user
+
 router.delete('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -300,24 +300,24 @@ router.delete('/users/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Prevent admin from deleting themselves
+    
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(400).json({ message: 'Cannot delete your own account' });
     }
 
-    // Delete associated profile
+    
     if (user.role === 'doctor') {
       await DoctorProfile.findOneAndDelete({ userId: user._id });
     } else if (user.role === 'patient') {
       await PatientProfile.findOneAndDelete({ userId: user._id });
-      // Delete diagnosis sessions
+      
       await DiagnosisSession.deleteMany({ patientId: user._id });
     }
 
-    // Delete user
+    
     await User.findByIdAndDelete(req.params.id);
 
-    // Log audit event
+    
     await AuditLog.create({
       userId: req.user._id,
       action: 'USER_DELETED',
@@ -331,7 +331,7 @@ router.delete('/users/:id', async (req, res) => {
   }
 });
 
-// Reset user password
+
 router.post('/users/:id/reset-password', async (req, res) => {
   try {
     const { newPassword } = req.body;
@@ -345,12 +345,12 @@ router.post('/users/:id/reset-password', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Hash and update password
+    
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
     await user.save();
 
-    // Log audit event
+    
     await AuditLog.create({
       userId: req.user._id,
       action: 'PASSWORD_RESET',
@@ -364,7 +364,7 @@ router.post('/users/:id/reset-password', async (req, res) => {
   }
 });
 
-// Get all audit logs
+
 router.get('/audit-logs', async (req, res) => {
   try {
     const { page = 1, limit = 20, userId, action } = req.query;

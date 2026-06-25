@@ -21,7 +21,7 @@ const ManageUsers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0, limit: 10 });
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create' | 'edit' | 'delete' | 'reset'
+  const [modalMode, setModalMode] = useState('create'); 
   const [selectedUser, setSelectedUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [resetData, setResetData] = useState({ password: '', confirm: '' });
@@ -102,7 +102,7 @@ const ManageUsers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Client-side validation for password reset before hitting the API
+    
     if (modalMode === 'reset') {
       if (resetData.password.length < 6) {
         toast.error('Password must be at least 6 characters');
@@ -120,7 +120,7 @@ const ManageUsers = () => {
         toast.success('User created successfully');
       } else if (modalMode === 'edit') {
         const updateData = { ...formData };
-        delete updateData.password; // Don't send password in edit
+        delete updateData.password; 
         await api.put(`/admin/users/${selectedUser._id}`, updateData);
         toast.success('User updated successfully');
       } else if (modalMode === 'delete') {
@@ -154,7 +154,7 @@ const ManageUsers = () => {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <button
             onClick={() => navigate('/admin/dashboard')}
@@ -171,11 +171,11 @@ const ManageUsers = () => {
           </p>
         </div>
 
-        {/* Filters and Actions */}
+        {}
         <div className="card p-4 sm:p-5 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex-1 flex flex-col sm:flex-row gap-3 sm:gap-4">
-              {/* Role Filter */}
+              {}
               <select
                 value={selectedRole}
                 onChange={(e) => {
@@ -190,7 +190,7 @@ const ManageUsers = () => {
                 <option value="admin">Admins</option>
               </select>
 
-              {/* Search */}
+              {}
               <input
                 type="text"
                 placeholder="Search by name or email..."
@@ -215,7 +215,7 @@ const ManageUsers = () => {
           </div>
         </div>
 
-        {/* Users Table */}
+        {}
         <div className="card overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -298,7 +298,7 @@ const ManageUsers = () => {
                 </table>
               </div>
 
-              {/* Pagination */}
+              {}
               {pagination.pages > 1 && (
                 <div className="bg-slate-50 dark:bg-slate-800/60 px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-700">
                   <div className="text-sm text-slate-600 dark:text-slate-300">
@@ -327,17 +327,17 @@ const ManageUsers = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {}
       {showModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          {/* Backdrop — strong blur + dim isolates the form (figure / ground) */}
+          {}
           <div
             className="fixed inset-0 bg-slate-900/70 backdrop-blur-md transition-opacity"
             onClick={() => setShowModal(false)}
             aria-hidden="true"
           ></div>
 
-          {/* Centering wrapper */}
+          {}
           <div
             className="relative flex min-h-full items-center justify-center p-4"
             onClick={() => setShowModal(false)}
@@ -348,7 +348,7 @@ const ManageUsers = () => {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-700 animate-fadeIn"
             >
-              {/* Header */}
+              {}
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                   {modalMode === 'create' && 'Create New User'}
@@ -367,7 +367,7 @@ const ManageUsers = () => {
               </div>
 
               <form onSubmit={handleSubmit}>
-                {/* Body */}
+                {}
                 <div className="px-6 py-5">
                   {modalMode === 'delete' ? (
                     <div className="flex items-start gap-3.5">
@@ -506,7 +506,7 @@ const ManageUsers = () => {
                   )}
                 </div>
 
-                {/* Actions */}
+                {}
                 <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
                   <button
                     type="button"

@@ -73,7 +73,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <h1 className="page-title">Admin Dashboard</h1>
           <p className="page-subtitle">
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        {/* Statistics Cards */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {statCards.map(({ label, value, Icon, chip }) => (
             <div key={label} className="stat-card">
@@ -96,7 +96,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
           {quickActions.map(({ title, desc, to }) => (
             <button
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Recent Activity */}
+        {}
         <div className="card">
           <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">

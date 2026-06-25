@@ -5,7 +5,7 @@ import './ScrollStack.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Passthrough wrapper — ScrollStack maps children into pinned cards */
+
 export const ScrollStackItem = ({ children }) => children;
 
 const ScrollStack = ({ children, className = '' }) => {

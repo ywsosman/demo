@@ -72,7 +72,7 @@ const diagnosisSessionSchema = new mongoose.Schema({
       'NEEDS_MORE_INFO',
       'REVIEWED',
       'SOFT_DELETED',
-      // legacy (migrated on read in routes)
+      
       'pending',
       'reviewed',
       'closed'

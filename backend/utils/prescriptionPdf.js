@@ -5,11 +5,9 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 
 
-
 const PRESCRIPTION_DIR = path.join(__dirname, '..', 'uploads', 'prescriptions');
 
 const ORB_LOGO_PATH = path.join(__dirname, '..', 'assets', 'medidiagnose-orb.png');
-
 
 
 const BRAND = {
@@ -27,7 +25,6 @@ const BRAND = {
 };
 
 
-
 function ensureDir() {
 
   if (!fs.existsSync(PRESCRIPTION_DIR)) {
@@ -37,7 +34,6 @@ function ensureDir() {
   }
 
 }
-
 
 
 function drawOrbLogoFallback(doc, cx, cy, radius) {
@@ -55,7 +51,6 @@ function drawOrbLogoFallback(doc, cx, cy, radius) {
   ];
 
 
-
   doc.save();
 
   layers.forEach((layer) => {
@@ -71,7 +66,6 @@ function drawOrbLogoFallback(doc, cx, cy, radius) {
   });
 
 
-
   doc.circle(cx - radius * 0.22, cy - radius * 0.28, radius * 0.1)
 
     .fillColor('#ffffff')
@@ -79,7 +73,6 @@ function drawOrbLogoFallback(doc, cx, cy, radius) {
     .fillOpacity(0.85)
 
     .fill();
-
 
 
   doc.circle(cx + radius * 0.3, cy + radius * 0.18, radius * 0.05)
@@ -95,7 +88,6 @@ function drawOrbLogoFallback(doc, cx, cy, radius) {
 }
 
 
-
 function drawPdfHeader(doc) {
 
   const pageWidth = doc.page.width;
@@ -109,7 +101,6 @@ function drawPdfHeader(doc) {
   const headerTop = 34;
 
   const logoX = (pageWidth - logoSize) / 2;
-
 
 
   if (fs.existsSync(ORB_LOGO_PATH)) {
@@ -139,9 +130,7 @@ function drawPdfHeader(doc) {
   }
 
 
-
   const titleY = headerTop + logoSize + 16;
-
 
 
   doc.font('Helvetica-Bold')
@@ -159,7 +148,6 @@ function drawPdfHeader(doc) {
     });
 
 
-
   doc.font('Helvetica')
 
     .fontSize(11)
@@ -175,7 +163,6 @@ function drawPdfHeader(doc) {
     });
 
 
-
   const dividerY = titleY + 62;
 
   doc.strokeColor(BRAND.divider)
@@ -189,7 +176,6 @@ function drawPdfHeader(doc) {
     .stroke();
 
 
-
   doc.fillColor(BRAND.body);
 
   doc.font('Helvetica').fontSize(11);
@@ -197,7 +183,6 @@ function drawPdfHeader(doc) {
   doc.y = dividerY + 22;
 
 }
-
 
 
 function drawSectionTitle(doc, title) {
@@ -222,13 +207,6 @@ function drawSectionTitle(doc, title) {
 
 }
 
-
-
-/**
-
- * Generate prescription PDF (paper: prescription + doctor sign-off).
-
- */
 
 async function generatePrescriptionPdf({
 
@@ -257,7 +235,6 @@ async function generatePrescriptionPdf({
   const filePath = path.join(PRESCRIPTION_DIR, filename);
 
 
-
   return new Promise((resolve, reject) => {
 
     const doc = new PDFDocument({ margin: 50, size: 'A4' });
@@ -267,9 +244,7 @@ async function generatePrescriptionPdf({
     doc.pipe(stream);
 
 
-
     drawPdfHeader(doc);
-
 
 
     doc.fillColor(BRAND.muted).text(`Date: ${new Date().toLocaleDateString()}`);
@@ -281,11 +256,9 @@ async function generatePrescriptionPdf({
     doc.fillColor(BRAND.body);
 
 
-
     drawSectionTitle(doc, 'Diagnosis');
 
     doc.text(finalDiagnosis || 'See clinical notes');
-
 
 
     drawSectionTitle(doc, 'Medications / Treatment');
@@ -293,11 +266,9 @@ async function generatePrescriptionPdf({
     doc.text(medications || 'As clinically indicated');
 
 
-
     drawSectionTitle(doc, 'Instructions');
 
     doc.text(instructions || 'Follow up as needed.');
-
 
 
     doc.moveDown(2);
@@ -309,7 +280,6 @@ async function generatePrescriptionPdf({
       .text('Electronically signed by attending physician.');
 
     doc.text(`Signed: Dr. ${doctorName}`);
-
 
 
     doc.fontSize(8)
@@ -325,7 +295,6 @@ async function generatePrescriptionPdf({
       );
 
 
-
     doc.end();
 
     stream.on('finish', () => resolve({ filePath, filename }));
@@ -337,7 +306,6 @@ async function generatePrescriptionPdf({
 }
 
 
-
 module.exports = {
 
   generatePrescriptionPdf,
@@ -347,5 +315,4 @@ module.exports = {
   ORB_LOGO_PATH,
 
 };
-
 

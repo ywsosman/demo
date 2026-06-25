@@ -1,93 +1,77 @@
-# MediDiagnose - AI Medical Diagnosis System
+# MediDiagnose
 
-A full-stack medical diagnosis system powered by AI, built with React + Vite, Node.js, Express, and MongoDB.
+A full-stack medical diagnosis platform for graduation research. Patients submit symptoms, a fine-tuned BERT model generates disease predictions with SHAP and LIME explainability, and licensed doctors review cases, prescribe treatment, and sign off on results.
 
-## 🚀 Features
+**Not for clinical use.** This is an educational demonstration and must not be used for real medical decisions.
 
-- **AI-Powered Diagnosis**: Fine-tuned BERT model for disease prediction
-- **Explainable AI**: SHAP visualization showing which symptoms influenced the diagnosis
-- **Word Importance**: Visual highlighting of key symptoms in patient descriptions
-- **Patient Dashboard**: Track medical history and diagnosis sessions
-- **Doctor Dashboard**: Review patient cases and provide medical feedback
-- **Secure Authentication**: JWT-based authentication system
-- **Real-time Updates**: Live diagnosis status updates
-- **Responsive Design**: Beautiful UI built with Tailwind CSS
+## Features
 
-## 🛠️ Tech Stack
+- **AI disease prediction** — Fine-tuned BERT model with temperature-scaled confidence
+- **Explainable AI** — Unified SHAP + LIME word-importance visualization
+- **Symptom input** — Structured dropdown vocabulary or free-text descriptions
+- **Doctor workflow** — Session locking, review queue, prescriptions (PDF), ICD-10 mapping
+- **Patient portal** — Symptom checker, diagnosis history, profile management
+- **Admin dashboard** — User management, audit logs, system statistics
+- **Notifications** — In-app alerts and optional SMTP email delivery
+- **Diagnosis state machine** — Tracked session lifecycle from submission to doctor review
+- **Authentication** — JWT-based auth with patient, doctor, and admin roles
 
-### Frontend
-- **React 18** with **Vite** for fast development
-- **React Router** for navigation
-- **Axios** for API calls
-- **Tailwind CSS** for styling
-- **Heroicons** for icons
-- **React Hot Toast** for notifications
+## Tech Stack
 
-### Backend
-- **Node.js** with **Express**
-- **MongoDB** with **Mongoose** for database
-- **Python** with **Transformers** for AI model
-- **SHAP** for explainable AI
-- **PyTorch** for model inference
-- **JWT** for authentication
-- **Bcrypt** for password hashing
-- **Joi** for validation
-- **Helmet** for security
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | React 18, Vite, Tailwind CSS, Framer Motion, GSAP, Recharts |
+| Backend | Node.js, Express, MongoDB, Mongoose |
+| AI | Python, PyTorch, Transformers, SHAP, LIME |
+| Auth & security | JWT, bcrypt, Helmet, rate limiting, Joi validation |
 
-## 📋 Prerequisites
+## Prerequisites
 
-- Node.js (v16 or higher)
-- Python (v3.8 or higher)
-- MongoDB (local or MongoDB Atlas)
-- npm or yarn
-- pip (Python package manager)
+- Node.js 16+
+- Python 3.12 or 3.13 (3.14+ is not supported by the current PyTorch stack)
+- MongoDB (local or Atlas)
+- npm
 
-## 🔧 Installation
+## Installation
 
-### 1. Clone the repository
+### 1. Clone and install dependencies
 
 ```bash
 git clone <your-repo-url>
 cd demo
+npm run install:all
 ```
 
-### 2. Install Python Dependencies (for AI Model)
+### 2. Python environment (AI model)
 
 ```bash
 cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+pip install -r requirements.txt
+
+# macOS / Linux
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Note**: On Linux/Mac, use `pip3` instead of `pip`
+### 3. Model files
 
-### 3. Install Backend Dependencies
+Ensure the trained model is present:
 
-```bash
-cd backend
-npm install
-```
-
-### 4. Install Frontend Dependencies
-
-```bash
-cd frontend
-npm install
-```
-
-### 5. Verify AI Model Files
-
-Ensure your fine-tuned BERT model is in:
 ```
 backend/symptom_disease_model/
 ├── config.json
 ├── model.safetensors
-├── tokenizer files...
+├── tokenizer.json
+└── ...
 ```
 
-### 6. Environment Setup
+### 4. Environment variables
 
-#### Backend (.env)
-Create a `.env` file in the `backend` directory:
+**Backend** — create `backend/.env`:
 
 ```env
 PORT=5000
@@ -95,218 +79,160 @@ NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/medical-diagnosis
 JWT_SECRET=your_super_secure_jwt_secret_key_change_in_production
 FRONTEND_URL=http://localhost:5173
-PYTHON_PATH=python  # or python3 on Linux/Mac
+PYTHON_PATH=python
+
+# Optional SMTP (emails are logged when unset)
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+EMAIL_FROM=MediDiagnose <no-reply@medidiagnose.local>
 ```
 
-#### Frontend (.env)
-Create a `.env` file in the `frontend` directory:
+**Frontend** — create `frontend/.env`:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-## 🚀 Running the Application
+## Running locally
 
-### Quick Start
+### Test the Python predictor
 
-For a quick start with the AI model, see [QUICK_START_AI_MODEL.md](./QUICK_START_AI_MODEL.md)
-
-### Development Mode
-
-#### Test Python AI Model (First Time)
 ```bash
 cd backend
-python predict_disease.py "I have a headache and fever"
+python predict_disease.py "{\"text\":\"I have a headache and fever\"}"
 ```
-You should see JSON output with disease prediction and SHAP explanations.
 
-#### Start Backend Server
+### Start both servers (from project root)
+
 ```bash
-cd backend
 npm run dev
 ```
-Server will run on http://localhost:5000
 
-**Note**: First AI prediction will be slow (20-30s) as the model loads into memory.
-
-#### Start Frontend Development Server
-```bash
-cd frontend
-npm run dev
-```
-Frontend will run on http://localhost:5173
-
-### Production Build
-
-#### Build Frontend
-```bash
-cd frontend
-npm run build
-```
-
-#### Start Backend in Production
-```bash
-cd backend
-npm start
-```
-
-## 👥 Demo Accounts
-
-After first run, the system creates demo accounts:
-
-**Doctor Account:**
-- Email: `doctor@demo.com`
-- Password: `demo123`
-
-**Patient Account:**
-- Email: `patient@demo.com`
-- Password: `demo123`
-
-## 🌐 Deploying to Vercel
-
-### 1. Install Vercel CLI
+Or run them separately:
 
 ```bash
-npm install -g vercel
+npm run dev:backend   # http://localhost:5000
+npm run dev:frontend  # http://localhost:5173
 ```
 
-### 2. Login to Vercel
+The first AI prediction after startup can take 20–30 seconds while the persistent Python worker loads the model. Subsequent requests are faster.
+
+### Production build
 
 ```bash
-vercel login
+npm run build:frontend
+npm run start:backend
 ```
 
-### 3. Deploy
+## Demo accounts
 
-```bash
-vercel
-```
+On first run with an empty database, demo users are seeded automatically:
 
-### 4. Environment Variables on Vercel
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@demo.com | demo123 |
+| Doctor | doctor@demo.com | demo123 |
+| Patient | patient@demo.com | demo123 |
 
-Set the following environment variables in Vercel dashboard:
-
-**For Backend:**
-- `MONGODB_URI`: Your MongoDB Atlas connection string
-- `JWT_SECRET`: Your production JWT secret
-- `NODE_ENV`: production
-- `FRONTEND_URL`: Your Vercel frontend URL
-
-**For Frontend:**
-- `VITE_API_URL`: Your Vercel backend API URL
-
-## 📁 Project Structure
+## Project structure
 
 ```
 demo/
 ├── backend/
-│   ├── config.js
-│   ├── server.js
-│   ├── predict_disease.py         # Python script for AI predictions
-│   ├── requirements.txt            # Python dependencies
-│   ├── symptom_disease_model/      # Fine-tuned BERT model
-│   │   ├── config.json
-│   │   ├── model.safetensors
-│   │   └── tokenizer files
-│   ├── database/
-│   │   └── db.js
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── PatientProfile.js
-│   │   ├── DoctorProfile.js
-│   │   ├── DiagnosisSession.js    # Now includes SHAP data
-│   │   ├── AuditLog.js
-│   │   └── aiModel.js              # Node.js wrapper for Python model
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── diagnosis.js
-│   │   └── users.js
-│   ├── middleware/
-│   │   └── auth.js
-│   └── package.json
+│   ├── server.js                  # Express server
+│   ├── predict_disease.py         # BERT inference + SHAP/LIME (CLI & --serve worker)
+│   ├── train_model.py             # Model training script
+│   ├── symptom_disease_model/     # Fine-tuned BERT weights
+│   ├── symptom_vocabulary.json    # Dropdown symptom vocabulary
+│   ├── models/                    # Mongoose schemas + aiModel.js worker wrapper
+│   ├── routes/                    # auth, diagnosis, users, admin, notifications
+│   ├── services/                  # Email and notification delivery
+│   └── utils/                     # FSM, ICD-10, PDF generation, formatting
 ├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── contexts/
-│   │   ├── pages/
-│   │   │   └── SymptomChecker.jsx  # Now with SHAP visualization
-│   │   ├── services/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── package.json
-├── AI_MODEL_INTEGRATION.md         # AI integration documentation
-├── PYTHON_SETUP.md                 # Python setup guide
-├── QUICK_START_AI_MODEL.md         # Quick start guide
-└── README.md
+│   └── src/
+│       ├── pages/                 # Role-specific dashboards and symptom checker
+│       ├── components/            # UI, layout, animations
+│       ├── contexts/              # Auth, theme, loading
+│       └── services/api.jsx       # Axios API client
+├── documentations/                # Thesis figures and implementation notes
+├── notebooks/                     # Training and evaluation notebooks
+└── package.json                   # Root scripts (concurrent dev, install:all)
 ```
 
-## 🔐 Security Features
+## API overview
 
-- Password hashing with bcrypt
-- JWT token authentication
-- Rate limiting on API endpoints
-- Helmet.js for security headers
-- Input validation with Joi
-- CORS configuration
+### Auth
+- `POST /api/auth/register` — Register
+- `POST /api/auth/login` — Login
+- `GET /api/auth/profile` — Current user + profile
+- `PUT /api/auth/profile` — Update profile
 
-## 📝 API Documentation
+### Diagnosis
+- `GET /api/diagnosis/symptoms` — Symptom vocabulary
+- `POST /api/diagnosis/submit` — Submit symptoms (patient)
+- `POST /api/diagnosis/:id/resubmit` — Resubmit after doctor request (patient)
+- `GET /api/diagnosis/history` — Patient history
+- `GET /api/diagnosis/pending` — Doctor review queue
+- `GET /api/diagnosis/:id` — Session details
+- `POST /api/diagnosis/:id/lock` — Acquire review lock (doctor)
+- `PUT /api/diagnosis/:id/review` — Submit doctor review
+- `GET /api/diagnosis/:id/prescription/pdf` — Download prescription PDF
+- `GET /api/diagnosis/stats/overview` — Statistics
 
-### Authentication Endpoints
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/profile` - Get user profile
-- `PUT /api/auth/profile` - Update user profile
+### Users
+- `GET /api/users/patients` — List patients (doctor)
+- `GET /api/users/patients/:id` — Patient details + sessions
+- `GET /api/users/search/patients?q=` — Search patients
+- `GET /api/users/activity/:id?` — Audit activity
 
-### Diagnosis Endpoints
-- `POST /api/diagnosis/submit` - Submit new diagnosis
-- `GET /api/diagnosis/history` - Get patient history
-- `GET /api/diagnosis/pending` - Get pending cases (doctors)
-- `GET /api/diagnosis/:id` - Get specific diagnosis
-- `PUT /api/diagnosis/:id/review` - Review diagnosis (doctors)
-- `GET /api/diagnosis/stats/overview` - Get statistics
+### Admin
+- `GET /api/admin/stats` — Dashboard statistics
+- `GET /api/admin/users` — List users (paginated)
+- `POST /api/admin/users` — Create user
+- `PUT /api/admin/users/:id` — Update user
+- `DELETE /api/admin/users/:id` — Delete user
+- `POST /api/admin/users/:id/reset-password` — Reset password
+- `GET /api/admin/audit-logs` — Audit trail
 
-### User Endpoints
-- `GET /api/users/patients` - Get all patients (doctors)
-- `GET /api/users/patients/:id` - Get patient details
-- `GET /api/users/search/patients` - Search patients
-- `GET /api/users/activity/:id?` - Get activity logs
+### Notifications
+- `GET /api/notifications` — List in-app notifications
+- `PATCH /api/notifications/:id/read` — Mark one read
+- `PATCH /api/notifications/read-all` — Mark all read
 
+## AI pipeline
 
-## 🤖 AI Model Integration
+1. Patient submits symptoms via the React frontend.
+2. Express creates a diagnosis session and responds immediately.
+3. A background job calls the persistent Python worker (`predict_disease.py --serve`).
+4. BERT predicts the disease; SHAP and LIME produce unified word-importance scores.
+5. Results are saved to MongoDB and doctors are notified.
+6. The frontend displays predictions and explainability charts once the doctor review is complete.
 
-This application uses a fine-tuned BERT model for disease prediction with SHAP explanations.
+Retrain the model with `python backend/train_model.py`. Export thesis figures with `python backend/generate_xai_figures.py`.
 
-### Key Features:
-- **Fine-tuned BERT**: Medical symptom-to-disease prediction
-- **SHAP Explanations**: Visual word importance for transparency
-- **Node.js Integration**: Python called as subprocess from Node.js
-- **Explainable AI**: See which symptoms influenced the diagnosis
+## Deploying to Vercel
 
-### Documentation:
-- [Quick Start Guide](./QUICK_START_AI_MODEL.md) - Get up and running in 5 minutes
-- [Python Setup](./PYTHON_SETUP.md) - Detailed Python environment setup
-- [Integration Guide](./AI_MODEL_INTEGRATION.md) - Architecture and technical details
+The backend includes a Vercel serverless entry point at `backend/api/index.js`.
 
-### How It Works:
-1. Patient enters symptoms in React frontend
-2. Node.js backend receives request
-3. Node.js spawns Python subprocess with symptom text
-4. Python loads BERT model and generates predictions
-5. Python calculates SHAP values for explainability
-6. Results returned to Node.js and saved to MongoDB
-7. Frontend displays predictions with word importance visualization
+```bash
+npm install -g vercel
+vercel login
+vercel
+```
 
-## 📄 License
+Set environment variables in the Vercel dashboard (`MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL`, `NODE_ENV=production`, and frontend `VITE_API_URL`).
 
-This project is reserved to Youssef Waleed and Ali Mohamed Hassanein. PROJECT IS FOR GRADUATION PROJECT, SHOULD NOT BE USED IN REAL LIFE AS IT IS NOT FINISHED OR TAILORED TO USE IN THE REAL WORLD, ALL RIGHTS RESERVED.
+## License
 
-## 🆘 Support
+Reserved to Youssef Waleed and Ali Mohamed Hassanein. Graduation project — all rights reserved. Not intended for real-world medical use.
 
-For support, email youssef.waleed2231@gmail.com
+## Support
 
-## ⚠️ Disclaimer
+youssef.waleed2231@gmail.com
 
-This is a demonstration application for educational purposes. It should not be used for actual medical diagnosis. Always consult with a qualified healthcare professional for medical advice.
+## Disclaimer
+
+This application is for educational and research purposes only. Always consult a qualified healthcare professional for medical advice.

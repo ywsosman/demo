@@ -24,7 +24,7 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -81,7 +81,7 @@ const Register = () => {
     const result = await register(userData);
 
     if (result.success) {
-      // Navigate to landing page after registration to show welcome animation
+      
       navigate('/');
     }
   };
@@ -90,7 +90,7 @@ const Register = () => {
     <div className="min-h-[calc(100vh-88px)] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full animate-fadeIn">
         <div className="card p-7 sm:p-9">
-          {/* Brand */}
+          {}
           <div className="text-center">
             <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
               <HeartIcon />
@@ -104,7 +104,7 @@ const Register = () => {
           </div>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            {/* Name fields */}
+            {}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="firstName" className="form-label">
@@ -145,7 +145,7 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Email */}
+            {}
             <div>
               <label htmlFor="email" className="form-label">
                 Email address
@@ -166,7 +166,7 @@ const Register = () => {
               )}
             </div>
 
-            {/* Role selection */}
+            {}
             <div>
               <label htmlFor="role" className="form-label">
                 I am a
@@ -186,7 +186,7 @@ const Register = () => {
               )}
             </div>
 
-            {/* Password */}
+            {}
             <div>
               <label htmlFor="password" className="form-label">
                 Password
@@ -221,7 +221,7 @@ const Register = () => {
               )}
             </div>
 
-            {/* Confirm Password */}
+            {}
             <div>
               <label htmlFor="confirmPassword" className="form-label">
                 Confirm Password
@@ -256,7 +256,7 @@ const Register = () => {
               )}
             </div>
 
-            {/* Terms and conditions */}
+            {}
             <label htmlFor="terms" className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
               <input
                 id="terms"

@@ -110,7 +110,7 @@ const Landing = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[#f0fdf4] via-white to-[#ecfdf5] dark:from-transparent dark:via-green-900/10 dark:to-green-950/30" />
       </div>
 
-      {/* Hero — split layout on desktop (Framer-style) */}
+      {}
       <section className="relative px-4 sm:px-6 pt-12 sm:pt-16 lg:px-8 overflow-hidden">
         <OrbAmbience />
 
@@ -188,7 +188,7 @@ const Landing = () => {
           </div>
         </div>
 
-        {/* Mobile orb behind hero text */}
+        {}
         <div className="lg:hidden absolute inset-0 flex items-center justify-center pointer-events-none opacity-25">
           <div className="w-full max-w-md h-[280px]">
             <Orb hoverIntensity={0.5} rotateOnHover={false} forceHoverState={false} />
@@ -196,7 +196,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Bento metrics */}
+      {}
       <section id="metrics" className="relative py-16 sm:py-24">
         <div className="landing-section">
           <ScrollReveal direction="up" delay={80} duration={700}>
@@ -249,7 +249,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* How it works */}
+      {}
       <section id="how-it-works" className="relative py-16 sm:py-24 border-t border-slate-200/80 dark:border-slate-700/50">
         <div className="landing-section">
           <ScrollReveal direction="up" delay={80} duration={700}>
@@ -275,7 +275,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features — bento grid (mobile/tablet) + scroll stack (desktop) */}
+      {}
       <section id="features" className="relative py-16 sm:py-24">
         <div className="landing-section">
           <ScrollReveal direction="up" delay={100} duration={700}>
@@ -291,7 +291,7 @@ const Landing = () => {
             </div>
           </ScrollReveal>
 
-          {/* Bento feature grid — inspired by Framer layout marketplace */}
+          {}
           <div className="landing-bento-features mb-4">
             {features.map((feature, index) => (
               <ScrollReveal key={feature.name} direction="up" delay={index * 50} duration={500}>
@@ -306,7 +306,7 @@ const Landing = () => {
             ))}
           </div>
 
-          {/* Immersive scroll stack on large screens */}
+          {}
           <div className="landing-scroll-stack-wrap">
             <ScrollStack>
               {features.map((feature) => (
@@ -323,7 +323,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {}
       <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="landing-section max-w-2xl">
           <div className="landing-cta-panel">

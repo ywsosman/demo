@@ -35,9 +35,9 @@ const PatientDashboard = () => {
       const response = await diagnosisAPI.getHistory();
       const sessions = response.data.sessions || [];
       
-      setRecentSessions(sessions.slice(0, 5)); // Get last 5 sessions
+      setRecentSessions(sessions.slice(0, 5)); 
       
-      // Calculate stats
+      
       setStats({
         total: sessions.length,
         pending: sessions.filter(s => isPendingForPatient(s.status)).length,
@@ -66,7 +66,7 @@ const PatientDashboard = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <ScrollReveal direction="down" delay={0} duration={600}>
           <div className="mb-6 sm:mb-8">
             <h1 className="page-title">
@@ -78,7 +78,7 @@ const PatientDashboard = () => {
           </div>
         </ScrollReveal>
 
-        {/* Quick Actions */}
+        {}
         <div className="mb-6 sm:mb-8">
           <ScrollReveal direction="up" delay={100} duration={600}>
             <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Quick Actions</h2>
@@ -132,7 +132,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Overview */}
+        {}
         <div className="mb-6 sm:mb-8">
           <ScrollReveal direction="up" delay={100} duration={600}>
             <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Overview</h2>
@@ -176,7 +176,7 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Sessions */}
+        {}
         <ScrollReveal direction="up" delay={100} duration={600}>
           <div>
             <div className="flex items-center justify-between mb-4">

@@ -54,7 +54,7 @@ const DoctorProfile = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -130,7 +130,7 @@ const DoctorProfile = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Header */}
+        {}
         <div className="mb-6 sm:mb-8">
           <h1 className="page-title">My Profile</h1>
           <p className="page-subtitle">
@@ -139,7 +139,7 @@ const DoctorProfile = () => {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* Basic Information (Read-only) */}
+          {}
           <div className="card p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -185,7 +185,7 @@ const DoctorProfile = () => {
             </div>
           </div>
 
-          {/* Professional Information */}
+          {}
           <form onSubmit={handleSubmit} className="card p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Professional Information</h2>
             
@@ -295,7 +295,7 @@ const DoctorProfile = () => {
             </div>
           </form>
 
-          {/* Professional Verification Notice */}
+          {}
           <div className="rounded-xl border border-amber-200/70 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/10 p-4">
             <div className="flex gap-3">
               <span className="icon-chip icon-chip--warning w-9 h-9 shrink-0">
@@ -315,7 +315,7 @@ const DoctorProfile = () => {
             </div>
           </div>
 
-          {/* Practice Statistics */}
+          {}
           <div className="card p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white mb-4">Practice Statistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

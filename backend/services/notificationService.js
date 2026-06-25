@@ -2,10 +2,7 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const emailService = require('./emailService');
 
-/**
- * Wrap a plain-text notification message in a minimal branded HTML email.
- * Optionally renders a call-to-action button and an attachment note.
- */
+
 function buildEmailHtml(title, message, { actionUrl, actionLabel, hasAttachment } = {}) {
   const ctaButton = actionUrl
     ? `<p style="margin: 24px 0;">
@@ -38,14 +35,7 @@ function buildEmailHtml(title, message, { actionUrl, actionLabel, hasAttachment 
   </div>`;
 }
 
-/**
- * Multi-channel notifications (paper: in-app + email/SMS hooks).
- * Email is sent via SMTP when configured, otherwise logged. SMS is a stub.
- *
- * @param {Array} [attachments] email attachments (e.g. prescription PDF)
- * @param {string} [actionUrl] optional CTA link rendered in the email
- * @param {string} [actionLabel] label for the CTA link
- */
+
 async function notifyUser({
   userId,
   sessionId,
@@ -96,10 +86,7 @@ async function notifyUser({
   return created;
 }
 
-/**
- * Notify every registered doctor (in-app + email by default).
- * Used when a session enters the doctor review queue after AI processing.
- */
+
 async function notifyDoctors({
   sessionId,
   title,

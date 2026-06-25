@@ -19,7 +19,7 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -55,7 +55,7 @@ const Login = () => {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
-      // Navigate to landing page after login to show welcome animation
+      
       navigate('/');
     }
   };
@@ -64,7 +64,7 @@ const Login = () => {
     <div className="min-h-[calc(100vh-88px)] flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full animate-fadeIn">
         <div className="card p-7 sm:p-9">
-          {/* Brand */}
+          {}
           <div className="text-center">
             <span className="icon-chip icon-chip--brand mx-auto w-14 h-14">
               <HeartIcon />

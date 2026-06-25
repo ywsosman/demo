@@ -5,7 +5,7 @@ import NotificationBell from './NotificationBell';
 import './StaggeredMenu.css';
 
 export const StaggeredMenu = ({
-  colors = ['#1f2937', '#111827'], // Dark gray theme matching the website
+  colors = ['#1f2937', '#111827'], 
   items = [],
   socialItems = [],
   displaySocials = false,
@@ -66,7 +66,7 @@ export const StaggeredMenu = ({
       }
       preLayerElsRef.current = preLayers;
 
-      // Changed from xPercent to yPercent for downward animation
+      
       const offscreen = -100;
       gsap.set([panel, ...preLayers], { yPercent: offscreen });
       gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
@@ -113,7 +113,7 @@ export const StaggeredMenu = ({
 
     const tl = gsap.timeline({ paused: true });
 
-    // Changed from xPercent to yPercent for downward animation
+    
     layerStates.forEach((ls, i) => {
       tl.fromTo(ls.el, { yPercent: ls.start }, { yPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
     });
@@ -281,10 +281,10 @@ export const StaggeredMenu = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
   
-  // Update button color when theme changes, even if menu is open
+  
   React.useEffect(() => {
     if (toggleBtnRef.current && openRef.current) {
-      // When menu is open and theme changes, update the color
+      
       gsap.to(toggleBtnRef.current, {
         color: openMenuButtonColor,
         duration: 0.3,
@@ -293,11 +293,11 @@ export const StaggeredMenu = ({
     }
   }, [isDarkMode, openMenuButtonColor]);
 
-  // Reset animation state when user changes (logout/login as different user)
+  
   React.useEffect(() => {
     const currentUserId = user ? (user.id || user._id || user.email) : null;
     
-    // If user changed (different user or logged out), reset the animation state
+    
     if (previousUserIdRef.current !== null && previousUserIdRef.current !== currentUserId) {
       setWelcomeAnimated(false);
       welcomeAnimationRef.current?.kill();
@@ -306,7 +306,7 @@ export const StaggeredMenu = ({
     previousUserIdRef.current = currentUserId;
   }, [user]);
 
-  // Welcome message animation effect - only runs once per session
+  
   React.useEffect(() => {
     if (!user || !welcomeMessageRef.current || !userInitialsRef.current) {
       return;
@@ -317,11 +317,11 @@ export const StaggeredMenu = ({
     const userId = user.id || user._id || user.email;
     const sessionKey = `welcomeAnimationShown_${userId}`;
     
-    // Check if animation has already been shown this session
+    
     const hasShownAnimation = sessionStorage.getItem(sessionKey);
     
     if (hasShownAnimation) {
-      // Skip animation, show initials directly
+      
       gsap.set(welcomeEl, { 
         width: 0, 
         opacity: 0, 
@@ -336,12 +336,12 @@ export const StaggeredMenu = ({
       return;
     }
     
-    // First time this session - run the animation
+    
     if (!welcomeAnimated) {
-      // Kill any existing animation
+      
       welcomeAnimationRef.current?.kill();
       
-      // Set initial states
+      
       gsap.set(welcomeEl, { 
         width: 0, 
         opacity: 0, 
@@ -354,32 +354,32 @@ export const StaggeredMenu = ({
         display: 'none'
       });
       
-      // Create timeline for welcome message animation with smooth easing
+      
       const tl = gsap.timeline({
         onComplete: () => {
           setWelcomeAnimated(true);
-          // Mark animation as shown for this session
+          
           sessionStorage.setItem(sessionKey, 'true');
         }
       });
       
-      // Open from right to left with smooth elastic ease
+      
       tl.to(welcomeEl, {
         width: 'auto',
         opacity: 1,
         duration: 0.8,
         ease: 'power4.out'
       })
-      // Stay for 2 seconds
+      
       .to({}, { duration: 2 })
-      // Close from left to right with smooth ease
+      
       .to(welcomeEl, {
         width: 0,
         opacity: 0,
         duration: 0.6,
         ease: 'power4.in'
       })
-      // Show initials with smooth bounce
+      
       .set(welcomeEl, { display: 'none' })
       .set(initialsEl, { display: 'flex' })
       .to(initialsEl, {
@@ -464,7 +464,7 @@ export const StaggeredMenu = ({
             React.cloneElement(logoComponent, { 
               onLogoClick: () => {
                 if (openRef.current && onLogoClick) {
-                  // Only close if menu is open
+                  
                   toggleMenu();
                 }
               }

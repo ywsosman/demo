@@ -16,7 +16,7 @@ const AnimatedCounter = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Toggle visibility based on whether element is in viewport
+        
         setIsVisible(entry.isIntersecting);
       },
       { threshold: 0.1 }
@@ -44,7 +44,7 @@ const AnimatedCounter = ({
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Easing function for smooth animation
+      
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const currentCount = startValue + (targetValue - startValue) * easeOutQuart;
       
@@ -59,7 +59,7 @@ const AnimatedCounter = ({
 
     animationFrameId = requestAnimationFrame(animate);
 
-    // Cleanup function to cancel animation if component unmounts or visibility changes
+    
     return () => {
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);

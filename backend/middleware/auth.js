@@ -13,14 +13,14 @@ const authMiddleware = async (req, res, next) => {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     
-    // Get user from database
+    
     const user = await User.findById(decoded.userId).select('-password');
 
     if (!user) {
       return res.status(401).json({ message: 'Token is not valid' });
     }
 
-    // Convert mongoose document to plain object and add id field
+    
     req.user = {
       id: user._id.toString(),
       _id: user._id,

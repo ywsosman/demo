@@ -24,10 +24,6 @@ const stagger = {
   animate: { transition: { staggerChildren: 0.07 } },
 };
 
-// ---------------------------------------------------------------------------
-// Unified AI Explainability visualization
-// ---------------------------------------------------------------------------
-
 const SymptomImportanceChart = ({ wordImportance }) => {
   if (!wordImportance || wordImportance.length === 0) return null;
 
@@ -98,10 +94,6 @@ const SymptomImportanceChart = ({ wordImportance }) => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
 const SymptomChecker = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -116,13 +108,13 @@ const SymptomChecker = () => {
   const [errors, setErrors] = useState({});
   const [symptomOptions, setSymptomOptions] = useState([]);
 
-  // Fetch symptom vocabulary on mount
+  
   useEffect(() => {
     diagnosisAPI
       .getSymptoms()
       .then((res) => setSymptomOptions(res.data.symptoms || []))
       .catch(() => {
-        /* vocabulary unavailable — free-text still works */
+        
       });
   }, []);
 
@@ -198,10 +190,6 @@ const SymptomChecker = () => {
     if (confidence >= 0.6) return 'text-yellow-600 bg-yellow-50';
     return 'text-red-600 bg-red-50';
   };
-
-  // -----------------------------------------------------------------------
-  // Results view
-  // -----------------------------------------------------------------------
 
   if (result) {
     const awaitingReview = !result.deliveredToPatient;
@@ -450,10 +438,6 @@ const SymptomChecker = () => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // Form view
-  // -----------------------------------------------------------------------
-
   return (
     <div className="min-h-screen py-4 sm:py-6 md:py-8 transition-colors duration-300">
       <motion.div
@@ -480,7 +464,7 @@ const SymptomChecker = () => {
 
         <motion.div variants={fadeUp} className="symptom-glass-card p-4 sm:p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Symptom Dropdown */}
+            {}
             {symptomOptions.length > 0 && (
               <motion.div variants={fadeUp}>
                 <label className="block text-sm font-semibold symptom-label-accent mb-2">
